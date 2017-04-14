@@ -80,7 +80,6 @@ public class GameRuntime {
 
 		if (isHost) {
 			// what the program is responsible for doing if it is a Host
-			System.out.println("Game is running as host...");
 		} else {
 			// what the program is responsible for doing if it is a client, so
 			// pretty much nothing... most of the game logic and host
