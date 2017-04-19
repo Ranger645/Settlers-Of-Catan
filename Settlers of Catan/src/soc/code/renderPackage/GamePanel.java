@@ -28,11 +28,14 @@ public class GamePanel extends JPanel {
 	// constructor requires reference to board that will be generated.
 	public GamePanel(Board GB) {
 		gameBoard = GB;
+
+		// initializing the images:
+		Tile.initializeResourceImages();
 	}
 
 	public void paint(Graphics g) {
-		
-		//drawing the background:
+
+		// drawing the background:
 		g.setColor(Color.BLUE);
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
