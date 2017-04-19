@@ -200,4 +200,5 @@ public class Board {
 	public int numberOfColumns(int row) {
 		return gameBoard.get(row).size();
 	}
+
 }

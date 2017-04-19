@@ -4,6 +4,8 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
@@ -20,7 +22,7 @@ import soc.code.logicPackage.Tile;
  * 
  * @author Greg
  */
-public class GamePanel extends JPanel {
+public class GamePanel extends JPanel implements MouseListener{
 
 	// the reference to the board used in this game.
 	Board gameBoard = null;
@@ -29,6 +31,8 @@ public class GamePanel extends JPanel {
 	public GamePanel(Board GB) {
 		gameBoard = GB;
 
+		this.addMouseListener(this);
+		
 		// initializing the images:
 		Tile.initializeResourceImages();
 	}
@@ -100,6 +104,36 @@ public class GamePanel extends JPanel {
 		g2.setStroke(new BasicStroke(3));
 		g2.drawPolygon(yValues, xValues, 6);
 		g2.setStroke(new BasicStroke(1));
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		System.out.println(e.getX() + "  " + e.getY());
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
