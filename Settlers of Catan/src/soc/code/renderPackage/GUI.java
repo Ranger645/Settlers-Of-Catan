@@ -21,7 +21,7 @@ public class GUI extends JFrame {
 
 	public GUI(Board gameBoard) {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(Tile.TILE_WIDTH * 5 + 1, Tile.TILE_WIDTH * 5 + 1);
+		this.setSize(Tile.TILE_WIDTH * 6, Tile.TILE_WIDTH * 6);
 		this.setTitle("Stettlers of Catan");
 		this.setResizable(false);
 

@@ -4,12 +4,15 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
 import soc.code.logicPackage.Board;
+import soc.code.logicPackage.BuildSite;
 import soc.code.logicPackage.Tile;
 
 /**
@@ -22,25 +25,51 @@ import soc.code.logicPackage.Tile;
  * 
  * @author Greg
  */
-public class GamePanel extends JPanel implements MouseListener{
+public class GamePanel extends JPanel implements MouseListener {
 
 	// the reference to the board used in this game.
-	Board gameBoard = null;
+	private Board gameBoard = null;
+	// this coordinate is the top left x,y coordinate of the actual tiles. There
+	// are no tiles connected to it becuase it is a hexagon but it is the lowest
+	// x and lowest y that any of the tiles are drawn in.
+	private Point tileZeroPoint = null;
+
+	private final Color BACKGROUND_COLOR = new Color(68, 199, 255);
 
 	// constructor requires reference to board that will be generated.
 	public GamePanel(Board GB) {
 		gameBoard = GB;
 
 		this.addMouseListener(this);
-		
+
+		// setting the size and border spacing:
+		this.setSize(Tile.TILE_WIDTH * 6, Tile.TILE_WIDTH * 6);
+		tileZeroPoint = new Point(this.getWidth() / 2 - Tile.TILE_WIDTH * 5 / 2 - 1,
+				this.getHeight() / 2 - Tile.TILE_WIDTH * 5 / 2 - 1);
+
+		// setting the positions of each of the buildsites:
+		setBuildSitePostitions(gameBoard.getBuildSites());
+
 		// initializing the images:
 		Tile.initializeResourceImages();
 	}
 
-	public void paint(Graphics g) {
+	/**
+	 * This method will be called when the board is initialized and will be in
+	 * charge of setting the x and y positions of each of the build sites in the
+	 * array.
+	 * 
+	 * @param sites
+	 *            the array lists that need to have their contents' positions
+	 *            set.
+	 */
+	private void setBuildSitePostitions(ArrayList<ArrayList<BuildSite>> sites) {
+		
+	}
 
+	public void paint(Graphics g) {
 		// drawing the background:
-		g.setColor(Color.BLUE);
+		g.setColor(BACKGROUND_COLOR);
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
 		// The extremes:
@@ -52,7 +81,6 @@ public class GamePanel extends JPanel implements MouseListener{
 		for (int i = -2; i < gameBoard.numberOfRows() - 2; i++) {
 			currentXRow = STARTING_X + Math.abs(i) * Tile.TILE_WIDTH / 2 - Tile.TILE_WIDTH;
 			for (int n = 0; n < gameBoard.numberOfColumns(i + 2); n++) {
-				System.out.println((i + 2) + ", " + n + "  " + gameBoard.getTileAt(i + 2, n).toString());
 				switch (gameBoard.getTileAt(i + 2, n).getType()) {
 				case WOOD:
 					g.setColor(Color.GREEN);
@@ -73,8 +101,9 @@ public class GamePanel extends JPanel implements MouseListener{
 					g.setColor(Color.LIGHT_GRAY);
 					break;
 				}
-				drawHexagon((Graphics2D) g, Tile.TILE_HEIGHT / 2, currentXRow += Tile.TILE_WIDTH,
-						STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4);
+				drawHexagon((Graphics2D) g, Tile.TILE_HEIGHT / 2,
+						(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX()),
+						(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()));
 			}
 		}
 	}
@@ -101,7 +130,7 @@ public class GamePanel extends JPanel implements MouseListener{
 				(int) (centerY + yOffset), (int) (centerY + yOffset) };
 		g2.fillPolygon(yValues, xValues, 6);
 		g2.setColor(Color.BLACK);
-		g2.setStroke(new BasicStroke(3));
+		g2.setStroke(new BasicStroke(6));
 		g2.drawPolygon(yValues, xValues, 6);
 		g2.setStroke(new BasicStroke(1));
 	}
@@ -109,31 +138,30 @@ public class GamePanel extends JPanel implements MouseListener{
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println(e.getX() + "  " + e.getY());
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+		System.out.println(e.getX() + "  " + e.getY());
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

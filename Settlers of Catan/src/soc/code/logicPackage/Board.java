@@ -116,7 +116,7 @@ public class Board {
 			for (int n = 0; n < 12 - Math.abs(i); n++)
 				// initializing the build sites and adding them to the array
 				// lists.
-				boardBuildSites.get(arraySetValue).add(new BuildSite());
+				boardBuildSites.get(arraySetValue).add(new BuildSite(0, 0));
 			arraySetValue++;
 		}
 
@@ -135,7 +135,6 @@ public class Board {
 	 * @param bottomSites
 	 */
 	private void addTiles(ArrayList<Tile> tileArray, ArrayList<BuildSite> topSites, ArrayList<BuildSite> bottomSites) {
-		System.out.println("Hello");
 		if (topSites.size() < bottomSites.size())
 			for (int n = 0; n < tileArray.size(); n++) {
 				// adding the three build sites on top of the tile to the tile's
@@ -201,4 +200,7 @@ public class Board {
 		return gameBoard.get(row).size();
 	}
 
+	public ArrayList<ArrayList<BuildSite>> getBuildSites() {
+		return boardBuildSites;
+	}
 }
