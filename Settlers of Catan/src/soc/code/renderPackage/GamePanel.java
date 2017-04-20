@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -25,7 +26,7 @@ import soc.code.logicPackage.Tile;
  * 
  * @author Greg
  */
-public class GamePanel extends JPanel implements MouseListener {
+public class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
 
 	// the reference to the board used in this game.
 	private Board gameBoard = null;
@@ -35,6 +36,7 @@ public class GamePanel extends JPanel implements MouseListener {
 	private Point tileZeroPoint = null;
 
 	private BuildSite selectedBuildSite = null;
+	private BuildSite hovoredBuildSite = null;
 
 	private final Color BACKGROUND_COLOR = new Color(68, 199, 255);
 
@@ -43,12 +45,17 @@ public class GamePanel extends JPanel implements MouseListener {
 		gameBoard = GB;
 
 		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
 
 		// setting the size and border spacing:
 		this.setSize(Tile.TILE_WIDTH * 6, Tile.TILE_WIDTH * 6);
 		tileZeroPoint = new Point(this.getWidth() / 2 - Tile.TILE_WIDTH * 5 / 2 - 1,
 				this.getHeight() / 2 - Tile.TILE_WIDTH * 5 / 2 - 1);
 
+		// initializing the default selected buildsite to not produce null
+		// pointer errors:
+		selectedBuildSite = new BuildSite(0, 0);
+		hovoredBuildSite = new BuildSite(0, 0);
 		// setting the positions of each of the buildsites:
 		setBuildSitePostitions(gameBoard.getBuildSites());
 
@@ -77,7 +84,7 @@ public class GamePanel extends JPanel implements MouseListener {
 		for (int i = -5; i < 6; i += 2) {
 			// will help alternate the jagged Spacing:
 			int jaggedSpacingMultiplier = 1;
-			if(i > 0)
+			if (i > 0)
 				jaggedSpacingMultiplier = 0;
 			for (int n = 0; n < sites.get((i + 5) / 2).size(); n++) {
 				// setting the x and y coordinates of the buildsites:
@@ -143,8 +150,16 @@ public class GamePanel extends JPanel implements MouseListener {
 				ArrayList<ArrayList<BuildSite>> sites = gameBoard.getBuildSites();
 				for (int j = 0; j < sites.size(); j++)
 					for (int k = 0; k < sites.get(j).size(); k++) {
-						System.out.println(j + " " + k);
-						g.fillOval(sites.get(j).get(k).getX() - Tile.TILE_HEIGHT / 4, sites.get(j).get(k).getY() - Tile.TILE_HEIGHT / 4, Tile.TILE_HEIGHT / 2, Tile.TILE_HEIGHT / 2);
+						if (sites.get(j).get(k) == selectedBuildSite)
+							g.setColor(Color.MAGENTA);
+						else if(sites.get(j).get(k) == hovoredBuildSite)
+							g.setColor(Color.ORANGE);
+						else
+							g.setColor(Color.CYAN);
+						g.fillOval(sites.get(j).get(k).getX() - Tile.TILE_HEIGHT / 4,
+								sites.get(j).get(k).getY() - Tile.TILE_HEIGHT / 4, Tile.TILE_HEIGHT / 2,
+								Tile.TILE_HEIGHT / 2);
+
 					}
 			}
 		}
@@ -197,13 +212,25 @@ public class GamePanel extends JPanel implements MouseListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		System.out.println(e.getX() + "  " + e.getY());
+		selectedBuildSite = gameBoard.getBuildSiteAtPoint(e.getX(), e.getY());
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		hovoredBuildSite = gameBoard.getBuildSiteAtPoint(e.getX(), e.getY());
 	}
 
 }

@@ -200,6 +200,31 @@ public class Board {
 		return gameBoard.get(row).size();
 	}
 
+	/**
+	 * gets the build site nearest to the x and y coordinates given by the
+	 * method message.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return - the build site closest to the x and y coordinates.
+	 */
+	public BuildSite getBuildSiteAtPoint(int x, int y) {
+		System.out.println("Start Search");
+		BuildSite toReturn = null;
+		int distance = 100000;
+		for (int i = 0; i < boardBuildSites.size(); i++)
+			for (int n = 0; n < boardBuildSites.get(i).size(); n++) {
+				int distanceSquared = (int) (Math.pow(boardBuildSites.get(i).get(n).getX() - x, 2)
+						+ Math.pow(boardBuildSites.get(i).get(n).getY() - y, 2));
+				if(distanceSquared < distance){
+					distance = distanceSquared;
+					toReturn = boardBuildSites.get(i).get(n);
+				}
+			}
+		System.out.println("End Search");
+		return toReturn;
+	}
+
 	public ArrayList<ArrayList<BuildSite>> getBuildSites() {
 		return boardBuildSites;
 	}

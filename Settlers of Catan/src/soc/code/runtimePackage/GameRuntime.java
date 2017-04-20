@@ -46,6 +46,8 @@ public class GameRuntime {
 	static ConsoleWindow console = null;
 	// the static Board variable that will store the game board.
 	static Board gameBoard = null;
+	// the JFrame that will house the board:
+	static GUI gui = null;
 	// a boolean variable in charge keeping track of whether or not there is a
 	// game going on.
 	static boolean playingGame = false;
@@ -78,16 +80,20 @@ public class GameRuntime {
 		// running through Game Setup with the user:
 		preGameConsoleDialogue();
 
-		if (isHost) {
-			// what the program is responsible for doing if it is a Host
-		} else {
-			// what the program is responsible for doing if it is a client, so
-			// pretty much nothing... most of the game logic and host
-			// communication is handled in the clientsetup thread.
+		while (true) {
+			if (isHost) {
+				// what the program is responsible for doing if it is a Host
+			} else {
+				// what the program is responsible for doing if it is a client,
+				// so
+				// pretty much nothing... most of the game logic and host
+				// communication is handled in the clientsetup thread.
+			}
+			gui.repaint();
 		}
 
 		// after the game is over, it resets the game playing variable to false:
-		playingGame = false;
+		// playingGame = false;
 	}
 
 	/**
@@ -141,7 +147,8 @@ public class GameRuntime {
 					System.out.println("[ERROR] you do not have permission to kick someone, you are not a host.");
 			} else if (lastMessage.equals("testBoard")) {
 				gameBoard = new Board();
-				GUI gui = new GUI(gameBoard);
+				gui = new GUI(gameBoard);
+				break;
 			} else
 				System.out.println("[ERROR] Unrecognized Command: " + lastMessage);
 
