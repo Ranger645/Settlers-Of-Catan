@@ -23,7 +23,7 @@ public class GUI extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(Tile.TILE_WIDTH * 6, Tile.TILE_WIDTH * 6);
 		this.setTitle("Stettlers of Catan");
-		this.setResizable(false);
+		//this.setResizable(false);
 
 		mainPanel = new GamePanel(gameBoard);
 		this.add(mainPanel);

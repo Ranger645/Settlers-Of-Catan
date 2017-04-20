@@ -34,6 +34,8 @@ public class GamePanel extends JPanel implements MouseListener {
 	// x and lowest y that any of the tiles are drawn in.
 	private Point tileZeroPoint = null;
 
+	private BuildSite selectedBuildSite = null;
+
 	private final Color BACKGROUND_COLOR = new Color(68, 199, 255);
 
 	// constructor requires reference to board that will be generated.
@@ -64,7 +66,38 @@ public class GamePanel extends JPanel implements MouseListener {
 	 *            set.
 	 */
 	private void setBuildSitePostitions(ArrayList<ArrayList<BuildSite>> sites) {
-		
+
+		int rowCount = 0; // the row that the program is currently setting.
+		// this number is the y distance between each of the consecutive
+		// buildsites in one row.
+		int jaggedSpacingDistanceApart = (int) (Math.tan(Math.toRadians(30)) * (Tile.TILE_WIDTH / 2));
+		// x spacing in between tiles:
+		int xSpacingBetweenBuildSites = Tile.TILE_WIDTH / 2;
+
+		for (int i = -5; i < 6; i += 2) {
+			// will help alternate the jagged Spacing:
+			int jaggedSpacingMultiplier = 1;
+			if(i > 0)
+				jaggedSpacingMultiplier = 0;
+			for (int n = 0; n < sites.get((i + 5) / 2).size(); n++) {
+				// setting the x and y coordinates of the buildsites:
+				sites.get((i + 5) / 2).get(n).setX((int) (tileZeroPoint.getX() - Tile.TILE_WIDTH / 4
+						+ Math.abs(i) * Tile.TILE_WIDTH / 4 + n * xSpacingBetweenBuildSites));
+				sites.get((i + 5) / 2).get(n)
+						.setY((int) (tileZeroPoint.getY() // the zeroing y value
+															// of the board.
+								// The row that the program is assigning
+								// coordinates to:
+								+ ((i + 5) / 2) * (jaggedSpacingDistanceApart + Tile.TILE_HEIGHT / 2)
+								// creating the jagged rows:
+								+ jaggedSpacingMultiplier * jaggedSpacingDistanceApart));
+				// alternating the jagged space Multiplyer:
+				if (jaggedSpacingMultiplier == 0)
+					jaggedSpacingMultiplier = 1;
+				else
+					jaggedSpacingMultiplier = 0;
+			}
+		}
 	}
 
 	public void paint(Graphics g) {
@@ -104,6 +137,15 @@ public class GamePanel extends JPanel implements MouseListener {
 				drawHexagon((Graphics2D) g, Tile.TILE_HEIGHT / 2,
 						(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX()),
 						(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()));
+
+				// drawing the build sites to test their placments:
+				g.setColor(Color.CYAN);
+				ArrayList<ArrayList<BuildSite>> sites = gameBoard.getBuildSites();
+				for (int j = 0; j < sites.size(); j++)
+					for (int k = 0; k < sites.get(j).size(); k++) {
+						System.out.println(j + " " + k);
+						g.fillOval(sites.get(j).get(k).getX() - Tile.TILE_HEIGHT / 4, sites.get(j).get(k).getY() - Tile.TILE_HEIGHT / 4, Tile.TILE_HEIGHT / 2, Tile.TILE_HEIGHT / 2);
+					}
 			}
 		}
 	}
