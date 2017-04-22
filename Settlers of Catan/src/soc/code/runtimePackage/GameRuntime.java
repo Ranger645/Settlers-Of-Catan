@@ -83,6 +83,10 @@ public class GameRuntime {
 		while (true) {
 			if (isHost) {
 				// what the program is responsible for doing if it is a Host
+
+				// Every loop, the host will send all of the updated player
+				// information to the other players.
+
 			} else {
 				// what the program is responsible for doing if it is a client,
 				// so
@@ -149,6 +153,16 @@ public class GameRuntime {
 				gameBoard = new Board();
 				gui = new GUI(gameBoard);
 				break;
+			} else if (lastMessage.equals("startGame") && isHost) {
+				// starting the game...
+				gameBoard = new Board(); // initializing the game board
+				gui = new GUI(gameBoard); // initializing the GUI window.
+				hostManager.startGameProcess();
+
+			} else if (lastMessage.equals("ready") && !isHost) {
+				// readying up...
+				System.out.println("you pressed ready.");
+				clientManager.setReady(true);
 			} else
 				System.out.println("[ERROR] Unrecognized Command: " + lastMessage);
 

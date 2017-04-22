@@ -17,6 +17,7 @@ public class ClientSetup extends Thread {
 
 	private Socket clientSocket = null;
 	Player localPlayer;
+	private boolean isReady = false;
 
 	private boolean alive = true;
 
@@ -51,6 +52,11 @@ public class ClientSetup extends Thread {
 			// for what a client should do when a host sends a particular
 			// message to it. They will all be individual if statments.
 
+			// this just means that the message that the server is sending
+			// should be displayed in the client's console window.
+			if (data.length() > 1 && data.substring(0, 2).equals("//"))
+				System.out.println(data.substring(2));
+
 			// This if statement is for if the host is requesting the ping of
 			// the client.
 			if (data.equals("ping")) {
@@ -81,6 +87,18 @@ public class ClientSetup extends Thread {
 				}
 			}
 
+			// this is the command for starting the game. The host will send out
+			// this message and waits for the readiness of each of the players.
+			if (data.equals("startingGame")) {
+				startGameProcess();
+			}
+			
+			try {
+				this.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		System.out.println("Killing the thread...");
 		// the only time it breaks out of this while loop is if the socket
@@ -102,12 +120,36 @@ public class ClientSetup extends Thread {
 		System.out.println("BIO file send.");
 	}
 
+	private void startGameProcess() {
+		System.out.println("Host has initiated the start of the game, type \"ready\" to ready up for the game.");
+		while (!isReady) { // waiting for the user to ready up.
+			System.out.println("Hello");
+			try {
+				this.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		// telling the server that this client is ready.
+		ConnectionHelper.printString("ready", clientSocket);
+		System.out.println("You are now ready for the game, recieving game data...");
+	}
+
 	/**
 	 * @return whethor or not the socket bound to this host has been
 	 *         disconnected or not.
 	 */
 	public boolean getAliveState() {
 		return alive;
+	}
+
+	public boolean isReady() {
+		return isReady;
+	}
+
+	public void setReady(boolean isReady) {
+		this.isReady = isReady;
 	}
 
 }

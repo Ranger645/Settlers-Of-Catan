@@ -91,9 +91,9 @@ public class ConnectionHelper {
 	 * message back to the server that says ping.
 	 */
 	public static void recievePingRequest(Socket s) {
-		System.out.println("Connection test request recieved, replying...");
+		//System.out.println("Connection test request recieved, replying...");
 		ConnectionHelper.printString("ping", s);
-		System.out.println("Connection test complete, ping = " + ConnectionHelper.readLine(s));
+		//System.out.println("Connection test complete, ping = " + ConnectionHelper.readLine(s));
 	}
 
 }

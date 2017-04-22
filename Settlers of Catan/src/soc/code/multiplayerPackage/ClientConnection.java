@@ -17,9 +17,12 @@ public class ClientConnection extends Thread {
 
 	// the socket for this connection.
 	private Socket clientSocket = null;
+
 	// this is the a local copy of the player variable that will be updated when
 	// new info comes into the server.
 	private Player clientPlayer = null;
+	// will determine if the player is ready or not:
+	private boolean isReady = false;
 
 	public ClientConnection(Socket s) {
 		clientSocket = s;
@@ -28,6 +31,18 @@ public class ClientConnection extends Thread {
 
 	public void run() {
 
+	}
+
+	public void startGameProcess(HostSetup hostManager) {
+		// making sure the client is ready...
+		ConnectionHelper.printString("startingGame", clientSocket);
+		while (!ConnectionHelper.readLine(clientSocket).equals("ready"))
+			;
+		System.out.println("Player " + clientPlayer.getUsername() + " is ready.");
+		hostManager.broadcast("//Player " + clientPlayer.getUsername() + " is ready.");
+		isReady = true;
+
+		// sending the information the client needs:
 	}
 
 	/**
@@ -75,6 +90,10 @@ public class ClientConnection extends Thread {
 
 	public Player getPlayer() {
 		return clientPlayer;
+	}
+	
+	public Socket getClientSocket() {
+		return clientSocket;
 	}
 
 }

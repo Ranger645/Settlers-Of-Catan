@@ -37,6 +37,16 @@ public class HostSetup extends Thread {
 		searchForClientConnections();
 	}
 
+	/**
+	 * This method starts the actual game for each of the clients. It is in
+	 * charge of sending all of the map data to the clients as well as other
+	 * player data to the clients.
+	 */
+	public void startGameProcess() {
+		for (ClientConnection i : clientConnectionList)
+			i.startGameProcess(this);
+	}
+
 	// the while loop that will wait for a new client to connect and then store
 	// their information to be playable with.
 	private void searchForClientConnections() {
@@ -56,7 +66,8 @@ public class HostSetup extends Thread {
 	 * server. It returns whether or not the kicking was successful due to the
 	 * specified username being in the array or not.
 	 * 
-	 * @param username - the username of the client to be kicked.
+	 * @param username
+	 *            - the username of the client to be kicked.
 	 * @return - the success of the disconnection.
 	 */
 	public boolean kickClient(String username) {
@@ -122,9 +133,10 @@ public class HostSetup extends Thread {
 			System.out.println("[WARNING] Latency is higher than recommended (300ms)...");
 	}
 
-	// sends the given message to each of the clients.
+	// sends the given message to each of the clients
 	public void broadcast(String message) {
-
+		for (ClientConnection i : clientConnectionList)
+			ConnectionHelper.printString(message, i.getClientSocket());
 	}
 
 }
