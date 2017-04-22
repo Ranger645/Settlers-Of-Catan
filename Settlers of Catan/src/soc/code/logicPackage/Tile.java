@@ -26,6 +26,9 @@ public class Tile {
 	private static BufferedImage t_DesertImage;
 
 	protected RESOURCE_TYPE type;
+	// this is the numeber that the dice needs to be rolled to gain this
+	// resource. If this tile is a desert then this number is -1
+	private int resourceNumber = -1;
 
 	public Tile(RESOURCE_TYPE Type) {
 		type = Type;
@@ -109,6 +112,30 @@ public class Tile {
 
 	public static BufferedImage getT_DesertImage() {
 		return t_DesertImage;
+	}
+
+	public static int getTileWidth() {
+		return TILE_WIDTH;
+	}
+
+	public static int getTileHeight() {
+		return TILE_HEIGHT;
+	}
+
+	public BuildSite[] getTileBuildSites() {
+		return tileBuildSites;
+	}
+
+	public int getNumberOfBuildSites() {
+		return numberOfBuildSites;
+	}
+	
+	public void setResourceNumber(int resourceNumber) {
+		this.resourceNumber = resourceNumber;
+	}
+
+	public int getResourceNumber() {
+		return resourceNumber;
 	}
 
 }

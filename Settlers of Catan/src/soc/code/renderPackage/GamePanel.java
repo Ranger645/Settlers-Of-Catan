@@ -2,6 +2,8 @@ package soc.code.renderPackage;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -108,59 +110,178 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	public void paint(Graphics g) {
+
 		// drawing the background:
 		g.setColor(BACKGROUND_COLOR);
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
+
+		// drawing the tiles:
+		this.drawTiles(g, false);
+
+		// drawing the build sites:
+		this.drawBuildSites(g, gameBoard.getBuildSites(), 10);
+
+		// drawing the numbers on top of the tiles:
+		this.drawTileNumbers(g);
+	}
+
+	/**
+	 * This method will draw the resource gain numbers on top of the tiles. The
+	 * numbers will come from the array of tile objects itself.
+	 * 
+	 * @param g
+	 *            the graphics that the numbers will be drawn on.
+	 */
+	private void drawTileNumbers(Graphics g) {
+		// setting the font of the numbers:
+		g.setFont(new Font("Arial", Font.BOLD, 24));
 
 		// The extremes:
 		final int STARTING_X = Tile.TILE_WIDTH / 2;
 		final int STARTING_Y = Tile.TILE_HEIGHT / 2;
 		int currentXRow = STARTING_X;
 
-		// This is an example for loop for navigating the board array.
+		// Drawing the individual hexes:
 		for (int i = -2; i < gameBoard.numberOfRows() - 2; i++) {
 			currentXRow = STARTING_X + Math.abs(i) * Tile.TILE_WIDTH / 2 - Tile.TILE_WIDTH;
 			for (int n = 0; n < gameBoard.numberOfColumns(i + 2); n++) {
-				switch (gameBoard.getTileAt(i + 2, n).getType()) {
-				case WOOD:
-					g.setColor(Color.GREEN);
-					break;
-				case WHEAT:
-					g.setColor(Color.YELLOW);
-					break;
-				case BRICK:
-					g.setColor(Color.RED);
-					break;
-				case ORE:
-					g.setColor(Color.DARK_GRAY);
-					break;
-				case SHEEP:
-					g.setColor(Color.WHITE);
-					break;
-				case DESERT:
-					g.setColor(Color.LIGHT_GRAY);
-					break;
+				// these are the middle x and y values of the text that has to
+				// be displayed.
+				int currentTileX = (int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX());
+				int currentTileY = (int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY());
+
+				// if it is a desert it shouldn't draw any number:
+				if (gameBoard.getTileAt(i + 2, n).getResourceNumber() > 0) {
+					// painting the background circle for the numbers:
+					g.setColor(new Color(255, 241, 188));
+					int circleRadius = 20;
+					g.fillOval(currentTileX - circleRadius, currentTileY - circleRadius, circleRadius * 2,
+							circleRadius * 2);
+					g.setColor(Color.BLACK);
+					g.drawOval(currentTileX - circleRadius, currentTileY - circleRadius, circleRadius * 2,
+							circleRadius * 2);
+
+					// changing the color of the number based on its value.
+					// Sixes and eights are bright red while twos and twelves
+					// are black.
+					if (gameBoard.getTileAt(i + 2, n).getResourceNumber() < 7)
+						g.setColor(new Color(
+								Math.min((gameBoard.getTileAt(i + 2, n).getResourceNumber() - 2) * 64, 255), 0, 0));
+					else
+						g.setColor(new Color(Math.min(
+								(Math.abs((gameBoard.getTileAt(i + 2, n).getResourceNumber() - 12)) * 64), 255), 0, 0));
+
+					// painting the actual text of the numbers:
+					drawCenteredText(g, Integer.toString(gameBoard.getTileAt(i + 2, n).getResourceNumber()),
+							currentTileX, currentTileY);
 				}
-				drawHexagon((Graphics2D) g, Tile.TILE_HEIGHT / 2,
-						(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX()),
-						(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()));
+			}
+		}
+	}
 
-				// drawing the build sites to test their placments:
-				g.setColor(Color.CYAN);
-				ArrayList<ArrayList<BuildSite>> sites = gameBoard.getBuildSites();
-				for (int j = 0; j < sites.size(); j++)
-					for (int k = 0; k < sites.get(j).size(); k++) {
-						if (sites.get(j).get(k) == selectedBuildSite)
-							g.setColor(Color.MAGENTA);
-						else if(sites.get(j).get(k) == hovoredBuildSite)
-							g.setColor(Color.ORANGE);
-						else
-							g.setColor(Color.CYAN);
-						g.fillOval(sites.get(j).get(k).getX() - Tile.TILE_HEIGHT / 4,
-								sites.get(j).get(k).getY() - Tile.TILE_HEIGHT / 4, Tile.TILE_HEIGHT / 2,
-								Tile.TILE_HEIGHT / 2);
+	/**
+	 * This method will draw given text on the given graphics object that has
+	 * its center at the given x and y coordinates.
+	 * 
+	 * @param g
+	 *            the graphics that the text will be drawn on.
+	 * @param text
+	 *            the text that will be drawn
+	 * @param x
+	 *            the x coordinate of the center of the text.
+	 * @param y
+	 *            the y coordinate of the center of the text.
+	 */
+	private void drawCenteredText(Graphics g, String text, int x, int y) {
+		// Get the FontMetrics
+		FontMetrics metrics = g.getFontMetrics(g.getFont());
+		// Determine the X coordinate for the text
+		int xString = x - (metrics.stringWidth(text)) / 2;
+		// Determine the Y coordinate for the text (note we add the ascent, as
+		// in java 2d 0 is top of the screen)
+		int yString = y + metrics.getAscent() / 2 - 2;
+		// Draw the String
+		g.drawString(text, xString, yString);
+	}
 
+	/**
+	 * This method is in charge of drawing the build sites and making them the
+	 * appropriate colors based on what is built on them and if they are being
+	 * selected/are selected or not.
+	 * 
+	 * @param g
+	 *            the graphics that the build sites are to be drawn on.
+	 * @param sites
+	 *            the array of build sites to be drawn.
+	 * @param radius
+	 *            the radius of each of the build site circles.
+	 */
+	private void drawBuildSites(Graphics g, ArrayList<ArrayList<BuildSite>> sites, int radius) {
+		// drawing the build sites to test their placments:
+		for (int j = 0; j < sites.size(); j++)
+			for (int k = 0; k < sites.get(j).size(); k++) {
+				if (sites.get(j).get(k) == selectedBuildSite) {
+					g.setColor(Color.MAGENTA);
+					g.fillOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
+							radius * 2);
+				} else if (sites.get(j).get(k) == hovoredBuildSite) {
+					g.setColor(Color.BLACK);
+					g.fillOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
+							radius * 2);
+				}
+			}
+	}
+
+	/**
+	 * This method is responsible for drawing the tile array on top of the
+	 * passed graphics object. It can either draw colored hexagons representing
+	 * the different resource tiles or it can draw the actual images of each of
+	 * the tiles. This mode is specified by the drawTileImages boolean variable.
+	 * 
+	 * @param g
+	 *            the graphics that the tiles should be drawn on.
+	 * @param drawTileImages
+	 *            if true, then the program will draw the images from the hard
+	 *            drive; if false, it will draw colored hexes to represent each
+	 *            of the tiles.
+	 */
+	private void drawTiles(Graphics g, boolean drawTileImages) {
+		if (drawTileImages) {
+
+		} else {
+			// The extremes:
+			final int STARTING_X = Tile.TILE_WIDTH / 2;
+			final int STARTING_Y = Tile.TILE_HEIGHT / 2;
+			int currentXRow = STARTING_X;
+
+			// Drawing the individual hexes:
+			for (int i = -2; i < gameBoard.numberOfRows() - 2; i++) {
+				currentXRow = STARTING_X + Math.abs(i) * Tile.TILE_WIDTH / 2 - Tile.TILE_WIDTH;
+				for (int n = 0; n < gameBoard.numberOfColumns(i + 2); n++) {
+					switch (gameBoard.getTileAt(i + 2, n).getType()) {
+					case WOOD:
+						g.setColor(Color.GREEN);
+						break;
+					case WHEAT:
+						g.setColor(Color.YELLOW);
+						break;
+					case BRICK:
+						g.setColor(Color.RED);
+						break;
+					case ORE:
+						g.setColor(Color.DARK_GRAY);
+						break;
+					case SHEEP:
+						g.setColor(Color.WHITE);
+						break;
+					case DESERT:
+						g.setColor(Color.LIGHT_GRAY);
+						break;
 					}
+					drawHexagon((Graphics2D) g, Tile.TILE_HEIGHT / 2,
+							(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX()),
+							(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()));
+				}
 			}
 		}
 	}
@@ -224,7 +345,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

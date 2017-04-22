@@ -51,6 +51,7 @@ public class Board {
 
 		// Generating all of the tiles from scratch:
 		Tile[] allTiles = new Tile[TOTAL_TILES];
+
 		int count = 0;
 		int lockedCount = 0;
 		// adding the wood tiles:
@@ -84,12 +85,56 @@ public class Board {
 			allTiles[random] = holder;
 		}
 
+		// setting the resource numbers of the tiles in order after it has been
+		// shuffled:
+		int tileResourceNumberCount = 0;
+		// getting a local copy of the array of numbers in order:
+		int[] tileNumbers = getTileNumbers();
+		for (int i = 0; i < allTiles.length; i++)
+			// setting the tile resource number:
+			if (allTiles[i].getType() != Tile.RESOURCE_TYPE.DESERT)
+				allTiles[i].setResourceNumber(tileNumbers[tileResourceNumberCount++]);
+
 		// going through the gameBoard's multidimensional arraylist to set each
 		// value to one of the shuffled ones.
-		count = 0;
-		for (int i = -2; i < 3; i++)
-			for (int n = 0; n < 5 - Math.abs(i); n++)
-				gameBoard.get(i + 2).add(allTiles[count++]);
+		// count = 0;
+		// for (int i = -2; i < 3; i++)
+		// for (int n = 0; n < 5 - Math.abs(i); n++)
+		// gameBoard.get(i + 2).add(allTiles[count++]);
+		setGameBoard(allTiles);
+	}
+
+	/**
+	 * This method will add the tile objects to the game board 2D array in a
+	 * spiral pattern.
+	 * 
+	 * @param allTiles
+	 *            - the tiles to add to the gameBoard array.
+	 */
+	private void setGameBoard(Tile[] allTiles) {
+		gameBoard.get(0).add(allTiles[0]);
+		gameBoard.get(0).add(allTiles[1]);
+		gameBoard.get(0).add(allTiles[2]);
+
+		gameBoard.get(1).add(allTiles[11]);
+		gameBoard.get(1).add(allTiles[12]);
+		gameBoard.get(1).add(allTiles[13]);
+		gameBoard.get(1).add(allTiles[3]);
+
+		gameBoard.get(2).add(allTiles[10]);
+		gameBoard.get(2).add(allTiles[17]);
+		gameBoard.get(2).add(allTiles[18]);
+		gameBoard.get(2).add(allTiles[14]);
+		gameBoard.get(2).add(allTiles[4]);
+
+		gameBoard.get(3).add(allTiles[9]);
+		gameBoard.get(3).add(allTiles[16]);
+		gameBoard.get(3).add(allTiles[15]);
+		gameBoard.get(3).add(allTiles[5]);
+
+		gameBoard.get(4).add(allTiles[8]);
+		gameBoard.get(4).add(allTiles[7]);
+		gameBoard.get(4).add(allTiles[6]);
 	}
 
 	/**
@@ -209,23 +254,49 @@ public class Board {
 	 * @return - the build site closest to the x and y coordinates.
 	 */
 	public BuildSite getBuildSiteAtPoint(int x, int y) {
-		System.out.println("Start Search");
 		BuildSite toReturn = null;
 		int distance = 100000;
 		for (int i = 0; i < boardBuildSites.size(); i++)
 			for (int n = 0; n < boardBuildSites.get(i).size(); n++) {
 				int distanceSquared = (int) (Math.pow(boardBuildSites.get(i).get(n).getX() - x, 2)
 						+ Math.pow(boardBuildSites.get(i).get(n).getY() - y, 2));
-				if(distanceSquared < distance){
+				if (distanceSquared < distance) {
 					distance = distanceSquared;
 					toReturn = boardBuildSites.get(i).get(n);
 				}
 			}
-		System.out.println("End Search");
 		return toReturn;
 	}
 
 	public ArrayList<ArrayList<BuildSite>> getBuildSites() {
 		return boardBuildSites;
+	}
+
+	/**
+	 * Generates the proper number order for the tile numbers
+	 * 
+	 * @returns the array containing the proper order of the tile numbers
+	 */
+	private static int[] getTileNumbers() {
+		int[] tileNumbers = new int[18];
+		tileNumbers[0] = 5;
+		tileNumbers[1] = 2;
+		tileNumbers[2] = 6;
+		tileNumbers[3] = 3;
+		tileNumbers[4] = 8;
+		tileNumbers[5] = 10;
+		tileNumbers[6] = 9;
+		tileNumbers[7] = 12;
+		tileNumbers[8] = 11;
+		tileNumbers[9] = 4;
+		tileNumbers[10] = 8;
+		tileNumbers[11] = 10;
+		tileNumbers[12] = 9;
+		tileNumbers[13] = 4;
+		tileNumbers[14] = 5;
+		tileNumbers[15] = 6;
+		tileNumbers[16] = 3;
+		tileNumbers[17] = 11;
+		return tileNumbers;
 	}
 }
