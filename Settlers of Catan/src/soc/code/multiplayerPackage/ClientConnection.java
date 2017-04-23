@@ -2,9 +2,11 @@ package soc.code.multiplayerPackage;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.sql.Connection;
+import java.util.ArrayList;
 
+import soc.code.logicPackage.Board;
 import soc.code.logicPackage.Player;
+import soc.code.logicPackage.Tile;
 
 /**
  * This class is responsible for handling one connection to one client. It is an
@@ -33,7 +35,7 @@ public class ClientConnection extends Thread {
 
 	}
 
-	public void startGameProcess(HostSetup hostManager) {
+	public void startGameProcess(HostSetup hostManager, Board gameBoard) {
 		// making sure the client is ready...
 		ConnectionHelper.printString("startingGame", clientSocket);
 		while (!ConnectionHelper.readLine(clientSocket).equals("ready"))
@@ -42,7 +44,30 @@ public class ClientConnection extends Thread {
 		hostManager.broadcast("//Player " + clientPlayer.getUsername() + " is ready.");
 		isReady = true;
 
+		//initializing the client's board object by sending the hosts.
+		sendBoardObject(gameBoard);		
+
+		// then sending the other players:
+
+	}
+
+	public void sendBoardObject(Board gameBoard) {
 		// sending the information the client needs:
+		/*
+		 * In order to send the board, the program lays out the tiles one row at
+		 * a time linearly. Each tile will be sent in the same notation. To send
+		 * one tile, the host must send the tile resource type and the tile's
+		 * resource number. It will spell out the actual word for the resource
+		 * type and then the resource collection number. It ends the tile
+		 * transmission with a | Ex) wood8|
+		 */
+		for (ArrayList<Tile> arr : gameBoard.getTileArray())
+			for (Tile i : arr) {
+				String messageToSend = "";
+				messageToSend += i.toString();
+				messageToSend += i.getResourceNumber() + "|";
+				ConnectionHelper.printString(messageToSend, clientSocket);
+			}
 	}
 
 	/**
@@ -91,7 +116,7 @@ public class ClientConnection extends Thread {
 	public Player getPlayer() {
 		return clientPlayer;
 	}
-	
+
 	public Socket getClientSocket() {
 		return clientSocket;
 	}

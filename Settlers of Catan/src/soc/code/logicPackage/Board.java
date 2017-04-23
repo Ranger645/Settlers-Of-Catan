@@ -226,6 +226,10 @@ public class Board {
 	public Tile getTileAt(int row, int col) {
 		return gameBoard.get(row).get(col);
 	}
+	
+	public ArrayList<ArrayList<Tile>> getTileArray() {
+		return gameBoard;
+	}
 
 	/**
 	 * @return the number of rows in the board array.

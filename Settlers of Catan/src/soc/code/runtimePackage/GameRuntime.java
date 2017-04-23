@@ -155,9 +155,11 @@ public class GameRuntime {
 				break;
 			} else if (lastMessage.equals("startGame") && isHost) {
 				// starting the game...
+				System.out.println("Starting the game...");
 				gameBoard = new Board(); // initializing the game board
 				gui = new GUI(gameBoard); // initializing the GUI window.
-				hostManager.startGameProcess();
+				gui.setVisible(false);
+				hostManager.startGameProcess(gameBoard);
 
 			} else if (lastMessage.equals("ready") && !isHost) {
 				// readying up...

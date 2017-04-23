@@ -313,6 +313,18 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		g2.setStroke(new BasicStroke(1));
 	}
 
+	public BuildSite getSelectedBuildSite() {
+		return selectedBuildSite;
+	}
+
+	public BuildSite getHovoredBuildSite() {
+		return hovoredBuildSite;
+	}
+
+	public Color getBACKGROUND_COLOR() {
+		return BACKGROUND_COLOR;
+	}
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub

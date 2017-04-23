@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import soc.code.logicPackage.Board;
 import soc.code.logicPackage.Player;
 
 /**
@@ -41,10 +42,11 @@ public class HostSetup extends Thread {
 	 * This method starts the actual game for each of the clients. It is in
 	 * charge of sending all of the map data to the clients as well as other
 	 * player data to the clients.
+	 * @param gameBoard 
 	 */
-	public void startGameProcess() {
+	public void startGameProcess(Board gameBoard) {
 		for (ClientConnection i : clientConnectionList)
-			i.startGameProcess(this);
+			i.startGameProcess(this, gameBoard);
 	}
 
 	// the while loop that will wait for a new client to connect and then store
@@ -123,14 +125,17 @@ public class HostSetup extends Thread {
 				max = ping;
 			averagePing += ping;
 		}
+		averagePing /= pingAccuracy;
 		System.out.println("Latency Retrieved " + pingAccuracy + "times...");
 		System.out.println("Max Ping = " + max + "ms.");
-		System.out.println("Average ping = " + averagePing / pingAccuracy + "ms.");
+		System.out.println("Average ping = " + averagePing + "ms.");
 		if (averagePing < 300) {
 			System.out.println("Latency is acceptable, seeking player data...");
 			clientConnectionList.add(new ClientConnection(incomingClient));
-		} else
+		} else {
 			System.out.println("[WARNING] Latency is higher than recommended (300ms)...");
+			clientConnectionList.add(new ClientConnection(incomingClient));
+		}
 	}
 
 	// sends the given message to each of the clients

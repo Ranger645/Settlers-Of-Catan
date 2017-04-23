@@ -1,6 +1,13 @@
 package soc.code.renderPackage;
 
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.Tile;
@@ -23,10 +30,28 @@ public class GUI extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(Tile.TILE_WIDTH * 6, Tile.TILE_WIDTH * 6);
 		this.setTitle("Stettlers of Catan");
-		//this.setResizable(false);
+		// this.setResizable(false);
 
 		mainPanel = new GamePanel(gameBoard);
 		this.add(mainPanel);
+
+		// JMenuBar menuBar = new JMenuBar();
+		// menuBar.setPreferredSize(new Dimension(this.getWidth(), 25));
+		// JMenu commandMenu = new JMenu("Commands");
+		// JMenuItem buildSettlement = new JMenuItem("Build Settlement");
+		// buildSettlement.addActionListener(new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent e) {
+		// if (mainPanel.getSelectedBuildSite().buildSettlement(1))
+		// System.out.println("Building settlement.");
+		// else
+		// System.out.println("Failed to build settlement.");
+		// }
+		// });
+		//
+		// commandMenu.add(buildSettlement);
+		// menuBar.add(commandMenu);
+		// this.setJMenuBar(menuBar);
 
 		this.setVisible(true);
 	}

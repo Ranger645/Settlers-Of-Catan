@@ -30,7 +30,7 @@ public class ClientSetup extends Thread {
 			System.out.println("Attempting to connect to " + ipAddress + " on port: " + HostSetup.SERVER_PORT + "...");
 			clientSocket = new Socket(ipAddress, HostSetup.SERVER_PORT);
 			System.out.println("Successfully connected to Host: " + ipAddress + " on port: " + HostSetup.SERVER_PORT);
-			System.out.println("Waiting to recieve connection tests...");
+			System.out.println("Replying to Connection Tests...");
 			this.start();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -55,12 +55,13 @@ public class ClientSetup extends Thread {
 			// this just means that the message that the server is sending
 			// should be displayed in the client's console window.
 			if (data.length() > 1 && data.substring(0, 2).equals("//"))
-				System.out.println(data.substring(2));
+				System.out.println("[SERVER MESSAGE] " + data.substring(2));
 
 			// This if statement is for if the host is requesting the ping of
 			// the client.
 			if (data.equals("ping")) {
 				// the server is requesting a connection test:
+				System.out.println("Latency request recieved... Replying to Latency Test.");
 				ConnectionHelper.recievePingRequest(clientSocket);
 			}
 
@@ -92,13 +93,14 @@ public class ClientSetup extends Thread {
 			if (data.equals("startingGame")) {
 				startGameProcess();
 			}
-			
+
 			try {
 				this.sleep(20);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 		System.out.println("Killing the thread...");
 		// the only time it breaks out of this while loop is if the socket
@@ -123,7 +125,6 @@ public class ClientSetup extends Thread {
 	private void startGameProcess() {
 		System.out.println("Host has initiated the start of the game, type \"ready\" to ready up for the game.");
 		while (!isReady) { // waiting for the user to ready up.
-			System.out.println("Hello");
 			try {
 				this.sleep(100);
 			} catch (InterruptedException e) {
