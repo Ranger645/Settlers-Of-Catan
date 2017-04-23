@@ -75,17 +75,17 @@ public class Tile {
 	public String toString() {
 		switch (type) {
 		case WOOD:
-			return "Wood";
+			return "wood";
 		case WHEAT:
-			return "Wheat";
+			return "wheat";
 		case BRICK:
-			return "Brick";
+			return "brick";
 		case SHEEP:
-			return "Sheep";
+			return "sheep";
 		case ORE:
-			return "Ore";
+			return "ore";
 		case DESERT:
-			return "Desert";
+			return "desert";
 		}
 		return "null";
 	}

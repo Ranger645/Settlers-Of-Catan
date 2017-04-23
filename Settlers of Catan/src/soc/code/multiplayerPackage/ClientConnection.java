@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import soc.code.logicPackage.Board;
+import soc.code.logicPackage.BuildSite;
 import soc.code.logicPackage.Player;
 import soc.code.logicPackage.Tile;
 
@@ -44,28 +45,52 @@ public class ClientConnection extends Thread {
 		hostManager.broadcast("//Player " + clientPlayer.getUsername() + " is ready.");
 		isReady = true;
 
-		//initializing the client's board object by sending the hosts.
-		sendBoardObject(gameBoard);		
+		// initializing the client's board object by sending the hosts.
+		sendBoardTiles(gameBoard);
 
 		// then sending the other players:
 
 	}
 
-	public void sendBoardObject(Board gameBoard) {
-		// sending the information the client needs:
+	/**
+	 * This method sends the tiles in the gameboard to the client socket saved
+	 * in this object. It sends it linearly row by row from top to bottom. Each
+	 * tile appears to the client like <RES_TYPE><RES_NUMBER>
+	 * 
+	 * @param gameBoard
+	 */
+	private void sendBoardTiles(Board gameBoard) {
 		/*
 		 * In order to send the board, the program lays out the tiles one row at
 		 * a time linearly. Each tile will be sent in the same notation. To send
 		 * one tile, the host must send the tile resource type and the tile's
 		 * resource number. It will spell out the actual word for the resource
-		 * type and then the resource collection number. It ends the tile
-		 * transmission with a | Ex) wood8|
+		 * type and then the resource collection number. It ends the
+		 * transmission with a | to tell the client what is in the transmission.
+		 * Ex) wood8|
 		 */
 		for (ArrayList<Tile> arr : gameBoard.getTileArray())
 			for (Tile i : arr) {
 				String messageToSend = "";
 				messageToSend += i.toString();
 				messageToSend += i.getResourceNumber() + "|";
+				ConnectionHelper.printString(messageToSend, clientSocket);
+			}
+	}
+
+	/**
+	 * This method sends the build site information to the client saved in this
+	 * object. It sends them linearly row by row in the following notation:
+	 * <PLAYER_INDEX>,<BUILDING_TYPE>
+	 * 
+	 * @param gameBoard
+	 */
+	public void sendBoardBuildSites(Board gameBoard) {
+		for (ArrayList<BuildSite> arr : gameBoard.getBuildSites())
+			for (BuildSite i : arr) {
+				String messageToSend = "";
+				messageToSend += i.getPlayerID() + ",";
+				messageToSend += i.getBuildingType() + "|";
 				ConnectionHelper.printString(messageToSend, clientSocket);
 			}
 	}

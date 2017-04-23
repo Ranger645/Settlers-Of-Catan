@@ -55,6 +55,9 @@ public class GameRuntime {
 	// The player that is running this game. Sometimes it will be the host and
 	// sometimes it will be a client.
 	static Player localPlayer = null;
+	// this is the array of references to all of the host side player objects
+	// will be.
+	static Player[] playerArray = null;
 
 	static boolean isHost = false;
 	// these two variables are the connectivity and data managment objects for
@@ -71,11 +74,8 @@ public class GameRuntime {
 		console.setSystemOut();
 		System.out.println("Console Linked to Game: Settlers of Catan.");
 
-		// Setting up the Player based on the bio file stored in the archive
-		// folder.
-		localPlayer = Player.readPlayerFile();
-
 		// creating the default multiplayer utils, which is as a client:
+		localPlayer = Player.readPlayerFile();
 		createMultiplayerApparatus();
 		// running through Game Setup with the user:
 		preGameConsoleDialogue();
@@ -83,9 +83,6 @@ public class GameRuntime {
 		while (true) {
 			if (isHost) {
 				// what the program is responsible for doing if it is a Host
-
-				// Every loop, the host will send all of the updated player
-				// information to the other players.
 
 			} else {
 				// what the program is responsible for doing if it is a client,
@@ -158,7 +155,9 @@ public class GameRuntime {
 				System.out.println("Starting the game...");
 				gameBoard = new Board(); // initializing the game board
 				gui = new GUI(gameBoard); // initializing the GUI window.
-				gui.setVisible(false);
+				//gui.setVisible(false);
+				playerArray = compilePlayerObjects(); // initializing the local
+														// players.
 				hostManager.startGameProcess(gameBoard);
 
 			} else if (lastMessage.equals("ready") && !isHost) {
@@ -217,6 +216,14 @@ public class GameRuntime {
 															// clients
 			clientManager = new ClientSetup(localPlayer);
 		}
+	}
+
+	private static Player[] compilePlayerObjects() {
+		int numberOfPlayers = hostManager.getClientConnections().size();
+		Player[] player = new Player[numberOfPlayers];
+		for (int i = 0; i < numberOfPlayers; i++)
+			player[i] = hostManager.getClientConnections().get(i).getPlayer();
+		return player;
 	}
 
 }

@@ -42,7 +42,8 @@ public class HostSetup extends Thread {
 	 * This method starts the actual game for each of the clients. It is in
 	 * charge of sending all of the map data to the clients as well as other
 	 * player data to the clients.
-	 * @param gameBoard 
+	 * 
+	 * @param gameBoard
 	 */
 	public void startGameProcess(Board gameBoard) {
 		for (ClientConnection i : clientConnectionList)
@@ -142,6 +143,10 @@ public class HostSetup extends Thread {
 	public void broadcast(String message) {
 		for (ClientConnection i : clientConnectionList)
 			ConnectionHelper.printString(message, i.getClientSocket());
+	}
+
+	public ArrayList<ClientConnection> getClientConnections() {
+		return clientConnectionList;
 	}
 
 }

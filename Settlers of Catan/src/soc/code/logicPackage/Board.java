@@ -37,6 +37,57 @@ public class Board {
 	}
 
 	/**
+	 * This constructor builds a board with the specified tile data.
+	 * 
+	 * @param tileData
+	 *            the tile data.
+	 */
+	public Board(String[] tileData) {
+		// initializing the tile array and setting the outside max size to 5.
+		// This is the height of the multi dimensional arraylist.
+		gameBoard = new ArrayList<ArrayList<Tile>>(5); // this is [y][x] form.
+		// setting the maximum sizes of all of the arraylists:
+		for (int i = -2; i < 3; i++)
+			gameBoard.add(new ArrayList<Tile>(5 - Math.abs(i)));
+
+		int dataCount = 0;
+		for (int i = 0; i < gameBoard.size(); i++)
+			for (int n = 0; n < 5 - Math.abs(i - 2); n++) {
+				// Addressing each of the tiles' slots
+				String resType = "";
+				// while it is still a letter...
+				while (((int) tileData[dataCount].charAt(0)) > 57) {
+					resType += tileData[dataCount].substring(0, 1);
+					tileData[dataCount] = tileData[dataCount].substring(1);
+				}
+
+				// initializing the tiles and setting their resource types:
+				if (resType.equals("wood"))
+					gameBoard.get(i).add(new Tile(Tile.RESOURCE_TYPE.WOOD));
+				else if (resType.equals("wheat"))
+					gameBoard.get(i).add(new Tile(Tile.RESOURCE_TYPE.WHEAT));
+				else if (resType.equals("brick"))
+					gameBoard.get(i).add(new Tile(Tile.RESOURCE_TYPE.BRICK));
+				else if (resType.equals("sheep"))
+					gameBoard.get(i).add(new Tile(Tile.RESOURCE_TYPE.SHEEP));
+				else if (resType.equals("ore"))
+					gameBoard.get(i).add(new Tile(Tile.RESOURCE_TYPE.ORE));
+				else if (resType.equals("desert"))
+					gameBoard.get(i).add(new Tile(Tile.RESOURCE_TYPE.DESERT));
+
+				// setting the resource type
+				gameBoard.get(i).get(n).setResourceNumber(
+						Integer.parseInt(tileData[dataCount].substring(0, tileData[dataCount].length() - 1)));
+
+				// incrementing the data counter...
+				dataCount++;
+			}
+
+		// initializing the build sites.
+		initializeBuildSites();
+	}
+
+	/**
 	 * This method initializes the lists of tiles from scratch or overwrites all
 	 * existing tiles.
 	 */
@@ -226,7 +277,7 @@ public class Board {
 	public Tile getTileAt(int row, int col) {
 		return gameBoard.get(row).get(col);
 	}
-	
+
 	public ArrayList<ArrayList<Tile>> getTileArray() {
 		return gameBoard;
 	}
