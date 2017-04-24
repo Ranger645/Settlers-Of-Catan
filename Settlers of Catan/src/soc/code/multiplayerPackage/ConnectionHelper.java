@@ -2,6 +2,10 @@ package soc.code.multiplayerPackage;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+
+import soc.code.logicPackage.Board;
+import soc.code.logicPackage.BuildSite;
 
 /**
  * This class is for housing helper methods to assist in data spitting and data
@@ -10,6 +14,26 @@ import java.net.Socket;
  * @author developer
  */
 public class ConnectionHelper {
+
+	/**
+	 * This method starts the tramsimssion with the user by sending the keyword
+	 * "buildsites". Then, this method sends the build site information to the
+	 * client saved in this object. It sends them linearly row by row in the
+	 * following notation: <PLAYER_INDEX>,<BUILDING_TYPE>
+	 * 
+	 * @param gameBoard
+	 * @param toSendSocket
+	 */
+	public void sendBoardBuildSites(Board gameBoard, Socket toSendSocket) {
+		ConnectionHelper.printString("buildsite", toSendSocket);
+		for (ArrayList<BuildSite> arr : gameBoard.getBuildSites())
+			for (BuildSite i : arr) {
+				String messageToSend = "";
+				messageToSend += i.getPlayerID() + ",";
+				messageToSend += i.getBuildingType() + "|";
+				ConnectionHelper.printString(messageToSend, toSendSocket);
+			}
+	}
 
 	/**
 	 * This method will write the given string to the output stream of the given
@@ -58,7 +82,7 @@ public class ConnectionHelper {
 		}
 		return readString;
 	}
-	
+
 	/**
 	 * Uses system time functions to calculate response time of the given socket
 	 * object in milliseconds.
@@ -83,7 +107,6 @@ public class ConnectionHelper {
 
 		return ms;
 	}
-	
 
 	/**
 	 * This method takes care of the situation in which the host requests a ping
@@ -91,9 +114,10 @@ public class ConnectionHelper {
 	 * message back to the server that says ping.
 	 */
 	public static void recievePingRequest(Socket s) {
-		//System.out.println("Connection test request recieved, replying...");
+		// System.out.println("Connection test request recieved, replying...");
 		ConnectionHelper.printString("ping", s);
-		//System.out.println("Connection test complete, ping = " + ConnectionHelper.readLine(s));
+		// System.out.println("Connection test complete, ping = " +
+		// ConnectionHelper.readLine(s));
 	}
 
 }

@@ -34,6 +34,34 @@ public class ClientConnection extends Thread {
 
 	public void run() {
 
+		while (true) {
+
+			// getting a command from the client.
+			String data = ConnectionHelper.readLine(clientSocket);
+
+			// executing the client's command
+			doClientCommand(data);
+
+			try {
+				this.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	/**
+	 * This method does the given string command that is provided by the client.
+	 * 
+	 * @param data
+	 *            - the command that the client wants executed.
+	 */
+	public void doClientCommand(String data) {
+		if(data.equals("buildsite")){
+			
+		}
 	}
 
 	public void startGameProcess(HostSetup hostManager, Board gameBoard) {
@@ -74,23 +102,6 @@ public class ClientConnection extends Thread {
 				String messageToSend = "";
 				messageToSend += i.toString();
 				messageToSend += i.getResourceNumber() + "|";
-				ConnectionHelper.printString(messageToSend, clientSocket);
-			}
-	}
-
-	/**
-	 * This method sends the build site information to the client saved in this
-	 * object. It sends them linearly row by row in the following notation:
-	 * <PLAYER_INDEX>,<BUILDING_TYPE>
-	 * 
-	 * @param gameBoard
-	 */
-	public void sendBoardBuildSites(Board gameBoard) {
-		for (ArrayList<BuildSite> arr : gameBoard.getBuildSites())
-			for (BuildSite i : arr) {
-				String messageToSend = "";
-				messageToSend += i.getPlayerID() + ",";
-				messageToSend += i.getBuildingType() + "|";
 				ConnectionHelper.printString(messageToSend, clientSocket);
 			}
 	}
