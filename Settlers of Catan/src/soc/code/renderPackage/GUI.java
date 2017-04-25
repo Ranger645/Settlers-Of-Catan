@@ -35,23 +35,23 @@ public class GUI extends JFrame {
 		mainPanel = new GamePanel(gameBoard);
 		this.add(mainPanel);
 
-		// JMenuBar menuBar = new JMenuBar();
-		// menuBar.setPreferredSize(new Dimension(this.getWidth(), 25));
-		// JMenu commandMenu = new JMenu("Commands");
-		// JMenuItem buildSettlement = new JMenuItem("Build Settlement");
-		// buildSettlement.addActionListener(new ActionListener() {
-		// @Override
-		// public void actionPerformed(ActionEvent e) {
-		// if (mainPanel.getSelectedBuildSite().buildSettlement(1))
-		// System.out.println("Building settlement.");
-		// else
-		// System.out.println("Failed to build settlement.");
-		// }
-		// });
-		//
-		// commandMenu.add(buildSettlement);
-		// menuBar.add(commandMenu);
-		// this.setJMenuBar(menuBar);
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.setPreferredSize(new Dimension(this.getWidth(), 25));
+		JMenu commandMenu = new JMenu("Commands");
+		JMenuItem buildSettlement = new JMenuItem("Build Settlement");
+		buildSettlement.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (mainPanel.getSelectedBuildSite().buildSettlement(1))
+					System.out.println("Building settlement.");
+				else
+					System.out.println("Failed to build settlement.");
+			}
+		});
+
+		commandMenu.add(buildSettlement);
+		menuBar.add(commandMenu);
+		this.setJMenuBar(menuBar);
 
 		this.setVisible(true);
 	}

@@ -35,6 +35,14 @@ public class BuildSite {
 		this.y = y;
 	}
 
+	public void setBuildingType(int buildingType) {
+		this.buildingType = buildingType;
+	}
+
+	public void setPlayerID(int playerID) {
+		this.playerID = playerID;
+	}
+
 	public int getBuildingType() {
 		return buildingType;
 	}

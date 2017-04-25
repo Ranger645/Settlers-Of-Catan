@@ -69,7 +69,7 @@ public class ClientSetup extends Thread {
 	} // end run method
 
 	private void doServerCommand(String data) {
-		// The following set of if statements will contaion the programming
+		// The following set of if statements contaion the programming
 		// for what a client should do when a host sends a particular
 		// message to it. They will all be individual if statments.
 

@@ -37,6 +37,22 @@ public class Board {
 	}
 
 	/**
+	 * Copies the player value and building type variables from the passed array
+	 * into the buildsite array that is storred inside this Board object.
+	 * 
+	 * @param newSites
+	 *            - the arraylist of arraylists to be set to the one indide this
+	 *            object.
+	 */
+	public void overwriteBuildSites(ArrayList<ArrayList<BuildSite>> newSites) {
+		for (int i = 0; i < newSites.size(); i++)
+			for (int n = 0; n < newSites.get(0).size(); n++) {
+				boardBuildSites.get(i).get(n).setBuildingType(newSites.get(i).get(n).getBuildingType());
+				boardBuildSites.get(i).get(n).setPlayerID(newSites.get(i).get(n).getPlayerID());
+			}
+	}
+
+	/**
 	 * This constructor builds a board with the specified tile data.
 	 * 
 	 * @param tileData
