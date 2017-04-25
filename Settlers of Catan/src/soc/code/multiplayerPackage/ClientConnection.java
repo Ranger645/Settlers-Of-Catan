@@ -27,8 +27,11 @@ public class ClientConnection extends Thread {
 	// will determine if the player is ready or not:
 	private boolean isReady = false;
 
-	public ClientConnection(Socket s) {
+	private Board gameBoard = null;
+
+	public ClientConnection(Socket s, Board b) {
 		clientSocket = s;
+		gameBoard = b;
 		initializePlayer();
 	}
 
@@ -59,25 +62,27 @@ public class ClientConnection extends Thread {
 	 *            - the command that the client wants executed.
 	 */
 	public void doClientCommand(String data) {
-		if(data.equals("buildsite")){
-			
+		if (data.equals("buildsite")) {
+
+		}
+
+		if (data.equals("ready")) {
+			System.out.println("Player " + clientPlayer.getUsername() + " is ready.");
+			// hostManager.broadcast("//Player " + clientPlayer.getUsername() +
+			// " is ready.");
+			isReady = true;
+
+			// initializing the client's board object by sending the hosts.
+			sendBoardTiles(gameBoard);
+
+			// then sending the other players:
+
 		}
 	}
 
 	public void startGameProcess(HostSetup hostManager, Board gameBoard) {
 		// making sure the client is ready...
 		ConnectionHelper.printString("startingGame", clientSocket);
-		while (!ConnectionHelper.readLine(clientSocket).equals("ready"))
-			;
-		System.out.println("Player " + clientPlayer.getUsername() + " is ready.");
-		hostManager.broadcast("//Player " + clientPlayer.getUsername() + " is ready.");
-		isReady = true;
-
-		// initializing the client's board object by sending the hosts.
-		sendBoardTiles(gameBoard);
-
-		// then sending the other players:
-
 	}
 
 	/**
@@ -102,6 +107,7 @@ public class ClientConnection extends Thread {
 				String messageToSend = "";
 				messageToSend += i.toString();
 				messageToSend += i.getResourceNumber() + "|";
+				System.out.println("Sending Message to " + clientPlayer.getUsername() + messageToSend);
 				ConnectionHelper.printString(messageToSend, clientSocket);
 			}
 	}
@@ -155,6 +161,10 @@ public class ClientConnection extends Thread {
 
 	public Socket getClientSocket() {
 		return clientSocket;
+	}
+
+	public boolean getReadiness() {
+		return isReady;
 	}
 
 }

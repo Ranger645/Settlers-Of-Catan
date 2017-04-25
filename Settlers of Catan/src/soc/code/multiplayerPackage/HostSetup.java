@@ -28,8 +28,12 @@ public class HostSetup extends Thread {
 	// variable that conrols whether or not to keep searching for new clients:
 	private boolean keepSearching = true;
 
-	public HostSetup() {
+	// the reference to the main game board.
+	private Board gameBoard = null;
+
+	public HostSetup(Board b) {
 		clientConnectionList = new ArrayList<ClientConnection>();
+		gameBoard = b;
 	}
 
 	public void run() {
@@ -41,13 +45,16 @@ public class HostSetup extends Thread {
 	/**
 	 * This method starts the actual game for each of the clients. It is in
 	 * charge of sending all of the map data to the clients as well as other
-	 * player data to the clients.
+	 * player data to the clients. It also starts all of the threads for each of
+	 * the client connections.
 	 * 
 	 * @param gameBoard
 	 */
 	public void startGameProcess(Board gameBoard) {
-		for (ClientConnection i : clientConnectionList)
+		for (ClientConnection i : clientConnectionList) {
+			i.start();
 			i.startGameProcess(this, gameBoard);
+		}
 	}
 
 	// the while loop that will wait for a new client to connect and then store
@@ -62,6 +69,22 @@ public class HostSetup extends Thread {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Gets the combined readiness of all of the clients. It is essentially a
+	 * many input AND gate for all of the individual client readiness status'.
+	 * 
+	 * @return - the combined readiness of all the clients.
+	 */
+	public boolean getClientReadiness() {
+		boolean readiness = true;
+		for (ClientConnection i : clientConnectionList)
+			if (!i.getReadiness()) {
+				readiness = false;
+				break;
+			}
+		return readiness;
 	}
 
 	/**
@@ -117,6 +140,7 @@ public class HostSetup extends Thread {
 		System.out.println("Client Seeking connection from " + incomingClient.getInetAddress());
 		System.out.println("Testing connection at Client's ip Address...");
 		// testsetHosting the response time of the client.
+		ConnectionHelper.printString("//Testing Latency...", incomingClient);
 		int max = -1;
 		int averagePing = 0;
 		int pingAccuracy = 10;
@@ -127,15 +151,20 @@ public class HostSetup extends Thread {
 			averagePing += ping;
 		}
 		averagePing /= pingAccuracy;
-		System.out.println("Latency Retrieved " + pingAccuracy + "times...");
+		System.out.println("Latency Retrieved " + pingAccuracy + " times...");
 		System.out.println("Max Ping = " + max + "ms.");
 		System.out.println("Average ping = " + averagePing + "ms.");
+		// sending results to the client.
+		ConnectionHelper.printString("//Latency test Complete...", incomingClient);
+		ConnectionHelper.printString("//Average Ping = " + averagePing, incomingClient);
 		if (averagePing < 300) {
 			System.out.println("Latency is acceptable, seeking player data...");
-			clientConnectionList.add(new ClientConnection(incomingClient));
+			ConnectionHelper.printString("//Test Passed.", incomingClient);
+			clientConnectionList.add(new ClientConnection(incomingClient, gameBoard));
 		} else {
 			System.out.println("[WARNING] Latency is higher than recommended (300ms)...");
-			clientConnectionList.add(new ClientConnection(incomingClient));
+			ConnectionHelper.printString("//WARNING: Test Failed... try getting a better connection.", incomingClient);
+			clientConnectionList.add(new ClientConnection(incomingClient, gameBoard));
 		}
 	}
 

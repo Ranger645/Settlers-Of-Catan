@@ -81,8 +81,6 @@ public class ClientSetup extends Thread {
 		// This if statement is for if the host is requesting the ping of
 		// the client.
 		if (data.equals("ping")) {
-			// the server is requesting a connection test:
-			System.out.println("Latency request recieved... Replying to Latency Test.");
 			ConnectionHelper.recievePingRequest(clientSocket);
 		}
 

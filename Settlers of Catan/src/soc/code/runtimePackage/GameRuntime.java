@@ -80,17 +80,55 @@ public class GameRuntime {
 		// running through Game Setup with the user:
 		preGameConsoleDialogue();
 
-		while (true) {
-			if (isHost) {
-				// what the program is responsible for doing if it is a Host
+		if (isHost) {
+			System.out.println("Program acting as host of Game with " + hostManager.getClientConnections().size() + " Players.");
+			
+			// what the program is responsible for doing if it is a Host
+			playerArray = compilePlayerObjects(); // initializing the local
+													// players.
+			// Passing the board to the players and making sure they are
+			// ready to start the game.
+			hostManager.startGameProcess(gameBoard);
 
-			} else {
-				// what the program is responsible for doing if it is a client,
-				// so
-				// pretty much nothing... most of the game logic and host
-				// communication is handled in the clientsetup thread.
+			// waiting for everyone to be ready:
+			int readinessCounter = 0;
+			while (!hostManager.getClientReadiness()) {
+				if (readinessCounter % 100 == 0)
+					System.out.println(
+							"Waiting for clients type \"ready\". Time: " + readinessCounter / 10 + " seconds.");
+
+				readinessCounter++;
+				sleepMillis(100);
 			}
+
+			// repainting:
 			gui.repaint();
+
+			int currentPlayer = 0;
+			System.out.println("Starting Main Game Loop...");
+			while (true/* Eventually this will be the win testing condition */) {
+
+				// This is the turn rotater.
+				if (++currentPlayer >= playerArray.length)
+					currentPlayer = 0;
+
+				// Repainting the gui after everything the turn is over just for
+				// good measure.
+				gui.repaint();
+			}
+
+		} else {
+			// what the program is responsible for doing if it is a client,
+			// so
+			// pretty much nothing... most of the game logic and host
+			// communication is handled in the clientsetup thread.
+
+			// essentially this is just responsible for constantly updating the
+			// gui window so the client has real time data.
+			gui.repaint();
+
+			// and then it sleeps to conserver processing power.
+			sleepMillis(20);
 		}
 
 		// after the game is over, it resets the game playing variable to false:
@@ -147,7 +185,6 @@ public class GameRuntime {
 				else
 					System.out.println("[ERROR] you do not have permission to kick someone, you are not a host.");
 			} else if (lastMessage.equals("testBoard")) {
-				gameBoard = new Board();
 				gui = new GUI(gameBoard);
 				break;
 			} else if (lastMessage.equals("startGame") && isHost) {
@@ -155,10 +192,7 @@ public class GameRuntime {
 				System.out.println("Starting the game...");
 				gameBoard = new Board(); // initializing the game board
 				gui = new GUI(gameBoard); // initializing the GUI window.
-				//gui.setVisible(false);
-				playerArray = compilePlayerObjects(); // initializing the local
-														// players.
-				hostManager.startGameProcess(gameBoard);
+				break;
 
 			} else if (lastMessage.equals("ready") && !isHost) {
 				// readying up...
@@ -179,7 +213,8 @@ public class GameRuntime {
 	private static void createMultiplayerApparatus() {
 		if (isHost) {
 			// creating the host:
-			hostManager = new HostSetup();
+			gameBoard = new Board();
+			hostManager = new HostSetup(gameBoard);
 			// setting the host to null:
 			clientManager = null;
 		} else {
