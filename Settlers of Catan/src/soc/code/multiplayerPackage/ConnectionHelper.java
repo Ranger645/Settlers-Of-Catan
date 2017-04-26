@@ -129,7 +129,7 @@ public class ConnectionHelper {
 	 */
 	public static long getResponseTime(Socket s) {
 		long ms = System.currentTimeMillis();
-
+		
 		// requesting ping...
 		ConnectionHelper.printString("ping", s);
 		// recieving ping response:
