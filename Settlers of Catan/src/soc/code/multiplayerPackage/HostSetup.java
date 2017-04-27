@@ -43,6 +43,31 @@ public class HostSetup extends Thread {
 	}
 
 	/**
+	 * Tells the client connection handler to start the client's turn. Then it
+	 * waits for the turn to be finished all while constantly updating the main
+	 * gameboard with whatever the client whose turn it is is doing to it.
+	 * 
+	 * @param playerIndex
+	 *            - the index of the player whose turn it is.
+	 * @param mainGameBoard
+	 *            - the main board that is updated constantly by the client
+	 *            whose turn it is.
+	 * @return the final board of the player whose turn it is.
+	 */
+	public Board doTurn(int playerIndex, Board mainGameBoard) {
+
+		// waiting for the player's turn to be over...
+		while (clientConnectionList.get(playerIndex).isTurn())
+			// constantly updating the build sites on the main gameboard to keep
+			// the main gameboard updated real time:
+			mainGameBoard.overwriteBuildSites(clientConnectionList.get(playerIndex).getGameBoard().getBuildSites());
+
+		// sending the board that is stored in that client to the board that is
+		// kept on the server.
+		return clientConnectionList.get(playerIndex).getGameBoard();
+	}
+
+	/**
 	 * This method starts the actual game for each of the clients. It is in
 	 * charge of sending all of the map data to the clients as well as other
 	 * player data to the clients. It also starts all of the threads for each of

@@ -81,8 +81,9 @@ public class GameRuntime {
 		preGameConsoleDialogue();
 
 		if (isHost) {
-			System.out.println("Program acting as host of Game with " + hostManager.getClientConnections().size() + " Players.");
-			
+			System.out.println(
+					"Program acting as host of Game with " + hostManager.getClientConnections().size() + " Players.");
+
 			// what the program is responsible for doing if it is a Host
 			playerArray = compilePlayerObjects(); // initializing the local
 													// players.
@@ -107,6 +108,10 @@ public class GameRuntime {
 			int currentPlayer = 0;
 			System.out.println("Starting Main Game Loop...");
 			while (true/* Eventually this will be the win testing condition */) {
+
+				// telling the host to tell the client to start their turn and
+				// passing the main board so it can be constantly updated.
+				gameBoard.overwriteBuildSites(hostManager.doTurn(currentPlayer, gameBoard).getBuildSites());
 
 				// This is the turn rotater.
 				if (++currentPlayer >= playerArray.length)

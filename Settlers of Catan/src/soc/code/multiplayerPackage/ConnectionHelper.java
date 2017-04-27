@@ -46,7 +46,7 @@ public class ConnectionHelper {
 	 * @return - a arraylist of arraylists of the build sites that were
 	 *         recieved.
 	 */
-	public ArrayList<ArrayList<BuildSite>> recieveBuildSites(Socket toRecieveSocket) {
+	public static ArrayList<ArrayList<BuildSite>> recieveBuildSites(Socket toRecieveSocket) {
 		ArrayList<ArrayList<BuildSite>> buildSites = new ArrayList<ArrayList<BuildSite>>();
 		// initializing each of the build sites:
 		int arraySetValue = 0;

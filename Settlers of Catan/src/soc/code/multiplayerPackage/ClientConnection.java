@@ -27,6 +27,10 @@ public class ClientConnection extends Thread {
 	// will determine if the player is ready or not:
 	private boolean isReady = false;
 
+	// The variable for keeping track of whether or not it is this player's
+	// turn.
+	private boolean isTurn = false;
+
 	private Board gameBoard = null;
 
 	public ClientConnection(Socket s, Board b) {
@@ -62,10 +66,22 @@ public class ClientConnection extends Thread {
 	 *            - the command that the client wants executed.
 	 */
 	public void doClientCommand(String data) {
+		// The client is sending build sites to the host to update the build
+		// site array based on what the client has done during their turn.
 		if (data.equals("buildsite")) {
-
+			// updating the build site arrays inside of the client gameboard.
+			// During this player's turn, this local game board will have its
+			// build sites copied to the main game board located inside the main
+			// class.
+			gameBoard.overwriteBuildSites(ConnectionHelper.recieveBuildSites(clientSocket));
 		}
 
+		// this ends the client's turn.
+		if (data.equals("endturn")) {
+			isTurn = false;
+		}
+
+		// Then the client has pressed ready and is now ready to start the game.
 		if (data.equals("ready")) {
 			System.out.println("Player " + clientPlayer.getUsername() + " is ready.");
 			// hostManager.broadcast("//Player " + clientPlayer.getUsername() +
@@ -78,6 +94,15 @@ public class ClientConnection extends Thread {
 			// then sending the other players:
 
 		}
+	}
+
+	/**
+	 * This method starts the turn by sending a message to the client and
+	 * setting the is turn variable to true.
+	 */
+	public void startTurn() {
+		isTurn = true;
+		ConnectionHelper.printString("startturn", clientSocket);
 	}
 
 	public void startGameProcess(HostSetup hostManager, Board gameBoard) {
@@ -159,12 +184,36 @@ public class ClientConnection extends Thread {
 		return clientPlayer;
 	}
 
+	public boolean isReady() {
+		return isReady;
+	}
+
+	public void setReady(boolean isReady) {
+		this.isReady = isReady;
+	}
+
+	public boolean isTurn() {
+		return isTurn;
+	}
+
+	public void setTurn(boolean isTurn) {
+		this.isTurn = isTurn;
+	}
+
 	public Socket getClientSocket() {
 		return clientSocket;
 	}
 
 	public boolean getReadiness() {
 		return isReady;
+	}
+
+	public Board getGameBoard() {
+		return gameBoard;
+	}
+
+	public void setGameBoard(Board gameBoard) {
+		this.gameBoard = gameBoard;
 	}
 
 }

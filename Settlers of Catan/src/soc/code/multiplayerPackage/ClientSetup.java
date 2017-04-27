@@ -22,6 +22,10 @@ public class ClientSetup extends Thread {
 
 	private boolean alive = true;
 
+	// The variable for keeping track of whether or not it is this player's
+	// turn.
+	private boolean isTurn = false;
+
 	// This is the local copy of the game board variable. It is updated in this
 	// class because incoming changes from the server will be recieved here.
 	private Board gameBoard = null;
@@ -112,6 +116,13 @@ public class ClientSetup extends Thread {
 		if (data.equals("startingGame")) {
 			startGameProcess();
 		}
+
+		// this means that the server is telling this client that it is this
+		// client's turn to play the game. That means that they can do all of
+		// the normal stuff that happens during their turn.
+		if (data.equals("startturn")) {
+			isTurn = true;
+		}
 	}
 
 	/**
@@ -153,7 +164,7 @@ public class ClientSetup extends Thread {
 	 * This method creates the gameboard based on the tile values sent by the
 	 * server.
 	 * 
-	 * @return
+	 * @return the board that is to be rendered on this client.
 	 */
 	private Board initializeGameBoard() {
 		System.out.println("Recieving Tile Data from the Host...");
@@ -183,6 +194,30 @@ public class ClientSetup extends Thread {
 
 	public void setReady(boolean isReady) {
 		this.isReady = isReady;
+	}
+
+	public Player getLocalPlayer() {
+		return localPlayer;
+	}
+
+	public void setLocalPlayer(Player localPlayer) {
+		this.localPlayer = localPlayer;
+	}
+
+	public boolean isTurn() {
+		return isTurn;
+	}
+
+	public void setTurn(boolean isTurn) {
+		this.isTurn = isTurn;
+	}
+
+	public Board getGameBoard() {
+		return gameBoard;
+	}
+
+	public void setGameBoard(Board gameBoard) {
+		this.gameBoard = gameBoard;
 	}
 
 }
