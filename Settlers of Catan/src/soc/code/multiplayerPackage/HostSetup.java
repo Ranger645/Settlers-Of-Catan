@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.Player;
+import soc.code.renderPackage.GUI;
 
 /**
  * This class is responsible for storing and keeping track of all the client
@@ -52,15 +53,23 @@ public class HostSetup extends Thread {
 	 * @param mainGameBoard
 	 *            - the main board that is updated constantly by the client
 	 *            whose turn it is.
+	 * @param gui
+	 *            - the gui of the host. It is passed so it can be repainted
+	 *            each time the board is updated.
 	 * @return the final board of the player whose turn it is.
 	 */
-	public Board doTurn(int playerIndex, Board mainGameBoard) {
+	public Board doTurn(int playerIndex, Board mainGameBoard, GUI gui) {
+
+		// Telling the client that it is their turn.
+		clientConnectionList.get(playerIndex).startTurn();
 
 		// waiting for the player's turn to be over...
-		while (clientConnectionList.get(playerIndex).isTurn())
+		while (clientConnectionList.get(playerIndex).isTurn()) {
 			// constantly updating the build sites on the main gameboard to keep
 			// the main gameboard updated real time:
 			mainGameBoard.overwriteBuildSites(clientConnectionList.get(playerIndex).getGameBoard().getBuildSites());
+			gui.repaint();
+		}
 
 		// sending the board that is stored in that client to the board that is
 		// kept on the server.

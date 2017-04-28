@@ -132,7 +132,6 @@ public class ClientConnection extends Thread {
 				String messageToSend = "";
 				messageToSend += i.toString();
 				messageToSend += i.getResourceNumber() + "|";
-				System.out.println("Sending Message to " + clientPlayer.getUsername() + messageToSend);
 				ConnectionHelper.printString(messageToSend, clientSocket);
 			}
 	}

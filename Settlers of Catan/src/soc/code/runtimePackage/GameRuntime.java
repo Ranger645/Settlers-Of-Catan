@@ -109,9 +109,16 @@ public class GameRuntime {
 			System.out.println("Starting Main Game Loop...");
 			while (true/* Eventually this will be the win testing condition */) {
 
-				// telling the host to tell the client to start their turn and
-				// passing the main board so it can be constantly updated.
-				gameBoard.overwriteBuildSites(hostManager.doTurn(currentPlayer, gameBoard).getBuildSites());
+				// Telling the host manager to start the given players turn and
+				// wait for it to be done while constantly updating the main
+				// game board with the same values that the client is sending to
+				// the game board that is stored in the client connection object
+				// of the player whose turn it is.
+				Board afterTurnBoard = hostManager.doTurn(currentPlayer, gameBoard, gui);
+
+				// Making sure that the build sites in the main game board are
+				// perfectly up to date before moving on to the next turn.
+				gameBoard.overwriteBuildSites(afterTurnBoard.getBuildSites());
 
 				// This is the turn rotater.
 				if (++currentPlayer >= playerArray.length)
@@ -123,17 +130,30 @@ public class GameRuntime {
 			}
 
 		} else {
-			// what the program is responsible for doing if it is a client,
-			// so
-			// pretty much nothing... most of the game logic and host
-			// communication is handled in the clientsetup thread.
 
-			// essentially this is just responsible for constantly updating the
-			// gui window so the client has real time data.
-			gui.repaint();
+			// waiting for the server to send the entirety of the gameboard
+			// object so that the GUI can be initialized.
+			System.out.println("Waiting for Server to send Tile Board info...");
+			while (clientManager.getGameBoard() == null)
+				sleepMillis(20);
 
-			// and then it sleeps to conserver processing power.
-			sleepMillis(20);
+			// updating the gameBoard object inside this class so that the main
+			// method can pass the reference to the GUI object.
+			System.out.println("Creating GUI Window...");
+			gameBoard = clientManager.getGameBoard();
+
+			// passing the gameboard reference to the gui object.
+			gui = new GUI(gameBoard);
+
+			while (true) {
+				// This is just responsible for constantly updating the
+				// gui window so the client has real time data.
+				gui.repaint();
+
+				// and then it sleeps to conserver processing power.
+				sleepMillis(20);
+			}
+
 		}
 
 		// after the game is over, it resets the game playing variable to false:
@@ -197,12 +217,13 @@ public class GameRuntime {
 				System.out.println("Starting the game...");
 				gameBoard = new Board(); // initializing the game board
 				gui = new GUI(gameBoard); // initializing the GUI window.
-				break;
+				playingGame = true;
 
 			} else if (lastMessage.equals("ready") && !isHost) {
 				// readying up...
 				System.out.println("you pressed ready.");
 				clientManager.setReady(true);
+				playingGame = true;
 			} else
 				System.out.println("[ERROR] Unrecognized Command: " + lastMessage);
 
