@@ -49,8 +49,8 @@ public class Player {
 				lines.add(bioScanner.nextLine());
 
 			// creating the player:
-			System.out.println("Creating local player " + lines.get(0) + ".");
-			Player p = new Player(lines.get(0));
+			Player p = new Player(lines.get(0) + "_" + (int) (Math.random() * 1000));
+			System.out.println("Created local player " + p.getUsername() + ".");
 
 			// parsing the color from its line:
 			// <r>,<g>,<b>
@@ -63,6 +63,9 @@ public class Player {
 			// setting the color of the player object:
 			p.setPreferedColor(r, g, b);
 
+			// for now the colors will be random.
+			p.setPreferedColor((int) (Math.random() * 256), (int) (Math.random() * 256), (int) (Math.random() * 256));
+
 			return p;
 
 		} catch (FileNotFoundException e) {
@@ -73,8 +76,22 @@ public class Player {
 		return null;
 	}
 
-	private class Builder {
+	/**
+	 * Determines whether this object is equal to p
+	 * 
+	 * @param p
+	 *            - the object to test equality with
+	 * @return true if equal false if not equal.
+	 */
+	public boolean equals(Player p) {
+		boolean equal = true;
+		if (!p.username.equals(username))
+			equal = false;
 
+		if (!p.getPreferedColor().equals(preferedColor))
+			equal = false;
+
+		return equal;
 	}
 
 }

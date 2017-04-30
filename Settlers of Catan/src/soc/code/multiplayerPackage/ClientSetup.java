@@ -3,6 +3,7 @@ package soc.code.multiplayerPackage;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.Player;
@@ -19,6 +20,8 @@ public class ClientSetup extends Thread {
 	private Socket clientSocket = null;
 	private Player localPlayer;
 	private boolean isReady = false;
+
+	private Player[] allPlayers = null;
 
 	private boolean alive = true;
 
@@ -158,6 +161,55 @@ public class ClientSetup extends Thread {
 		// from the server's incoming message.
 		gameBoard = initializeGameBoard();
 		System.out.println("Tile data Recieved, Board initialized.");
+
+		// recieving the other player data from the server and initializing the
+		// array of all the players.
+		allPlayers = getAllPlayers();
+		System.out.println("Other Player Data Received, startup transmission finished.");
+	}
+
+	private Player[] getAllPlayers() {
+		ArrayList<Player> p = new ArrayList<Player>();
+
+		// getting teh number of players:
+		String numberOfPlayersTransmission = ConnectionHelper.readLine(clientSocket);
+		int numberOfPlayers = Integer.parseInt(numberOfPlayersTransmission.substring(2));
+
+		// recieving each player transmission.
+		for (int i = 0; i < numberOfPlayers; i++) {
+			// getting the transmission.
+			String playerTransmission = ConnectionHelper.readLine(clientSocket);
+			String userName = playerTransmission.substring(0, playerTransmission.indexOf("|"));
+			playerTransmission = playerTransmission.substring(playerTransmission.indexOf("|") + 1);
+
+			// getting the red value of the color
+			int r = Integer.parseInt(playerTransmission.substring(0, playerTransmission.indexOf("|")));
+			playerTransmission = playerTransmission.substring(playerTransmission.indexOf("|") + 1);
+
+			// getting the green value of the color
+			int g = Integer.parseInt(playerTransmission.substring(0, playerTransmission.indexOf("|")));
+			playerTransmission = playerTransmission.substring(playerTransmission.indexOf("|") + 1);
+
+			// getting the blue value of the color
+			int b = Integer.parseInt(playerTransmission);
+
+			// creating the player with the given username:
+			p.add(new Player(userName));
+			// setting the preffered color of the player
+			p.get(p.size() - 1).setPreferedColor(r, g, b);
+			System.out.println("Recieved player: " + userName + ".");
+		}
+
+		// going through the players and finding which one the local player is
+		// and setting the local player reference to be the same as the same
+		// player in the array.
+		for (int i = 0; i < p.size(); i++)
+			if (p.get(i).equals(localPlayer)) {
+				localPlayer = p.get(i);
+				System.out.println("Your client Index is " + i);
+			}
+
+		return (Player[]) p.toArray();
 	}
 
 	/**

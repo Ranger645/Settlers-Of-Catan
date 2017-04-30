@@ -24,6 +24,11 @@ public class ClientConnection extends Thread {
 	// this is the a local copy of the player variable that will be updated when
 	// new info comes into the server.
 	private Player clientPlayer = null;
+
+	// Each client connection stores a reference to the host manager so that
+	// they can directly reference the other players and their connections.
+	private HostSetup hostManager = null;
+
 	// will determine if the player is ready or not:
 	private boolean isReady = false;
 
@@ -92,7 +97,7 @@ public class ClientConnection extends Thread {
 			sendBoardTiles(gameBoard);
 
 			// then sending the other players:
-
+			sendOtherPlayers();
 		}
 	}
 
@@ -108,6 +113,10 @@ public class ClientConnection extends Thread {
 	public void startGameProcess(HostSetup hostManager, Board gameBoard) {
 		// making sure the client is ready...
 		ConnectionHelper.printString("startingGame", clientSocket);
+
+		// setting the host manager reference so that this client can reference
+		// the other player values.
+		this.hostManager = hostManager;
 	}
 
 	/**
@@ -127,6 +136,8 @@ public class ClientConnection extends Thread {
 		 * transmission with a | to tell the client what is in the transmission.
 		 * Ex) wood8|
 		 */
+		System.out.println("Sending Tile data to " + clientPlayer.getUsername());
+
 		for (ArrayList<Tile> arr : gameBoard.getTileArray())
 			for (Tile i : arr) {
 				String messageToSend = "";
@@ -134,6 +145,31 @@ public class ClientConnection extends Thread {
 				messageToSend += i.getResourceNumber() + "|";
 				ConnectionHelper.printString(messageToSend, clientSocket);
 			}
+	}
+
+	/**
+	 * Sends the other player values to the client that this connection handles.
+	 * This is so that the client can render the board with all the proper
+	 * player colors and usernames.
+	 */
+	private void sendOtherPlayers() {
+		// In order to send each player, the methods will have to send the
+		// username of the player and then the color of the player. It is spaced
+		// out like so: <username>|<Red>|<Green>|<Blue>
+		System.out.println("Sending Player data to " + clientPlayer.getUsername());
+
+		// starting off by sending how many players there are:
+		// P:<number of Players>
+		ConnectionHelper.printString("P:" + hostManager.getClientConnections().size(), clientSocket);
+
+		// going through and sending each player.
+		for (int i = 0; i < hostManager.getClientConnections().size(); i++) {
+			String toSend = hostManager.getClientConnections().get(i).getPlayer().getUsername() + "|";
+			toSend += hostManager.getClientConnections().get(i).getPlayer().getPreferedColor().getRed() + "|";
+			toSend += hostManager.getClientConnections().get(i).getPlayer().getPreferedColor().getGreen() + "|";
+			toSend += hostManager.getClientConnections().get(i).getPlayer().getPreferedColor().getBlue();
+			ConnectionHelper.printString(toSend, clientSocket);
+		}
 	}
 
 	/**
