@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.BuildSite;
-import soc.code.renderPackage.GamePanel;
 
 /**
  * This class is for housing helper methods to assist in data spitting and data
