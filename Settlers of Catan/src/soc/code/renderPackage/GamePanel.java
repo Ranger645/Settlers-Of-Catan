@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.BuildSite;
 import soc.code.logicPackage.Tile;
+import soc.code.multiplayerPackage.ClientSetup;
 
 /**
  * This class will be responsible for rendering the game itself based on the
@@ -32,6 +33,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 	// the reference to the board used in this game.
 	private Board gameBoard = null;
+	// the client manager that will be used to access the painting parts of each
+	// player:
+	private ClientSetup clientManager = null;
+
 	// this coordinate is the top left x,y coordinate of the actual tiles. There
 	// are no tiles connected to it becuase it is a hexagon but it is the lowest
 	// x and lowest y that any of the tiles are drawn in.
@@ -43,8 +48,9 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	private final Color BACKGROUND_COLOR = new Color(68, 199, 255);
 
 	// constructor requires reference to board that will be generated.
-	public GamePanel(Board GB) {
+	public GamePanel(Board GB, ClientSetup clientManager) {
 		gameBoard = GB;
+		this.clientManager = clientManager;
 
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
@@ -226,6 +232,12 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 							radius * 2);
 				} else if (sites.get(j).get(k) == hovoredBuildSite) {
 					g.setColor(Color.BLACK);
+					g.fillOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
+							radius * 2);
+				} else if (sites.get(j).get(k).getBuildingType() == 1) {
+					// Drawing the settlements with the color that the player
+					// that they are is.
+					g.setColor(clientManager.getAllPlayers()[sites.get(j).get(k).getPlayerID()].getPreferedColor());
 					g.fillOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
 							radius * 2);
 				}

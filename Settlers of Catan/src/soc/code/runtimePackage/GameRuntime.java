@@ -105,9 +105,14 @@ public class GameRuntime {
 			// repainting:
 			gui.repaint();
 
+			// MAIN GAME LOOP \\
 			int currentPlayer = 0;
 			System.out.println("Starting Main Game Loop...");
 			while (true/* Eventually this will be the win testing condition */) {
+
+				// telling all the clients whose turn it is.
+				hostManager.broadcast("It is now "
+						+ hostManager.getClientConnections().get(currentPlayer).getPlayer().getUsername() + "'s turn.");
 
 				// Telling the host manager to start the given players turn and
 				// wait for it to be done while constantly updating the main
@@ -118,7 +123,7 @@ public class GameRuntime {
 
 				// Making sure that the build sites in the main game board are
 				// perfectly up to date before moving on to the next turn.
-				gameBoard.overwriteBuildSites(afterTurnBoard.getBuildSites());
+				// gameBoard.overwriteBuildSites(afterTurnBoard.getBuildSites());
 
 				// This is the turn rotater.
 				if (++currentPlayer >= playerArray.length)
@@ -143,9 +148,17 @@ public class GameRuntime {
 			gameBoard = clientManager.getGameBoard();
 
 			// passing the gameboard reference to the gui object.
-			gui = new GUI(gameBoard);
+			gui = new GUI(gameBoard, clientManager, false);
 
 			while (true) {
+
+				// controlling whether or not the IO should be enabled or
+				// disabled epending on whether or not it is the client's turn.
+				if (clientManager.isTurn() && !gui.isEnabledIO())
+					gui.openIO();
+				else if (!clientManager.isTurn() && gui.isEnabledIO())
+					gui.closeIO();
+
 				// This is just responsible for constantly updating the
 				// gui window so the client has real time data.
 				gui.repaint();
@@ -209,14 +222,13 @@ public class GameRuntime {
 						System.out.println("[ERROR] Unable to kick the specified player, player not found.");
 				else
 					System.out.println("[ERROR] you do not have permission to kick someone, you are not a host.");
-			} else if (lastMessage.equals("testBoard")) {
-				gui = new GUI(gameBoard);
-				break;
 			} else if (lastMessage.equals("startGame") && isHost) {
 				// starting the game...
 				System.out.println("Starting the game...");
 				gameBoard = new Board(); // initializing the game board
-				gui = new GUI(gameBoard); // initializing the GUI window.
+				gui = new GUI(gameBoard, clientManager, true); // initializing
+																// the GUI
+																// window.
 				playingGame = true;
 
 			} else if (lastMessage.equals("ready") && !isHost) {

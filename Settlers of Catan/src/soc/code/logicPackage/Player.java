@@ -61,10 +61,12 @@ public class Player {
 			int b = Integer.parseInt(lines.get(1));
 
 			// setting the color of the player object:
-			p.setPreferedColor(r, g, b);
+			// p.setPreferedColor(r, g, b);
 
 			// for now the colors will be random.
 			p.setPreferedColor((int) (Math.random() * 256), (int) (Math.random() * 256), (int) (Math.random() * 256));
+			System.out.println("Setting Color to " + p.getPreferedColor().getRed() + ", "
+					+ p.getPreferedColor().getGreen() + ", " + p.getPreferedColor().getBlue());
 
 			return p;
 

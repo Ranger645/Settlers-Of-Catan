@@ -22,6 +22,7 @@ public class ClientSetup extends Thread {
 	private boolean isReady = false;
 
 	private Player[] allPlayers = null;
+	private int playerIndex = -1;
 
 	private boolean alive = true;
 
@@ -80,6 +81,16 @@ public class ClientSetup extends Thread {
 		// for what a client should do when a host sends a particular
 		// message to it. They will all be individual if statments.
 
+		// The server is sending build sites to the client to update the build
+		// site array.
+		if (data.equals("buildsite")) {
+			// updating the build site arrays inside of the client gameboard.
+			// During this player's turn, this local game board will have its
+			// build sites copied to the main game board located inside the main
+			// class.
+			gameBoard.overwriteBuildSites(ConnectionHelper.recieveBuildSites(clientSocket));
+		}
+
 		// this just means that the message that the server is sending
 		// should be displayed in the client's console window.
 		if (data.length() > 1 && data.substring(0, 2).equals("//"))
@@ -129,6 +140,14 @@ public class ClientSetup extends Thread {
 	}
 
 	/**
+	 * Sends the build sites that are stored on this client to the server to
+	 * overwrite the servers build site arrays.
+	 */
+	public void sendUpdatedBuildSites() {
+		ConnectionHelper.sendBoardBuildSites(gameBoard, clientSocket);
+	}
+
+	/**
 	 * This method sends the player data to the server for their local storage.
 	 */
 	private void sendPlayer() {
@@ -164,11 +183,11 @@ public class ClientSetup extends Thread {
 
 		// recieving the other player data from the server and initializing the
 		// array of all the players.
-		allPlayers = getAllPlayers();
+		allPlayers = initializeAllPlayers();
 		System.out.println("Other Player Data Received, startup transmission finished.");
 	}
 
-	private Player[] getAllPlayers() {
+	private Player[] initializeAllPlayers() {
 		ArrayList<Player> p = new ArrayList<Player>();
 
 		// getting teh number of players:
@@ -207,9 +226,22 @@ public class ClientSetup extends Thread {
 			if (p.get(i).equals(localPlayer)) {
 				localPlayer = p.get(i);
 				System.out.println("Your client Index is " + i);
+				playerIndex = i;
 			}
 
-		return (Player[]) p.toArray();
+		Player[] pArr = new Player[p.size()];
+		for (int i = 0; i < p.size(); i++)
+			pArr[i] = p.get(i);
+
+		return pArr;
+	}
+
+	/**
+	 * Ends the turn locally and tells the server to also end the turn.
+	 */
+	public void endTurn() {
+		isTurn = false;
+		ConnectionHelper.printString("endturn", clientSocket);
 	}
 
 	/**
@@ -250,6 +282,18 @@ public class ClientSetup extends Thread {
 
 	public Player getLocalPlayer() {
 		return localPlayer;
+	}
+
+	public int getPlayerIndex() {
+		return playerIndex;
+	}
+
+	public Player[] getAllPlayers() {
+		return allPlayers;
+	}
+
+	public void setAllPlayers(Player[] allPlayers) {
+		this.allPlayers = allPlayers;
 	}
 
 	public void setLocalPlayer(Player localPlayer) {

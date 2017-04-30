@@ -79,6 +79,11 @@ public class ClientConnection extends Thread {
 			// build sites copied to the main game board located inside the main
 			// class.
 			gameBoard.overwriteBuildSites(ConnectionHelper.recieveBuildSites(clientSocket));
+
+			// Then it updates all of the other player's buildsites excluding
+			// the one that just sent the message to update the servers build
+			// sites.
+			hostManager.updateAllBuildSites(hostManager.getClientConnections().indexOf(this));
 		}
 
 		// this ends the client's turn.

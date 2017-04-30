@@ -65,9 +65,7 @@ public class HostSetup extends Thread {
 
 		// waiting for the player's turn to be over...
 		while (clientConnectionList.get(playerIndex).isTurn()) {
-			// constantly updating the build sites on the main gameboard to keep
-			// the main gameboard updated real time:
-			mainGameBoard.overwriteBuildSites(clientConnectionList.get(playerIndex).getGameBoard().getBuildSites());
+			// keeping the main gameboard updated in real time:
 			gui.repaint();
 		}
 
@@ -202,10 +200,22 @@ public class HostSetup extends Thread {
 		}
 	}
 
+	public void updateAllBuildSites(int clientThatIsUpdating) {
+		// setting the board on the server to have the same build sites.
+		System.out.println("Updating Build Sites.");
+		broadcast("Updating Build Sites.");
+		gameBoard.overwriteBuildSites(clientConnectionList.get(clientThatIsUpdating).getGameBoard().getBuildSites());
+		for (int i = 0; i < clientConnectionList.size(); i++)
+			if (i != clientThatIsUpdating)
+				// sending the new build sites to all the clients except the one
+				// that sent it in the first place.
+				ConnectionHelper.sendBoardBuildSites(gameBoard, clientConnectionList.get(i).getClientSocket());
+	}
+
 	// sends the given message to each of the clients
 	public void broadcast(String message) {
 		for (ClientConnection i : clientConnectionList)
-			ConnectionHelper.printString(message, i.getClientSocket());
+			ConnectionHelper.printString("//" + message, i.getClientSocket());
 	}
 
 	public ArrayList<ClientConnection> getClientConnections() {

@@ -24,7 +24,7 @@ public class ConnectionHelper {
 	 * @param gameBoard
 	 * @param toSendSocket
 	 */
-	public void sendBoardBuildSites(Board gameBoard, Socket toSendSocket) {
+	public static void sendBoardBuildSites(Board gameBoard, Socket toSendSocket) {
 		ConnectionHelper.printString("buildsite", toSendSocket);
 		for (ArrayList<BuildSite> arr : gameBoard.getBuildSites())
 			for (BuildSite i : arr) {
@@ -128,7 +128,7 @@ public class ConnectionHelper {
 	 */
 	public static long getResponseTime(Socket s) {
 		long ms = System.currentTimeMillis();
-		
+
 		// requesting ping...
 		ConnectionHelper.printString("ping", s);
 		// recieving ping response:
