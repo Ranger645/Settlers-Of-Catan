@@ -114,7 +114,7 @@ public class GUI extends JFrame implements ActionListener {
 		// the server so the server can distribute the updated ones to the
 		// client.
 		if (e.getSource() == buildSettlement) {
-			if (mainPanel.getSelectedBuildSite().buildSettlement(1))
+			if (mainPanel.getSelectedBuildSite().buildSettlement(clientManager.getPlayerIndex()))
 				System.out.println("Building settlement.");
 			else
 				System.out.println("Failed to build settlement.");
