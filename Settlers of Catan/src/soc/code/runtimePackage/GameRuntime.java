@@ -123,7 +123,7 @@ public class GameRuntime {
 
 				// Making sure that the build sites in the main game board are
 				// perfectly up to date before moving on to the next turn.
-				// gameBoard.overwriteBuildSites(afterTurnBoard.getBuildSites());
+				gameBoard.overwriteBuildSites(afterTurnBoard.getBuildSites());
 
 				// This is the turn rotater.
 				if (++currentPlayer >= playerArray.length)

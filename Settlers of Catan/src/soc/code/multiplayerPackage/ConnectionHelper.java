@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.BuildSite;
+import soc.code.renderPackage.ConsoleWindow;
 
 /**
  * This class is for housing helper methods to assist in data spitting and data
@@ -14,6 +15,8 @@ import soc.code.logicPackage.BuildSite;
  * @author developer
  */
 public class ConnectionHelper {
+
+	//static ConsoleWindow CW = new ConsoleWindow();
 
 	/**
 	 * This method starts the tramsimssion with the user by sending the keyword
@@ -115,6 +118,7 @@ public class ConnectionHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//CW.getOutputConsole().append(readString + "\n");
 		return readString;
 	}
 

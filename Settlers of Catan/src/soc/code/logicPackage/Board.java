@@ -46,7 +46,7 @@ public class Board {
 	 */
 	public void overwriteBuildSites(ArrayList<ArrayList<BuildSite>> newSites) {
 		for (int i = 0; i < newSites.size(); i++)
-			for (int n = 0; n < newSites.get(0).size(); n++) {
+			for (int n = 0; n < newSites.get(i).size(); n++) {
 				boardBuildSites.get(i).get(n).setBuildingType(newSites.get(i).get(n).getBuildingType());
 				boardBuildSites.get(i).get(n).setPlayerID(newSites.get(i).get(n).getPlayerID());
 			}
