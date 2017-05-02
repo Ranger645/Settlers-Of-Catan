@@ -30,6 +30,10 @@ public class ClientSetup extends Thread {
 	// turn.
 	private boolean isTurn = false;
 
+	// The data sucker that will handle all incoming data seperatly and store it
+	// in an array list of strings.
+	private DataSucker dataSucker = null;
+
 	// This is the local copy of the game board variable. It is updated in this
 	// class because incoming changes from the server will be recieved here.
 	private Board gameBoard = null;
@@ -41,7 +45,11 @@ public class ClientSetup extends Thread {
 	public void connectToHost(String ipAddress) {
 		try {
 			System.out.println("Attempting to connect to " + ipAddress + " on port: " + HostSetup.SERVER_PORT + "...");
+
 			clientSocket = new Socket(ipAddress, HostSetup.SERVER_PORT);
+			// initializing the data sucker:
+			dataSucker = new DataSucker(clientSocket);
+
 			System.out.println("Successfully connected to Host: " + ipAddress + " on port: " + HostSetup.SERVER_PORT);
 			System.out.println("Replying to Connection Tests...");
 			this.start();
@@ -59,7 +67,7 @@ public class ClientSetup extends Thread {
 
 		while (alive) {
 
-			String data = ConnectionHelper.readLine(clientSocket);
+			String data = dataSucker.getNextLine();
 
 			doServerCommand(data);
 
@@ -88,7 +96,7 @@ public class ClientSetup extends Thread {
 			// During this player's turn, this local game board will have its
 			// build sites copied to the main game board located inside the main
 			// class.
-			gameBoard.overwriteBuildSites(ConnectionHelper.recieveBuildSites(clientSocket));
+			gameBoard.overwriteBuildSites(ConnectionHelper.recieveBuildSites(dataSucker));
 		}
 
 		// this just means that the message that the server is sending
@@ -191,13 +199,13 @@ public class ClientSetup extends Thread {
 		ArrayList<Player> p = new ArrayList<Player>();
 
 		// getting teh number of players:
-		String numberOfPlayersTransmission = ConnectionHelper.readLine(clientSocket);
+		String numberOfPlayersTransmission = dataSucker.getNextLine();
 		int numberOfPlayers = Integer.parseInt(numberOfPlayersTransmission.substring(2));
 
 		// recieving each player transmission.
 		for (int i = 0; i < numberOfPlayers; i++) {
 			// getting the transmission.
-			String playerTransmission = ConnectionHelper.readLine(clientSocket);
+			String playerTransmission = dataSucker.getNextLine();
 			String userName = playerTransmission.substring(0, playerTransmission.indexOf("|"));
 			playerTransmission = playerTransmission.substring(playerTransmission.indexOf("|") + 1);
 
@@ -254,7 +262,7 @@ public class ClientSetup extends Thread {
 		System.out.println("Recieving Tile Data from the Host...");
 		String[] tileData = new String[19];
 		for (int i = 0; i < 19; i++) {
-			tileData[i] = ConnectionHelper.readLine(clientSocket);
+			tileData[i] = dataSucker.getNextLine();
 			// if the line is not from the tile transmission then it needs to be
 			// rid of.
 			if (tileData[i].charAt(tileData[i].length() - 1) != '|')

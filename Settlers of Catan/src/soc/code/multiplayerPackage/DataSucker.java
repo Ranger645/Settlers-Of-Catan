@@ -3,6 +3,8 @@ package soc.code.multiplayerPackage;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import soc.code.logicPackage.BuildSite;
+
 /**
  * This class' purpose is to suck up all the lines of incoming data that it can
  * from a given socket and store all that data in an ArrayList of Strings.
@@ -12,18 +14,29 @@ import java.util.ArrayList;
 public class DataSucker extends Thread {
 
 	private Socket suckerSocket = null;
-	private ArrayList<String> suckedLines = null;
+	private ArrayList<String> suckedCommands = null;
+	private ArrayList<String> buildSiteMessages = null;
 	private boolean isAlive = true;
 
 	public DataSucker(Socket toSuckFrom) {
 		suckerSocket = toSuckFrom;
-		suckedLines = new ArrayList<String>();
+		suckedCommands = new ArrayList<String>();
+		buildSiteMessages = new ArrayList<String>();
+		this.start();
 	}
 
 	public void run() {
 		while (isAlive) {
+
 			// Adding the incoming data to the buffer.
-			suckedLines.add(ConnectionHelper.readLine(suckerSocket));
+			String line = ConnectionHelper.readLine(suckerSocket);
+
+			// if it is a build site command it goes in one section if it is a
+			// command it goes in the other section.
+			if (line.length() > 1 && line.substring(0, 2).equals("BS"))
+				buildSiteMessages.add(line);
+			else
+				suckedCommands.add(line);
 
 			try {
 				this.sleep(10);
@@ -35,7 +48,33 @@ public class DataSucker extends Thread {
 	}
 
 	public String getNextLine() {
-		return suckedLines.remove(0);
+		// waiting for data to come in...
+		while (suckedCommands.size() < 1)
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		// returning the data.
+		return suckedCommands.remove(0);
+	}
+
+	/**
+	 * Gets the array of build site messages that have been recieved from the
+	 * server.
+	 * 
+	 * @return
+	 */
+	public String[] getBuildSiteMessages() {
+		String[] bsArr = new String[buildSiteMessages.size()];
+		for (int i = 0; i < bsArr.length; i++)
+			bsArr[i] = buildSiteMessages.remove(0);
+		return bsArr;
+	}
+
+	public ArrayList<String> getSuckedLines() {
+		return suckedCommands;
 	}
 
 }

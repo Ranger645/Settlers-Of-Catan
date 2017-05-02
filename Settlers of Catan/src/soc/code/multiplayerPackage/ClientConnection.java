@@ -32,14 +32,20 @@ public class ClientConnection extends Thread {
 	// will determine if the player is ready or not:
 	private boolean isReady = false;
 
+	private DataSucker dataSucker = null;
+
 	// The variable for keeping track of whether or not it is this player's
 	// turn.
 	private boolean isTurn = false;
 
 	private Board gameBoard = null;
 
-	public ClientConnection(Socket s, Board b) {
+	public ClientConnection(Socket s, Board b, DataSucker ds) {
 		clientSocket = s;
+
+		// Initializing the data sucker so that it constantly sucks new data.
+		dataSucker = ds;
+
 		gameBoard = b;
 		initializePlayer();
 	}
@@ -48,11 +54,8 @@ public class ClientConnection extends Thread {
 
 		while (true) {
 
-			// getting a command from the client.
-			String data = ConnectionHelper.readLine(clientSocket);
-
 			// executing the client's command
-			doClientCommand(data);
+			doClientCommand(dataSucker.getNextLine());
 
 			try {
 				this.sleep(20);
@@ -61,7 +64,6 @@ public class ClientConnection extends Thread {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	/**
@@ -78,7 +80,7 @@ public class ClientConnection extends Thread {
 			// During this player's turn, this local game board will have its
 			// build sites copied to the main game board located inside the main
 			// class.
-			gameBoard.overwriteBuildSites(ConnectionHelper.recieveBuildSites(clientSocket));
+			gameBoard.overwriteBuildSites(ConnectionHelper.recieveBuildSites(dataSucker));
 
 			// Then it updates all of the other player's buildsites excluding
 			// the one that just sent the message to update the servers build
@@ -202,14 +204,14 @@ public class ClientConnection extends Thread {
 	public void initializePlayer() {
 		ConnectionHelper.printString("playerbio", clientSocket);
 
-		String username = ConnectionHelper.readLine(clientSocket);
+		String username = dataSucker.getNextLine();
 		clientPlayer = new Player(username.substring(username.indexOf(":") + 1));
 		System.out.println("Client at " + clientSocket.getInetAddress() + " sent Bio file...");
 		System.out.println("Username: \"" + clientPlayer.getUsername() + "\"");
 
 		// parsing the color from its line:
 		// <r>,<g>,<b>
-		String colorLine = ConnectionHelper.readLine(clientSocket);
+		String colorLine = dataSucker.getNextLine();
 		int r = Integer.parseInt(colorLine.substring(colorLine.indexOf(":") + 1, colorLine.indexOf(",")));
 		colorLine = colorLine.substring(colorLine.indexOf(",") + 1);
 		int g = Integer.parseInt(colorLine.substring(0, colorLine.indexOf(",")));

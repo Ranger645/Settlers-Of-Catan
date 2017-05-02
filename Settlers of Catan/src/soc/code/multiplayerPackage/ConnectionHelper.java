@@ -16,7 +16,7 @@ import soc.code.renderPackage.ConsoleWindow;
  */
 public class ConnectionHelper {
 
-	//static ConsoleWindow CW = new ConsoleWindow();
+	// static ConsoleWindow CW = new ConsoleWindow();
 
 	/**
 	 * This method starts the tramsimssion with the user by sending the keyword
@@ -28,10 +28,13 @@ public class ConnectionHelper {
 	 * @param toSendSocket
 	 */
 	public static void sendBoardBuildSites(Board gameBoard, Socket toSendSocket) {
+		// this triggers the reciever to start the build site reading process.
 		ConnectionHelper.printString("buildsite", toSendSocket);
+
+		// sending all of the actual build sites.
 		for (ArrayList<BuildSite> arr : gameBoard.getBuildSites())
 			for (BuildSite i : arr) {
-				String messageToSend = "";
+				String messageToSend = "BS";
 				messageToSend += i.getPlayerID() + ",";
 				messageToSend += i.getBuildingType() + "|";
 				ConnectionHelper.printString(messageToSend, toSendSocket);
@@ -60,6 +63,49 @@ public class ConnectionHelper {
 				// build site.
 				buildSites.get(arraySetValue).add(new BuildSite(0, 0));
 				String currentSiteDataLine = ConnectionHelper.readLine(toRecieveSocket);
+				// setting the player ID:
+				buildSites.get(arraySetValue).get(buildSites.get(arraySetValue).size() - 1).setPlayerID(
+						Integer.parseInt(currentSiteDataLine.substring(0, currentSiteDataLine.indexOf(","))));
+				// setting the building type:
+				buildSites.get(arraySetValue).get(buildSites.get(arraySetValue).size() - 1)
+						.setBuildingType(Integer.parseInt(currentSiteDataLine
+								.substring(currentSiteDataLine.indexOf(",") + 1, currentSiteDataLine.length() - 1)));
+			}
+			arraySetValue++;
+		}
+		return buildSites;
+	}
+
+	public static ArrayList<ArrayList<BuildSite>> recieveBuildSites(DataSucker ds) {
+		ArrayList<ArrayList<BuildSite>> buildSites = new ArrayList<ArrayList<BuildSite>>();
+
+		// creating an array to store all the buildsites as they come in.
+		String[] allReadSites = new String[54];
+		int numBuildSites = 54;
+		int currentSiteIndex = 0;
+
+		// setting up the array of build site commands.
+		while (currentSiteIndex < numBuildSites) {
+			// Adding all of the current readSites to the array of final
+			// Commands:
+			String[] readSites = ds.getBuildSiteMessages();
+			for (int i = 0; i < readSites.length; i++)
+				allReadSites[currentSiteIndex++] = readSites[i].substring(2);
+		}
+		currentSiteIndex = 0;
+
+		// After the previous while loop has executed, there should be an array
+		// of indevidual commands for each build site.
+		// Extracting the build sites from the commands that create them.
+		int arraySetValue = 0;
+		for (int i = -5; i < 6; i += 2) {
+			// initialising the 1D array lists:
+			buildSites.add(new ArrayList<BuildSite>(12 - Math.abs(i)));
+			for (int n = 0; n < 12 - Math.abs(i); n++) {
+				// getting the data out of the transmitted string about the
+				// build site.
+				buildSites.get(arraySetValue).add(new BuildSite(0, 0));
+				String currentSiteDataLine = allReadSites[currentSiteIndex++];
 				// setting the player ID:
 				buildSites.get(arraySetValue).get(buildSites.get(arraySetValue).size() - 1).setPlayerID(
 						Integer.parseInt(currentSiteDataLine.substring(0, currentSiteDataLine.indexOf(","))));
@@ -118,7 +164,7 @@ public class ConnectionHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//CW.getOutputConsole().append(readString + "\n");
+		// CW.getOutputConsole().append(readString + "\n");
 		return readString;
 	}
 

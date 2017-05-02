@@ -173,30 +173,55 @@ public class HostSetup extends Thread {
 		System.out.println("Testing connection at Client's ip Address...");
 		// testsetHosting the response time of the client.
 		ConnectionHelper.printString("//Testing Latency...", incomingClient);
+
+		// creating the data sucker:
+		DataSucker ds = new DataSucker(incomingClient);
+
 		int max = -1;
 		int averagePing = 0;
 		int pingAccuracy = 10;
+
+		// calculating average ping over pingAccuracy tests.
 		for (int i = 0; i < pingAccuracy; i++) {
-			int ping = (int) ConnectionHelper.getResponseTime(incomingClient);
+			long ms = System.currentTimeMillis();
+
+			// requesting ping...
+			ConnectionHelper.printString("ping", incomingClient);
+			// recieving ping response:
+			ds.getNextLine();
+			// calculating the actual time difference:
+			ms -= System.currentTimeMillis();
+			ms = Math.abs(ms);
+
+			// sending the ping calculation to the client:
+			ConnectionHelper.printString(String.valueOf(ms), incomingClient);
+
+			int ping = (int) ms;
 			if (ping > max)
 				max = ping;
 			averagePing += ping;
 		}
+
+		// calculating averag ping and printing it out
 		averagePing /= pingAccuracy;
 		System.out.println("Latency Retrieved " + pingAccuracy + " times...");
 		System.out.println("Max Ping = " + max + "ms.");
 		System.out.println("Average ping = " + averagePing + "ms.");
+
 		// sending results to the client.
 		ConnectionHelper.printString("//Latency test Complete...", incomingClient);
 		ConnectionHelper.printString("//Average Ping = " + averagePing, incomingClient);
+
+		// determining what to do with the average ping and creating the client
+		// connection
 		if (averagePing < 300) {
 			System.out.println("Latency is acceptable, seeking player data...");
 			ConnectionHelper.printString("//Test Passed.", incomingClient);
-			clientConnectionList.add(new ClientConnection(incomingClient, gameBoard));
+			clientConnectionList.add(new ClientConnection(incomingClient, gameBoard, ds));
 		} else {
 			System.out.println("[WARNING] Latency is higher than recommended (300ms)...");
 			ConnectionHelper.printString("//WARNING: Test Failed... try getting a better connection.", incomingClient);
-			clientConnectionList.add(new ClientConnection(incomingClient, gameBoard));
+			clientConnectionList.add(new ClientConnection(incomingClient, gameBoard, ds));
 		}
 	}
 
