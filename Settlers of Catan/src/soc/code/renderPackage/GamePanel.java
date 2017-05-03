@@ -125,7 +125,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		this.drawTiles(g, false);
 
 		// drawing the build sites:
-		this.drawBuildSites(g, gameBoard.getBuildSites(), 10);
+		this.drawBuildSites(g, gameBoard.getBuildSites(), 12);
 
 		// drawing the numbers on top of the tiles:
 		this.drawTileNumbers(g);
@@ -224,24 +224,37 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	 */
 	private void drawBuildSites(Graphics g, ArrayList<ArrayList<BuildSite>> sites, int radius) {
 		// drawing the build sites to test their placments:
+		Graphics2D g2 = (Graphics2D) g;
 		for (int j = 0; j < sites.size(); j++)
 			for (int k = 0; k < sites.get(j).size(); k++) {
-				if (sites.get(j).get(k) == selectedBuildSite) {
-					g.setColor(Color.MAGENTA);
-					g.fillOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
-							radius * 2);
-				} else if (sites.get(j).get(k) == hovoredBuildSite) {
-					g.setColor(Color.BLACK);
-					g.fillOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
-							radius * 2);
-				} else if (sites.get(j).get(k).getBuildingType() == 1) {
+
+				// always trying to paint the settlements even if it is
+				// selected.
+				if (sites.get(j).get(k).getBuildingType() > 0) {
 					// Drawing the settlements with the color that the player
 					// that they are is.
 					g.setColor(clientManager.getAllPlayers()[sites.get(j).get(k).getPlayerID()].getPreferedColor());
 					g.fillOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
 							radius * 2);
+					g.setColor(Color.BLACK);
+					g2.setStroke(new BasicStroke(1));
+					g.drawOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
+							radius * 2);
+				}
+
+				if (sites.get(j).get(k) == selectedBuildSite) {
+					g2.setColor(Color.BLUE);
+					g2.setStroke(new BasicStroke(5));
+					g2.drawOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
+							radius * 2);
+				} else if (sites.get(j).get(k) == hovoredBuildSite) {
+					g2.setColor(Color.PINK);
+					g2.setStroke(new BasicStroke(3));
+					g2.drawOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
+							radius * 2);
 				}
 			}
+		g2.setStroke(new BasicStroke(1));
 	}
 
 	/**

@@ -1,6 +1,6 @@
 package soc.code.runtimePackage;
 
-import javax.print.attribute.standard.ReferenceUriSchemesSupported;
+import java.util.Random;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.Player;
@@ -102,13 +102,36 @@ public class GameRuntime {
 				sleepMillis(100);
 			}
 
+			// making the order of the players array.
+			int[] playerOrder = new int[hostManager.getClientConnections().size()];
+			for (int i = 0; i < playerOrder.length; i++)
+				playerOrder[i] = i;
+
+			// shuffling the order of the players
+			for (int i = 0; i < playerOrder.length; i++) {
+				int randInt = new Random().nextInt(playerOrder.length);
+				int temp = playerOrder[randInt];
+				playerOrder[randInt] = playerOrder[i];
+				playerOrder[i] = temp;
+			}
+
 			// repainting:
 			gui.repaint();
 
-			// MAIN GAME LOOP \\
+			//\\ MAIN GAME LOOP //\\
 			int currentPlayer = 0;
-			System.out.println("Starting Main Game Loop...");
+			int playerOrderTracker = 0;
+			
+			// Displaying initial messages.
+			hostManager.broadcast("Starting Game...");
+			hostManager.broadcast("The Order of this game is as follows...");
+			for (int i = 0; i < playerOrder.length; i++)
+				hostManager.broadcast((i + 1) + ". " + playerArray[playerOrder[i]].getUsername());
+
 			while (true/* Eventually this will be the win testing condition */) {
+
+				// setting this turns player index based on the random order.
+				currentPlayer = playerOrder[playerOrderTracker];
 
 				// telling all the clients whose turn it is.
 				hostManager.broadcast("It is now "
@@ -126,8 +149,8 @@ public class GameRuntime {
 				gameBoard.overwriteBuildSites(afterTurnBoard.getBuildSites());
 
 				// This is the turn rotater.
-				if (++currentPlayer >= playerArray.length)
-					currentPlayer = 0;
+				if (++playerOrderTracker >= playerArray.length)
+					playerOrderTracker = 0;
 
 				// Repainting the gui after everything the turn is over just for
 				// good measure.

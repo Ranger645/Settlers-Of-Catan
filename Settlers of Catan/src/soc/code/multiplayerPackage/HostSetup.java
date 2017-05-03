@@ -239,6 +239,7 @@ public class HostSetup extends Thread {
 
 	// sends the given message to each of the clients
 	public void broadcast(String message) {
+		System.out.println("[BROADCAST] " + message);
 		for (ClientConnection i : clientConnectionList)
 			ConnectionHelper.printString("//" + message, i.getClientSocket());
 	}
