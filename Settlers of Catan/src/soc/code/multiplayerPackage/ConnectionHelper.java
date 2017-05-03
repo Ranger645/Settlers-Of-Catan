@@ -89,8 +89,13 @@ public class ConnectionHelper {
 			// Adding all of the current readSites to the array of final
 			// Commands:
 			String[] readSites = ds.getBuildSiteMessages();
-			for (int i = 0; i < readSites.length; i++)
-				allReadSites[currentSiteIndex++] = readSites[i].substring(2);
+			for (int i = 0; i < readSites.length; i++) {
+				System.out.println(currentSiteIndex + " _ " + i);
+				if (currentSiteIndex < 54) {
+					System.out.println(currentSiteIndex + ". " + readSites[i].substring(2));
+					allReadSites[currentSiteIndex++] = readSites[i].substring(2);
+				}
+			}
 		}
 		currentSiteIndex = 0;
 

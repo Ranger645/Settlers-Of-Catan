@@ -39,7 +39,7 @@ public class DataSucker extends Thread {
 				suckedCommands.add(line);
 
 			try {
-				this.sleep(10);
+				this.sleep(2);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -51,7 +51,7 @@ public class DataSucker extends Thread {
 		// waiting for data to come in...
 		while (suckedCommands.size() < 1)
 			try {
-				Thread.sleep(20);
+				Thread.sleep(5);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
