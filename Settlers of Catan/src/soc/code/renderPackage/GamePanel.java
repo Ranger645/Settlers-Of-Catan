@@ -285,26 +285,50 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				for (int n = 0; n < gameBoard.numberOfColumns(i + 2); n++) {
 					switch (gameBoard.getTileAt(i + 2, n).getType()) {
 					case WOOD:
-						g.setColor(Color.GREEN);
+						g.drawImage(Tile.getT_WoodImage(),
+								(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX() - Tile.TILE_WIDTH / 2),
+								(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()
+										- Tile.TILE_HEIGHT / 2),
+								null);
 						break;
 					case WHEAT:
-						g.setColor(Color.YELLOW);
+						g.drawImage(Tile.getT_WheatImage(),
+								(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX() - Tile.TILE_WIDTH / 2),
+								(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()
+										- Tile.TILE_HEIGHT / 2),
+								null);
 						break;
 					case BRICK:
-						g.setColor(Color.RED);
+						g.drawImage(Tile.getT_BrickImage(),
+								(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX() - Tile.TILE_WIDTH / 2),
+								(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()
+										- Tile.TILE_HEIGHT / 2),
+								null);
 						break;
 					case ORE:
-						g.setColor(Color.DARK_GRAY);
+						g.drawImage(Tile.getT_OreImage(),
+								(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX() - Tile.TILE_WIDTH / 2),
+								(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()
+										- Tile.TILE_HEIGHT / 2),
+								null);
 						break;
 					case SHEEP:
-						g.setColor(Color.WHITE);
+						g.drawImage(Tile.getT_SheepImage(),
+								(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX() - Tile.TILE_WIDTH / 2),
+								(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()
+										- Tile.TILE_HEIGHT / 2),
+								null);
 						break;
 					case DESERT:
-						g.setColor(Color.LIGHT_GRAY);
+						g.drawImage(Tile.getT_WheatImage(),
+								(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX() - Tile.TILE_WIDTH / 2),
+								(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()
+										- Tile.TILE_HEIGHT / 2),
+								null);
 						break;
 					}
 					drawHexagon((Graphics2D) g, Tile.TILE_HEIGHT / 2,
-							(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX()),
+							(int) ((currentXRow) + tileZeroPoint.getX()),
 							(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()));
 				}
 			}
@@ -331,8 +355,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		double yOffset = sideLength * Math.sqrt(3) / 2;
 		int[] yValues = { centerY, (int) (centerY - yOffset), (int) (centerY - yOffset), centerY,
 				(int) (centerY + yOffset), (int) (centerY + yOffset) };
-		g2.fillPolygon(yValues, xValues, 6);
-		g2.setColor(Color.BLACK);
+		//g2.fillPolygon(yValues, xValues, 6);
+		g2.setColor(Color.GRAY);
 		g2.setStroke(new BasicStroke(6));
 		g2.drawPolygon(yValues, xValues, 6);
 		g2.setStroke(new BasicStroke(1));

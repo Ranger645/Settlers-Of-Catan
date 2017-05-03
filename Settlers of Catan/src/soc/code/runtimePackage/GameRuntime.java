@@ -236,6 +236,10 @@ public class GameRuntime {
 			} else if (lastMessage.equals("clear")) {
 				// clearing the console window.
 				console.getOutputConsole().setText("");
+			} else if (lastMessage.equals("testBoard")) {
+				// clearing the console window.
+				gameBoard = new Board();
+				gui = new GUI(gameBoard, clientManager, isHost);
 			} else if (lastMessage.length() > 5 && lastMessage.substring(0, 4).equals("kick")) {
 				// kicking a player from the server.
 				if (isHost)
