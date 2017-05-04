@@ -76,33 +76,25 @@ public class ConnectionHelper {
 		return buildSites;
 	}
 
+	/**
+	 * 
+	 * @param ds
+	 * @return
+	 */
 	public static ArrayList<ArrayList<BuildSite>> recieveBuildSites(DataSucker ds) {
 		ArrayList<ArrayList<BuildSite>> buildSites = new ArrayList<ArrayList<BuildSite>>();
 
 		// creating an array to store all the buildsites as they come in.
 		String[] allReadSites = new String[54];
-		int numBuildSites = 54;
-		int currentSiteIndex = 0;
 
-		// setting up the array of build site commands.
-		while (currentSiteIndex < numBuildSites) {
-			// Adding all of the current readSites to the array of final
-			// Commands:
-			String[] readSites = ds.getBuildSiteMessages();
-			for (int i = 0; i < readSites.length; i++) {
-				System.out.println(currentSiteIndex + " _ " + i);
-				if (currentSiteIndex < 54) {
-					System.out.println(currentSiteIndex + ". " + readSites[i].substring(2));
-					allReadSites[currentSiteIndex++] = readSites[i].substring(2);
-				}
-			}
-		}
-		currentSiteIndex = 0;
-
+		for (int i = 0; i < allReadSites.length; i++)
+			allReadSites[i] = ds.getNextBuildSite().substring(2);
+			
 		// After the previous while loop has executed, there should be an array
 		// of indevidual commands for each build site.
 		// Extracting the build sites from the commands that create them.
 		int arraySetValue = 0;
+		int currentSiteIndex = 0;
 		for (int i = -5; i < 6; i += 2) {
 			// initialising the 1D array lists:
 			buildSites.add(new ArrayList<BuildSite>(12 - Math.abs(i)));

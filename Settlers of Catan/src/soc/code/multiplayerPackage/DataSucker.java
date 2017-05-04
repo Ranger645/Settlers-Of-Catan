@@ -59,6 +59,17 @@ public class DataSucker extends Thread {
 		// returning the data.
 		return suckedCommands.remove(0);
 	}
+	
+	public String getNextBuildSite(){
+		while(buildSiteMessages.size() < 1)
+			try {
+				Thread.sleep(5);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return buildSiteMessages.remove(0);
+	}
 
 	/**
 	 * Gets the array of build site messages that have been recieved from the
