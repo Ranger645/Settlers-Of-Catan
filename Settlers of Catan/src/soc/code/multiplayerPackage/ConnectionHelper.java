@@ -1,12 +1,12 @@
 package soc.code.multiplayerPackage;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.BuildSite;
-import soc.code.renderPackage.ConsoleWindow;
 
 /**
  * This class is for housing helper methods to assist in data spitting and data
@@ -29,16 +29,37 @@ public class ConnectionHelper {
 	 */
 	public static void sendBoardBuildSites(Board gameBoard, Socket toSendSocket) {
 		// this triggers the reciever to start the build site reading process.
-		ConnectionHelper.printString("buildsite", toSendSocket);
+		ConnectionHelper.printString("buildsites", toSendSocket);
 
 		// sending all of the actual build sites.
-		for (ArrayList<BuildSite> arr : gameBoard.getBuildSites())
+		int x = 0;
+		int y = 0;
+		for (ArrayList<BuildSite> arr : gameBoard.getBuildSites()) {
 			for (BuildSite i : arr) {
 				String messageToSend = "BS";
 				messageToSend += i.getPlayerID() + ",";
-				messageToSend += i.getBuildingType() + "|";
+				messageToSend += i.getBuildingType() + ",";
+				messageToSend += x + ",";
+				messageToSend += y + "|";
 				ConnectionHelper.printString(messageToSend, toSendSocket);
+				x++;
 			}
+			x = 0;
+			y++;
+		}
+	}
+
+	public static void sendBuildSite(BuildSite BS, Socket toSendSocket, int x, int y) {
+		// this triggers the reciever to start the build site reading process.
+		ConnectionHelper.printString("buildsite", toSendSocket);
+
+		// sending one build site.
+		String messageToSend = "BS";
+		messageToSend += BS.getPlayerID() + ",";
+		messageToSend += BS.getBuildingType() + ",";
+		messageToSend += x + ",";
+		messageToSend += y + "|";
+		ConnectionHelper.printString(messageToSend, toSendSocket);
 	}
 
 	/**
@@ -87,9 +108,11 @@ public class ConnectionHelper {
 		// creating an array to store all the buildsites as they come in.
 		String[] allReadSites = new String[54];
 
-		for (int i = 0; i < allReadSites.length; i++)
-			allReadSites[i] = ds.getNextBuildSite().substring(2);
-			
+		for (int i = 0; i < allReadSites.length; i++) {
+			// System.out.println(i + ". " + ds.getNextBuildSite());
+			allReadSites[i] = ds.getNextBuildSite();
+		}
+
 		// After the previous while loop has executed, there should be an array
 		// of indevidual commands for each build site.
 		// Extracting the build sites from the commands that create them.
@@ -114,6 +137,37 @@ public class ConnectionHelper {
 			arraySetValue++;
 		}
 		return buildSites;
+	}
+
+	/**
+	 * 
+	 * @param ds
+	 * @return
+	 */
+	public static Point recieveBuildSite(DataSucker ds, ArrayList<ArrayList<BuildSite>> currentBuildSites) {
+		// getting the newest build site command:
+		String buildSiteCommand = ds.getNextBuildSite();
+
+		// getting the player ID
+		int playerID = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf(",")));
+		buildSiteCommand = buildSiteCommand.substring(buildSiteCommand.indexOf(",") + 1);
+
+		// getting the building type:
+		int buildingType = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf(",")));
+		buildSiteCommand = buildSiteCommand.substring(buildSiteCommand.indexOf(",") + 1);
+
+		// getting the x value of the changed build site.
+		int x = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf(",")));
+		buildSiteCommand = buildSiteCommand.substring(buildSiteCommand.indexOf(",") + 1);
+
+		// getting the y value of the changed build site.
+		int y = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf("|")));
+
+		// changing the values inside of the build site array.
+		currentBuildSites.get(y).get(x).setPlayerID(playerID);
+		currentBuildSites.get(y).get(x).setBuildingType(buildingType);
+
+		return new Point(x, y);
 	}
 
 	/**

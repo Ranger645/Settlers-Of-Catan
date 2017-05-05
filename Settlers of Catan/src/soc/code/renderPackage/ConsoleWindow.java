@@ -41,7 +41,7 @@ public class ConsoleWindow extends JFrame {
 
 		// initializing the textfield and textarea that will be used for Input
 		// and output of the console:
-		inputTerminal = new JTextField("acceptClients", 25);
+		inputTerminal = new JTextField("connectTo localhost", 25);
 		inputTerminal.setBackground(Color.BLACK);
 		inputTerminal.setForeground(Color.GREEN);
 		outputConsole = new JTextArea(15, 25);

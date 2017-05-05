@@ -1,11 +1,11 @@
 package soc.code.multiplayerPackage;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
 import soc.code.logicPackage.Board;
-import soc.code.logicPackage.BuildSite;
 import soc.code.logicPackage.Player;
 import soc.code.logicPackage.Tile;
 
@@ -75,7 +75,7 @@ public class ClientConnection extends Thread {
 	public void doClientCommand(String data) {
 		// The client is sending build sites to the host to update the build
 		// site array based on what the client has done during their turn.
-		if (data.equals("buildsite")) {
+		if (data.equals("buildsites")) {
 			// updating the build site arrays inside of the client gameboard.
 			// During this player's turn, this local game board will have its
 			// build sites copied to the main game board located inside the main
@@ -86,6 +86,19 @@ public class ClientConnection extends Thread {
 			// the one that just sent the message to update the servers build
 			// sites.
 			hostManager.updateAllBuildSites(hostManager.getClientConnections().indexOf(this));
+		}
+
+		// the client is sending just one of the build sites.
+		if (data.equals("buildsite")) {
+			// Updating the arrays of build sites to change just the one
+			// incoming build site.
+			Point changedBuildSiteCoordinate = ConnectionHelper.recieveBuildSite(dataSucker, gameBoard.getBuildSites());
+
+			// Then it updates all of the other player's buildsites excluding
+			// the one that just sent the message to update the servers build
+			// sites.
+			hostManager.updateSingleBuildSite(hostManager.getClientConnections().indexOf(this),
+					(int) changedBuildSiteCoordinate.getX(), (int) changedBuildSiteCoordinate.getY());
 		}
 
 		// this ends the client's turn.

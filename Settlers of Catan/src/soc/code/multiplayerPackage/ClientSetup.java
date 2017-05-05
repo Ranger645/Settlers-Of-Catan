@@ -91,12 +91,18 @@ public class ClientSetup extends Thread {
 
 		// The server is sending build sites to the client to update the build
 		// site array.
-		if (data.equals("buildsite")) {
+		if (data.equals("buildsites")) {
 			// updating the build site arrays inside of the client gameboard.
 			// During this player's turn, this local game board will have its
 			// build sites copied to the main game board located inside the main
 			// class.
 			gameBoard.overwriteBuildSites(ConnectionHelper.recieveBuildSites(dataSucker));
+		}
+
+		if (data.equals("buildsite")) {
+			// Recieving just one build site from the server if just that one
+			// was changed.
+			ConnectionHelper.recieveBuildSite(dataSucker, gameBoard.getBuildSites());
 		}
 
 		// this just means that the message that the server is sending
@@ -322,6 +328,11 @@ public class ClientSetup extends Thread {
 
 	public void setGameBoard(Board gameBoard) {
 		this.gameBoard = gameBoard;
+	}
+
+	public void sendUpdatedBuildSite(int x, int y) {
+		// sends the specified build site to the server.
+		ConnectionHelper.sendBuildSite(gameBoard.getBuildSites().get(y).get(x), clientSocket, x, y);
 	}
 
 }

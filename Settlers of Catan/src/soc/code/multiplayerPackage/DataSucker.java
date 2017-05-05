@@ -33,9 +33,9 @@ public class DataSucker extends Thread {
 
 			// if it is a build site command it goes in one section if it is a
 			// command it goes in the other section.
-			if (line.length() > 1 && line.substring(0, 2).equals("BS"))
-				buildSiteMessages.add(line);
-			else
+			if (line.length() > 1 && line.substring(0, 2).equals("BS")) {
+				buildSiteMessages.add(line.substring(2));
+			} else
 				suckedCommands.add(line);
 
 			try {
@@ -59,11 +59,11 @@ public class DataSucker extends Thread {
 		// returning the data.
 		return suckedCommands.remove(0);
 	}
-	
-	public String getNextBuildSite(){
-		while(buildSiteMessages.size() < 1)
+
+	public String getNextBuildSite() {
+		while (buildSiteMessages.size() < 1)
 			try {
-				Thread.sleep(5);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

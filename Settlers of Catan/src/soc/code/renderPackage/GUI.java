@@ -3,6 +3,8 @@ package soc.code.renderPackage;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -23,7 +25,7 @@ import soc.code.multiplayerPackage.ClientSetup;
  * 
  * @author Greg
  */
-public class GUI extends JFrame implements ActionListener {
+public class GUI extends JFrame implements ActionListener, KeyListener {
 
 	private GamePanel mainPanel = null;
 	private boolean isHostGUI = false;
@@ -56,6 +58,8 @@ public class GUI extends JFrame implements ActionListener {
 			buildSettlement.addActionListener(this);
 			endTurn = new JMenuItem("End Turn");
 			endTurn.addActionListener(this);
+
+			this.addKeyListener(this);
 
 			commandMenu.add(buildSettlement);
 			commandMenu.add(endTurn);
@@ -113,18 +117,57 @@ public class GUI extends JFrame implements ActionListener {
 		// pressed the client must send the updated build site array lists to
 		// the server so the server can distribute the updated ones to the
 		// client.
-		if (e.getSource() == buildSettlement) {
-			if (mainPanel.getSelectedBuildSite().buildSettlement(clientManager.getPlayerIndex()))
+		if (enabledIO && e.getSource() == buildSettlement) {
+			if (mainPanel.getSelectedBuildSite().buildSettlement(clientManager.getPlayerIndex())) {
 				System.out.println("Building settlement.");
-			else
+				// finding the proper build site to send which needs to be
+				// updated.
+				for (int i = 0; i < clientManager.getGameBoard().getBuildSites().size(); i++)
+					for (int n = 0; n < clientManager.getGameBoard().getBuildSites().get(i).size(); n++)
+						if (clientManager.getGameBoard().getBuildSites().get(i).get(n) == mainPanel
+								.getSelectedBuildSite()) {
+							// telling the server to updated the build sites.
+							clientManager.sendUpdatedBuildSite(n, i);
+							break;
+						}
+			} else
 				System.out.println("Failed to build settlement.");
 		} else if (e.getSource() == endTurn) {
 			// ends the turn.
 			clientManager.endTurn();
 		}
 
-		// telling the server to updated the build sites.
-		clientManager.sendUpdatedBuildSites();
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		if (enabledIO && e.getKeyChar() == 'b')
+			if (mainPanel.getSelectedBuildSite().buildSettlement(clientManager.getPlayerIndex()))
+				System.out.println("Building settlement.");
+			else
+				System.out.println("Failed to build settlement.");
+
+		// finding the proper build site to send which needs to be updated.
+		for (int i = 0; i < clientManager.getGameBoard().getBuildSites().size(); i++)
+			for (int n = 0; n < clientManager.getGameBoard().getBuildSites().get(i).size(); n++)
+				if (clientManager.getGameBoard().getBuildSites().get(i).get(n) == mainPanel.getSelectedBuildSite()) {
+					// telling the server to updated the build sites.
+					clientManager.sendUpdatedBuildSite(n, i);
+					break;
+				}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

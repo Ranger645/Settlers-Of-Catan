@@ -32,6 +32,8 @@ public class HostSetup extends Thread {
 	// the reference to the main game board.
 	private Board gameBoard = null;
 
+	private static final int MAX_PLAYERS = 4;
+
 	public HostSetup(Board b) {
 		clientConnectionList = new ArrayList<ClientConnection>();
 		gameBoard = b;
@@ -94,7 +96,14 @@ public class HostSetup extends Thread {
 	private void searchForClientConnections() {
 		while (keepSearching) {
 			try {
-				getClientConnection();
+				if (clientConnectionList.size() <= MAX_PLAYERS)
+					getClientConnection();
+				else {
+					keepSearching = false;
+					System.out.println("Four players have connected to the game.");
+					System.out.println("Stopping Client Search.");
+				}
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				System.out.println("[WARNING] Interupted Client Connection accepting process.");
@@ -246,6 +255,24 @@ public class HostSetup extends Thread {
 
 	public ArrayList<ClientConnection> getClientConnections() {
 		return clientConnectionList;
+	}
+
+	/**
+	 * This method updates just the given build site on each of the other
+	 * clients.
+	 * 
+	 * @param indexOf
+	 * @param x
+	 * @param y
+	 */
+	public void updateSingleBuildSite(int clientThatIsUpdating, int x, int y) {
+		broadcast("Updating Build site at (" + x + ", " + y + ").");
+		for (int i = 0; i < clientConnectionList.size(); i++)
+			if (i != clientThatIsUpdating)
+				// sending the updated build site.
+				ConnectionHelper.sendBuildSite(gameBoard.getBuildSites().get(y).get(x),
+						clientConnectionList.get(i).getClientSocket(), x, y);
+
 	}
 
 }
