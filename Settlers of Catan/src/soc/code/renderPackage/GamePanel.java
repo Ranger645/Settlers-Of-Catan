@@ -230,12 +230,25 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 				// always trying to paint the settlements even if it is
 				// selected.
-				if (sites.get(j).get(k).getBuildingType() > 0) {
+				if (sites.get(j).get(k).getBuildingType() == 1) {
 					// Drawing the settlements with the color that the player
 					// that they are is.
 					g.setColor(clientManager.getAllPlayers()[sites.get(j).get(k).getPlayerID()].getPreferedColor());
 					g.fillOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
 							radius * 2);
+					g.setColor(Color.BLACK);
+					g2.setStroke(new BasicStroke(1));
+					g.drawOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
+							radius * 2);
+				}
+
+				// always trying to paint the settlements even if it is
+				// selected.
+				if (sites.get(j).get(k).getBuildingType() == 2) {
+					// Drawing the settlements with the color that the player
+					// that they are is.
+					g.setColor(clientManager.getAllPlayers()[sites.get(j).get(k).getPlayerID()].getPreferedColor());
+					this.drawHexagon(g2, radius, sites.get(j).get(k).getY(), sites.get(j).get(k).getX());
 					g.setColor(Color.BLACK);
 					g2.setStroke(new BasicStroke(1));
 					g.drawOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
@@ -327,12 +340,62 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 								null);
 						break;
 					}
-					drawHexagon((Graphics2D) g, Tile.TILE_HEIGHT / 2,
-							(int) ((currentXRow) + tileZeroPoint.getX()),
+					drawTile((Graphics2D) g, Tile.TILE_HEIGHT / 2, (int) ((currentXRow) + tileZeroPoint.getX()),
 							(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()));
 				}
 			}
 		}
+	}
+
+	/**
+	 * This method draws a regular hexagon with the given center x,y point and
+	 * the given side length on the specified graphics object. The hexagon it
+	 * draws has one of its points facing down.
+	 * 
+	 * @param g2
+	 *            the graphics that the hexagon will be drawn on.
+	 * @param sideLength
+	 *            the side length of the regular hexagon
+	 * @param centerY
+	 *            the y value of the center of the hexagon
+	 * @param centerX
+	 *            the x value of the center of the hexagon.
+	 */
+	private void drawTile(Graphics2D g2, int sideLength, int centerY, int centerX) {
+		int[] xValues = { centerX - sideLength, centerX - sideLength / 2, centerX + sideLength / 2,
+				centerX + sideLength, centerX + sideLength / 2, centerX - sideLength / 2 };
+		double yOffset = sideLength * Math.sqrt(3) / 2;
+		int[] yValues = { centerY, (int) (centerY - yOffset), (int) (centerY - yOffset), centerY,
+				(int) (centerY + yOffset), (int) (centerY + yOffset) };
+		// g2.fillPolygon(yValues, xValues, 6);
+		g2.setColor(Color.GRAY);
+		g2.setStroke(new BasicStroke(6));
+		g2.drawPolygon(yValues, xValues, 6);
+		g2.setStroke(new BasicStroke(1));
+	}
+
+	/**
+	 * This method draws a regular hexagon with the given center x,y point and
+	 * the given side length on the specified graphics object. The hexagon it
+	 * draws has one of its points facing down.
+	 * 
+	 * @param g2
+	 *            the graphics that the hexagon will be drawn on.
+	 * @param sideLength
+	 *            the side length of the regular hexagon
+	 * @param centerY
+	 *            the y value of the center of the hexagon
+	 * @param centerX
+	 *            the x value of the center of the hexagon.
+	 */
+	private void fillHexagon(Graphics2D g2, int sideLength, int centerY, int centerX) {
+		int[] xValues = { centerX - sideLength, centerX - sideLength / 2, centerX + sideLength / 2,
+				centerX + sideLength, centerX + sideLength / 2, centerX - sideLength / 2 };
+		double yOffset = sideLength * Math.sqrt(3) / 2;
+		int[] yValues = { centerY, (int) (centerY - yOffset), (int) (centerY - yOffset), centerY,
+				(int) (centerY + yOffset), (int) (centerY + yOffset) };
+		g2.fillPolygon(yValues, xValues, 6);
+		g2.setStroke(new BasicStroke(1));
 	}
 
 	/**
@@ -355,10 +418,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		double yOffset = sideLength * Math.sqrt(3) / 2;
 		int[] yValues = { centerY, (int) (centerY - yOffset), (int) (centerY - yOffset), centerY,
 				(int) (centerY + yOffset), (int) (centerY + yOffset) };
-		//g2.fillPolygon(yValues, xValues, 6);
-		g2.setColor(Color.GRAY);
-		g2.setStroke(new BasicStroke(6));
-		g2.drawPolygon(yValues, xValues, 6);
+		g2.fillPolygon(yValues, xValues, 6);
 		g2.setStroke(new BasicStroke(1));
 	}
 

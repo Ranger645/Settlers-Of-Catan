@@ -60,8 +60,8 @@ public class BuildSite {
 			return false;
 	}
 
-	public boolean buildCity() {
-		if (this.buildingType == 1) {
+	public boolean buildCity(int playerID) {
+		if (this.getPlayerID() == playerID && this.buildingType == 1) {
 			this.buildingType++;
 			return true;
 		} else
