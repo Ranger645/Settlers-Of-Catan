@@ -55,10 +55,18 @@ public class ConnectionHelper {
 
 		// sending one build site.
 		String messageToSend = "BS";
+		// sending the basic build site data:
 		messageToSend += BS.getPlayerID() + ",";
 		messageToSend += BS.getBuildingType() + ",";
+		// sending the x and y coordinates of this build site:
 		messageToSend += x + ",";
-		messageToSend += y + "|";
+		messageToSend += y + ",";
+		// sending the updated road ID values:
+		messageToSend += BS.getRoadIDValues()[BuildSite.ROAD_LEFT_ID] + ",";
+		messageToSend += BS.getRoadIDValues()[BuildSite.ROAD_MIDDLE_ID] + ",";
+		messageToSend += BS.getRoadIDValues()[BuildSite.ROAD_RIGHT_ID] + "|";
+
+		// sending all of the above compiled data.
 		ConnectionHelper.printString(messageToSend, toSendSocket);
 	}
 
@@ -161,11 +169,23 @@ public class ConnectionHelper {
 		buildSiteCommand = buildSiteCommand.substring(buildSiteCommand.indexOf(",") + 1);
 
 		// getting the y value of the changed build site.
-		int y = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf("|")));
+		int y = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf(",")));
+		buildSiteCommand = buildSiteCommand.substring(buildSiteCommand.indexOf(",") + 1);
+		
+		int left = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf(",")));
+		buildSiteCommand = buildSiteCommand.substring(buildSiteCommand.indexOf(",") + 1);
+		
+		int middle = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf(",")));
+		buildSiteCommand = buildSiteCommand.substring(buildSiteCommand.indexOf(",") + 1);
+		
+		int right = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf("|")));
 
 		// changing the values inside of the build site array.
 		currentBuildSites.get(y).get(x).setPlayerID(playerID);
 		currentBuildSites.get(y).get(x).setBuildingType(buildingType);
+		currentBuildSites.get(y).get(x).setRoadIDValue(BuildSite.ROAD_LEFT_ID, left);
+		currentBuildSites.get(y).get(x).setRoadIDValue(BuildSite.ROAD_MIDDLE_ID, middle);
+		currentBuildSites.get(y).get(x).setRoadIDValue(BuildSite.ROAD_RIGHT_ID, right);
 
 		return new Point(x, y);
 	}
