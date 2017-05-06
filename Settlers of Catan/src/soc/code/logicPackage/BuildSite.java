@@ -5,7 +5,7 @@ public class BuildSite {
 	// These are the x and y coordinates of the build sites that will be used
 	// for determining if they were clicked on or where the building that is on
 	// top of them goes.
-	private int x, y = 0;
+	private int x, y, arrX, arrY = 0;
 
 	// This is the variable that determines what type of building is located on
 	// this point. A 0 is no building, a 1 is a settlment, and a 2 is a city.
@@ -21,6 +21,7 @@ public class BuildSite {
 	// array is 0 = left, 1 = middle, 2 = right. The middle can either be
 	// pointed up or down.
 	private int[] roadIDValues = null;
+
 	// The values for each direction:
 	public static final int ROAD_LEFT_ID = 0;
 	public static final int ROAD_MIDDLE_ID = 1;
@@ -29,11 +30,14 @@ public class BuildSite {
 	// build site points up or down.
 	private boolean pointUp = false;
 
-	public BuildSite(int xPos, int yPos) {
-		x = xPos;
-		y = yPos;
+	public BuildSite(int xPos, int yPos, boolean pointUp) {
+		arrX = xPos;
+		arrY = yPos;
+		this.pointUp = pointUp;
 		// Initializing the roadID Values. It always has 3 values.
 		roadIDValues = new int[3];
+		for (int i = 0; i < roadIDValues.length; i++)
+			roadIDValues[i] = -1;
 	}
 
 	/**
@@ -46,8 +50,28 @@ public class BuildSite {
 		roadIDValues[roadDirection] = playerID;
 	}
 
+	public int getArrX() {
+		return arrX;
+	}
+
+	public void setArrX(int arrX) {
+		this.arrX = arrX;
+	}
+
+	public int getArrY() {
+		return arrY;
+	}
+
+	public void setArrY(int arrY) {
+		this.arrY = arrY;
+	}
+
 	public int[] getRoadIDValues() {
 		return roadIDValues;
+	}
+
+	public boolean isPointUp() {
+		return pointUp;
 	}
 
 	public int getX() {

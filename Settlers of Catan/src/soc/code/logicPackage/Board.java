@@ -1,5 +1,6 @@
 package soc.code.logicPackage;
 
+import java.awt.Point;
 import java.util.ArrayList;
 
 public class Board {
@@ -50,6 +51,68 @@ public class Board {
 				boardBuildSites.get(i).get(n).setBuildingType(newSites.get(i).get(n).getBuildingType());
 				boardBuildSites.get(i).get(n).setPlayerID(newSites.get(i).get(n).getPlayerID());
 			}
+	}
+
+	/**
+	 * Returns whether or not the two specified coordinates are adjacent to each
+	 * other in the array of build sites.
+	 * 
+	 * @param site1
+	 *            - the x and y coordinates of the first site.
+	 * @param site2
+	 *            - the x and y coordinates of the second site.
+	 * @return true if they are adjacent, false if they are not adjacent.
+	 */
+	public boolean areBuildSitesAdjacent(Point site1, Point site2) {
+		BuildSite[] adjacentSites = getAdjacentBuildSites((int) site1.getX(), (int) site1.getY());
+		boolean isAdjacent = false;
+		for (int i = 0; i < adjacentSites.length; i++)
+			if (adjacentSites[i] != null && adjacentSites[i].getArrX() == site2.getX()
+					&& adjacentSites[i].getArrY() == site2.getY())
+				isAdjacent = true;
+		return isAdjacent;
+	}
+
+	/**
+	 * Gets the adjacent build site references.
+	 * 
+	 * @return the references to the build sites adjacent to the given build
+	 *         site position.
+	 */
+	public BuildSite[] getAdjacentBuildSites(int x, int y) {
+		BuildSite[] adjacentSites = null;
+		ArrayList<BuildSite> adjacentSiteList = new ArrayList<BuildSite>();
+
+		// getting the left most site.
+		if (x - 1 >= 0)
+			adjacentSiteList.add(boardBuildSites.get(y).get(x - 1));
+		else
+			adjacentSiteList.add(null);
+
+		// Getting the middle site.
+		// Prepping the x value to be the same as the adjacent build site above
+		// or below the current build site.
+		int xOffset = 0;
+		if (boardBuildSites.get(y).get(x).isPointUp() && y - 1 >= 0) {
+			xOffset = (boardBuildSites.get(y - 1).size() - boardBuildSites.get(y).size()) / 2;
+			adjacentSiteList.add(boardBuildSites.get(y - 1).get(x + xOffset));
+		} else if (!boardBuildSites.get(y).get(x).isPointUp() && y + 1 < boardBuildSites.size()) {
+			xOffset = (boardBuildSites.get(y + 1).size() - boardBuildSites.get(y).size()) / 2;
+			adjacentSiteList.add(boardBuildSites.get(y + 1).get(x + xOffset));
+		} else
+			adjacentSiteList.add(null);
+
+		// getting the right most build site.
+		if (x + 1 < boardBuildSites.get(y).size())
+			adjacentSiteList.add(boardBuildSites.get(y).get(x + 1));
+		else
+			adjacentSiteList.add(null);
+
+		adjacentSites = new BuildSite[3];
+		for (int i = 0; i < adjacentSites.length; i++)
+			adjacentSites[i] = adjacentSiteList.get(i);
+
+		return adjacentSites;
 	}
 
 	/**
@@ -220,15 +283,27 @@ public class Board {
 		// as the gameboard arraylist of tiles plus 1. It is in [y][x] form.
 		boardBuildSites = new ArrayList<ArrayList<BuildSite>>(6);
 
+		// the pointUp/pointdown variable that needs to be different for each
+		// build site. False = down, True = up.
+		boolean pointDirection = false;
 		// initializing each of the build sites:
 		int arraySetValue = 0;
 		for (int i = -5; i < 6; i += 2) {
 			// initialising the 1D array lists:
 			boardBuildSites.add(new ArrayList<BuildSite>(12 - Math.abs(i)));
-			for (int n = 0; n < 12 - Math.abs(i); n++)
+			// setting the starting point direction which is different if it is
+			// creating the top of the board versus the bottom of the board.
+			if (i < 0)
+				pointDirection = false;
+			else
+				pointDirection = true;
+			for (int n = 0; n < 12 - Math.abs(i); n++) {
 				// initializing the build sites and adding them to the array
 				// lists.
-				boardBuildSites.get(arraySetValue).add(new BuildSite(0, 0));
+				boardBuildSites.get(arraySetValue).add(new BuildSite(n, (i + 5) / 2, pointDirection));
+				// alternating the point direction.
+				pointDirection = !pointDirection;
+			}
 			arraySetValue++;
 		}
 

@@ -82,15 +82,24 @@ public class ConnectionHelper {
 	 */
 	public static ArrayList<ArrayList<BuildSite>> recieveBuildSites(Socket toRecieveSocket) {
 		ArrayList<ArrayList<BuildSite>> buildSites = new ArrayList<ArrayList<BuildSite>>();
+		// the pointUp/pointdown variable that needs to be different for each
+		// build site. False = down, True = up.
+		boolean pointDirection = false;
 		// initializing each of the build sites:
 		int arraySetValue = 0;
 		for (int i = -5; i < 6; i += 2) {
+			// setting the starting point direction which is different if it is
+			// creating the top of the board versus the bottom of the board.
+			if (i < 0)
+				pointDirection = false;
+			else
+				pointDirection = true;
 			// initialising the 1D array lists:
 			buildSites.add(new ArrayList<BuildSite>(12 - Math.abs(i)));
 			for (int n = 0; n < 12 - Math.abs(i); n++) {
 				// getting the data out of the transmitted string about the
 				// build site.
-				buildSites.get(arraySetValue).add(new BuildSite(0, 0));
+				buildSites.get(arraySetValue).add(new BuildSite(0, 0, pointDirection));
 				String currentSiteDataLine = ConnectionHelper.readLine(toRecieveSocket);
 				// setting the player ID:
 				buildSites.get(arraySetValue).get(buildSites.get(arraySetValue).size() - 1).setPlayerID(
@@ -99,6 +108,8 @@ public class ConnectionHelper {
 				buildSites.get(arraySetValue).get(buildSites.get(arraySetValue).size() - 1)
 						.setBuildingType(Integer.parseInt(currentSiteDataLine
 								.substring(currentSiteDataLine.indexOf(",") + 1, currentSiteDataLine.length() - 1)));
+				// alternating the point direction.
+				pointDirection = !pointDirection;
 			}
 			arraySetValue++;
 		}
@@ -123,16 +134,25 @@ public class ConnectionHelper {
 
 		// After the previous while loop has executed, there should be an array
 		// of indevidual commands for each build site.
+		// the pointUp/pointdown variable that needs to be different for each
+		// build site. False = down, True = up.
+		boolean pointDirection = false;
 		// Extracting the build sites from the commands that create them.
 		int arraySetValue = 0;
 		int currentSiteIndex = 0;
 		for (int i = -5; i < 6; i += 2) {
+			// setting the starting point direction which is different if it is
+			// creating the top of the board versus the bottom of the board.
+			if (i < 0)
+				pointDirection = false;
+			else
+				pointDirection = true;
 			// initialising the 1D array lists:
 			buildSites.add(new ArrayList<BuildSite>(12 - Math.abs(i)));
 			for (int n = 0; n < 12 - Math.abs(i); n++) {
 				// getting the data out of the transmitted string about the
 				// build site.
-				buildSites.get(arraySetValue).add(new BuildSite(0, 0));
+				buildSites.get(arraySetValue).add(new BuildSite(0, 0, pointDirection));
 				String currentSiteDataLine = allReadSites[currentSiteIndex++];
 				// setting the player ID:
 				buildSites.get(arraySetValue).get(buildSites.get(arraySetValue).size() - 1).setPlayerID(
@@ -141,6 +161,8 @@ public class ConnectionHelper {
 				buildSites.get(arraySetValue).get(buildSites.get(arraySetValue).size() - 1)
 						.setBuildingType(Integer.parseInt(currentSiteDataLine
 								.substring(currentSiteDataLine.indexOf(",") + 1, currentSiteDataLine.length() - 1)));
+				// alternating the point direction.
+				pointDirection = !pointDirection;
 			}
 			arraySetValue++;
 		}
@@ -148,6 +170,8 @@ public class ConnectionHelper {
 	}
 
 	/**
+	 * Recieves one build site from the specified data sucker and puts it into
+	 * the specified array list of build sites at the appropriate place.
 	 * 
 	 * @param ds
 	 * @return
@@ -171,13 +195,13 @@ public class ConnectionHelper {
 		// getting the y value of the changed build site.
 		int y = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf(",")));
 		buildSiteCommand = buildSiteCommand.substring(buildSiteCommand.indexOf(",") + 1);
-		
+
 		int left = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf(",")));
 		buildSiteCommand = buildSiteCommand.substring(buildSiteCommand.indexOf(",") + 1);
-		
+
 		int middle = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf(",")));
 		buildSiteCommand = buildSiteCommand.substring(buildSiteCommand.indexOf(",") + 1);
-		
+
 		int right = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf("|")));
 
 		// changing the values inside of the build site array.

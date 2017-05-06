@@ -1,6 +1,7 @@
 package soc.code.renderPackage;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -12,6 +13,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import soc.code.logicPackage.Board;
+import soc.code.logicPackage.BuildSite;
 import soc.code.logicPackage.Tile;
 import soc.code.multiplayerPackage.ClientSetup;
 
@@ -32,7 +34,10 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	private ClientSetup clientManager = null;
 
 	private boolean enabledIO = false;
-	private JMenuItem buildSettlement, endTurn, buildCity = null;
+	private JMenuItem buildSettlement, endTurn, buildCity, buildRoad = null;
+
+	// keeps track of whether the user is in the process of selecting a road.
+	private boolean selectingRoad = false;
 
 	public GUI(Board gameBoard, ClientSetup clientManager, boolean isHost) {
 
@@ -56,8 +61,13 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
 			buildSettlement = new JMenuItem("Build Settlement");
 			buildSettlement.addActionListener(this);
+
 			buildCity = new JMenuItem("Build City");
 			buildCity.addActionListener(this);
+
+			buildRoad = new JMenuItem("Build Road");
+			buildRoad.addActionListener(this);
+
 			endTurn = new JMenuItem("End Turn");
 			endTurn.addActionListener(this);
 
@@ -65,8 +75,11 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
 			commandMenu.add(buildSettlement);
 			commandMenu.add(buildCity);
+			commandMenu.add(buildRoad);
 			commandMenu.add(endTurn);
+
 			menuBar.add(commandMenu);
+
 			this.setJMenuBar(menuBar);
 
 			// starting the IO disabled until it is the client's turn.
@@ -74,16 +87,17 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		}
 
 		// only shows the board if it is a client doing the controlling.
-		if (!isHost)
+		if (!isHostGUI)
 			this.setVisible(true);
 	}
 
 	/**
-	 * will enable all of the components that the user can interact with
+	 * Will enable all of the components that the user can interact with
 	 */
 	public void openIO() {
 		buildSettlement.setEnabled(true);
 		buildCity.setEnabled(true);
+		buildRoad.setEnabled(true);
 		endTurn.setEnabled(true);
 		enabledIO = true;
 	}
@@ -94,6 +108,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	public void closeIO() {
 		buildSettlement.setEnabled(false);
 		buildCity.setEnabled(false);
+		buildRoad.setEnabled(false);
 		endTurn.setEnabled(false);
 		enabledIO = false;
 	}
@@ -114,6 +129,96 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		this.enabledIO = enabledIO;
 	}
 
+	/**
+	 * Adds a road starting at the selected build site. It then waits for the
+	 * user to select a VALID build site and then creates the road logically.
+	 */
+	public void addRoad() {
+		// Making sure this is true so nothing else happens:
+		System.out.println("Choose an adjacent build site then press Lock Road.");
+		selectingRoad = true;
+		this.closeIO();
+		buildRoad.setEnabled(true);
+		buildRoad.setText("Lock Road");
+
+		BuildSite roadStartSite = mainPanel.getSelectedBuildSite();
+
+		// getting a selected road from the user as long as it takes to be a
+		// valid road.
+		boolean inValidSite;
+		do {
+			// waiting for the user to pick the road.
+			while (selectingRoad) {
+				System.out.println("Waiting...");
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			inValidSite = !mainPanel.getGameBoard().areBuildSitesAdjacent(
+					new Point(roadStartSite.getArrX(), roadStartSite.getArrY()),
+					new Point(mainPanel.getSelectedBuildSite().getArrX(), mainPanel.getSelectedBuildSite().getArrY()));
+
+			// displaying status message:
+			if (inValidSite) {
+				System.out.println("That build site is not adjacent to the selected Build Site.");
+				selectingRoad = true;
+			} else
+				System.out.println("Building Road from (" + roadStartSite.getArrX() + ", " + roadStartSite.getArrY()
+						+ ") to (" + mainPanel.getSelectedBuildSite().getArrX() + ", "
+						+ mainPanel.getSelectedBuildSite().getArrY() + ")");
+		} while (inValidSite);
+
+		buildRoad.setText("Build Road");
+		openIO();
+
+		// After both build sites have been recieved, now they have to be
+		// propperly formatted.
+		BuildSite[] adjacentSites = mainPanel.getGameBoard().getAdjacentBuildSites(roadStartSite.getArrX(),
+				roadStartSite.getArrY());
+
+		if (adjacentSites[0] == mainPanel.getSelectedBuildSite()) {
+			// Then the road has to be built to the left of the first selected
+			// build site.
+			roadStartSite.setRoadIDValue(BuildSite.ROAD_LEFT_ID, clientManager.getPlayerIndex());
+			mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_RIGHT_ID, clientManager.getPlayerIndex());
+		}
+
+		if (adjacentSites[2] == mainPanel.getSelectedBuildSite()) {
+			// Then the road has to be built to the right of the first selected
+			// build site.
+			roadStartSite.setRoadIDValue(BuildSite.ROAD_RIGHT_ID, clientManager.getPlayerIndex());
+			mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_LEFT_ID, clientManager.getPlayerIndex());
+		}
+
+		if (adjacentSites[1] == mainPanel.getSelectedBuildSite()) {
+			// Then the road has to be built below or above the first selected
+			// build site.
+			roadStartSite.setRoadIDValue(BuildSite.ROAD_MIDDLE_ID, clientManager.getPlayerIndex());
+			mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_MIDDLE_ID, clientManager.getPlayerIndex());
+		}
+
+	}
+
+	/**
+	 * Updates the build site that is selected in the main game panel.
+	 */
+	public void sendSelectedBuildSite() {
+		// Finding the proper build site to send which needs to be
+		// updated.
+		for (int i = 0; i < clientManager.getGameBoard().getBuildSites().size(); i++)
+			for (int n = 0; n < clientManager.getGameBoard().getBuildSites().get(i).size(); n++)
+				if (clientManager.getGameBoard().getBuildSites().get(i).get(n) == mainPanel.getSelectedBuildSite()) {
+					// telling the server to updated the build
+					// sites.
+					clientManager.sendUpdatedBuildSite(n, i);
+					break;
+				}
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// A button on the gui has been pressed and therefore must have its
@@ -122,22 +227,16 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		// pressed the client must send the updated build site array lists to
 		// the server so the server can distribute the updated ones to the
 		// client.
-		if (enabledIO) {
+		if (enabledIO)
 			if (e.getSource() == buildSettlement) {
 				if (mainPanel.getSelectedBuildSite().buildSettlement(clientManager.getPlayerIndex())) {
-					System.out.println("Building settlement.");
-					// Finding the proper build site to send which needs to be
-					// updated.
-					for (int i = 0; i < clientManager.getGameBoard().getBuildSites().size(); i++)
-						for (int n = 0; n < clientManager.getGameBoard().getBuildSites().get(i).size(); n++)
-							if (clientManager.getGameBoard().getBuildSites().get(i).get(n) == mainPanel
-									.getSelectedBuildSite()) {
-								// telling the server to updated the build
-								// sites.
-								clientManager.sendUpdatedBuildSite(n, i);
-								break;
-							}
+					// printing status message
+					System.out.println("Building settlement at (" + mainPanel.getSelectedBuildSite().getX() + ", "
+							+ mainPanel.getSelectedBuildSite().getY() + ")");
+					// updating build site array in the network
+					sendSelectedBuildSite();
 				} else
+					// printing statis message.
 					System.out.println("Failed to build settlement.");
 			} else if (e.getSource() == endTurn) {
 				// ends the turn.
@@ -145,23 +244,29 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 			} else if (e.getSource() == buildCity) {
 				// building a city.
 				if (mainPanel.getSelectedBuildSite().buildCity(clientManager.getPlayerIndex())) {
-					System.out.println("Building City.");
-					// Finding the proper build site to send which needs to be
-					// updated.
-					for (int i = 0; i < clientManager.getGameBoard().getBuildSites().size(); i++)
-						for (int n = 0; n < clientManager.getGameBoard().getBuildSites().get(i).size(); n++)
-							if (clientManager.getGameBoard().getBuildSites().get(i).get(n) == mainPanel
-									.getSelectedBuildSite()) {
-								// telling the server to updated the build
-								// sites.
-								clientManager.sendUpdatedBuildSite(n, i);
-								break;
-							}
+					// printing statis message.
+					System.out.println("Building City at (" + mainPanel.getSelectedBuildSite().getX() + ", "
+							+ mainPanel.getSelectedBuildSite().getY() + ")");
+					// updating build site array in the network
+					sendSelectedBuildSite();
 				} else
+					// printing statis message.
 					System.out.println("Failed to build City.");
+			} else if (e.getSource() == buildRoad) {
+				// adding a road at the selected build site.
+				if (mainPanel.getSelectedBuildSite().getPlayerID() == clientManager.getPlayerIndex()
+						&& !selectingRoad) {
+					Thread addRoadThread = new Thread(){
+						public void run(){
+							addRoad();
+						}
+					};
+					addRoadThread.start();
+				} else {
+					selectingRoad = false;
+				}
+
 			}
-		} else
-			System.out.println("It is not your turn.");
 
 	}
 

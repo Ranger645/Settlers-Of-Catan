@@ -62,8 +62,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 		// initializing the default selected buildsite to not produce null
 		// pointer errors:
-		selectedBuildSite = new BuildSite(0, 0);
-		hovoredBuildSite = new BuildSite(0, 0);
+		selectedBuildSite = new BuildSite(0, 0, false);
+		hovoredBuildSite = new BuildSite(0, 0, false);
 		// setting the positions of each of the buildsites:
 		setBuildSitePostitions(gameBoard.getBuildSites());
 
@@ -124,11 +124,36 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		// drawing the tiles:
 		this.drawTiles(g, false);
 
+		// drawing the roads between build sites:
+		this.drawRoads(g, gameBoard.getBuildSites());
+
 		// drawing the build sites:
 		this.drawBuildSites(g, gameBoard.getBuildSites(), 12);
 
 		// drawing the numbers on top of the tiles:
 		this.drawTileNumbers(g);
+	}
+
+	private void drawRoads(Graphics g, ArrayList<ArrayList<BuildSite>> sites) {
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setStroke(new BasicStroke(8));
+		for (int j = 0; j < sites.size(); j++)
+			for (int k = 0; k < sites.get(j).size(); k++) {
+				int[] currentRoadIDs = sites.get(j).get(k).getRoadIDValues();
+				BuildSite[] adjacentBuildSites = gameBoard.getAdjacentBuildSites(k, j);
+				for (int i = 0; i < currentRoadIDs.length; i++)
+					if (currentRoadIDs[i] >= 0) {
+						// A road will be painted.
+
+						// setting the proper color:
+						g2.setColor(clientManager.getAllPlayers()[currentRoadIDs[i]].getPreferedColor());
+
+						// drawing the line from one site to the other:
+						if (adjacentBuildSites[i] != null)
+							g2.drawLine(sites.get(j).get(k).getX(), sites.get(j).get(k).getY(),
+									adjacentBuildSites[i].getX(), adjacentBuildSites[i].getY());
+					}
+			}
 	}
 
 	/**
@@ -429,6 +454,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 	public Color getBACKGROUND_COLOR() {
 		return BACKGROUND_COLOR;
+	}
+
+	public Board getGameBoard() {
+		return gameBoard;
 	}
 
 	@Override
