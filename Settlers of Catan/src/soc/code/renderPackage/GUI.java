@@ -83,6 +83,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	 */
 	public void openIO() {
 		buildSettlement.setEnabled(true);
+		buildCity.setEnabled(true);
 		endTurn.setEnabled(true);
 		enabledIO = true;
 	}
@@ -92,6 +93,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	 */
 	public void closeIO() {
 		buildSettlement.setEnabled(false);
+		buildCity.setEnabled(false);
 		endTurn.setEnabled(false);
 		enabledIO = false;
 	}

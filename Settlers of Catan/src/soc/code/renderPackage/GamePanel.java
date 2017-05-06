@@ -248,11 +248,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 					// Drawing the settlements with the color that the player
 					// that they are is.
 					g.setColor(clientManager.getAllPlayers()[sites.get(j).get(k).getPlayerID()].getPreferedColor());
-					this.drawHexagon(g2, radius, sites.get(j).get(k).getY(), sites.get(j).get(k).getX());
+					fillHexagon(g2, radius * 3 / 2, sites.get(j).get(k).getX(), sites.get(j).get(k).getY());
 					g.setColor(Color.BLACK);
 					g2.setStroke(new BasicStroke(1));
-					g.drawOval(sites.get(j).get(k).getX() - radius, sites.get(j).get(k).getY() - radius, radius * 2,
-							radius * 2);
+					drawHexagon(g2, radius * 3 / 2, sites.get(j).get(k).getX(), sites.get(j).get(k).getY());
 				}
 
 				if (sites.get(j).get(k) == selectedBuildSite) {
@@ -395,7 +394,6 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		int[] yValues = { centerY, (int) (centerY - yOffset), (int) (centerY - yOffset), centerY,
 				(int) (centerY + yOffset), (int) (centerY + yOffset) };
 		g2.fillPolygon(yValues, xValues, 6);
-		g2.setStroke(new BasicStroke(1));
 	}
 
 	/**
@@ -418,8 +416,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		double yOffset = sideLength * Math.sqrt(3) / 2;
 		int[] yValues = { centerY, (int) (centerY - yOffset), (int) (centerY - yOffset), centerY,
 				(int) (centerY + yOffset), (int) (centerY + yOffset) };
-		g2.fillPolygon(yValues, xValues, 6);
-		g2.setStroke(new BasicStroke(1));
+		g2.drawPolygon(yValues, xValues, 6);
 	}
 
 	public BuildSite getSelectedBuildSite() {
