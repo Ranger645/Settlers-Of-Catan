@@ -204,6 +204,8 @@ public class ConnectionHelper {
 
 		int right = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf("|")));
 
+		System.out.println("(" + left + ", " + middle + ", " + right + ")");
+
 		// changing the values inside of the build site array.
 		currentBuildSites.get(y).get(x).setPlayerID(playerID);
 		currentBuildSites.get(y).get(x).setBuildingType(buildingType);

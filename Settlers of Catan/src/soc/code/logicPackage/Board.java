@@ -50,6 +50,8 @@ public class Board {
 			for (int n = 0; n < newSites.get(i).size(); n++) {
 				boardBuildSites.get(i).get(n).setBuildingType(newSites.get(i).get(n).getBuildingType());
 				boardBuildSites.get(i).get(n).setPlayerID(newSites.get(i).get(n).getPlayerID());
+				for (int j = 0; j < boardBuildSites.get(i).get(n).getRoadIDValues().length; j++)
+					boardBuildSites.get(i).get(n).setRoadIDValue(i, newSites.get(i).get(n).getRoadIDValues()[i]);
 			}
 	}
 

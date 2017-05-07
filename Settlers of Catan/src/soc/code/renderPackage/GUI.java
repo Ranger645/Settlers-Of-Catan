@@ -201,17 +201,20 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 			mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_MIDDLE_ID, clientManager.getPlayerIndex());
 		}
 
+		// sending the updated build sites.
+		sendBuildSite(mainPanel.getSelectedBuildSite());
+		sendBuildSite(roadStartSite);
 	}
 
 	/**
 	 * Updates the build site that is selected in the main game panel.
 	 */
-	public void sendSelectedBuildSite() {
+	public void sendBuildSite(BuildSite toSend) {
 		// Finding the proper build site to send which needs to be
 		// updated.
 		for (int i = 0; i < clientManager.getGameBoard().getBuildSites().size(); i++)
 			for (int n = 0; n < clientManager.getGameBoard().getBuildSites().get(i).size(); n++)
-				if (clientManager.getGameBoard().getBuildSites().get(i).get(n) == mainPanel.getSelectedBuildSite()) {
+				if (clientManager.getGameBoard().getBuildSites().get(i).get(n) == toSend) {
 					// telling the server to updated the build
 					// sites.
 					clientManager.sendUpdatedBuildSite(n, i);
@@ -234,7 +237,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 					System.out.println("Building settlement at (" + mainPanel.getSelectedBuildSite().getX() + ", "
 							+ mainPanel.getSelectedBuildSite().getY() + ")");
 					// updating build site array in the network
-					sendSelectedBuildSite();
+					sendBuildSite(mainPanel.getSelectedBuildSite());
 				} else
 					// printing statis message.
 					System.out.println("Failed to build settlement.");
@@ -248,7 +251,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 					System.out.println("Building City at (" + mainPanel.getSelectedBuildSite().getX() + ", "
 							+ mainPanel.getSelectedBuildSite().getY() + ")");
 					// updating build site array in the network
-					sendSelectedBuildSite();
+					sendBuildSite(mainPanel.getSelectedBuildSite());
 				} else
 					// printing statis message.
 					System.out.println("Failed to build City.");
@@ -256,8 +259,8 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 				// adding a road at the selected build site.
 				if (mainPanel.getSelectedBuildSite().getPlayerID() == clientManager.getPlayerIndex()
 						&& !selectingRoad) {
-					Thread addRoadThread = new Thread(){
-						public void run(){
+					Thread addRoadThread = new Thread() {
+						public void run() {
 							addRoad();
 						}
 					};
