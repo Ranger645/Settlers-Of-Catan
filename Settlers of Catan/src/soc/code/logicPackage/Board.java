@@ -67,14 +67,11 @@ public class Board {
 	public boolean isValidSettlementSpot(int x, int y) {
 		boolean isValid = true;
 
-		// Testing the actual site:
-		if (boardBuildSites.get(y).get(x).getBuildingType() > 0)
-			isValid = false;
-
 		// Testing the adjacent build sites.
-		for (BuildSite site : getAdjacentBuildSites(x, y))
+		for (BuildSite site : getAdjacentBuildSites(x, y)) {
 			if (site != null && site.getBuildingType() > 0)
 				isValid = false;
+		}
 
 		return isValid;
 	}

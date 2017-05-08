@@ -219,6 +219,59 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	}
 
 	/**
+	 * Trys to build a settlement at the selected build site.
+	 */
+	public void buildSettlement() {
+		// making sure it is ok to build on this tile:
+		if (mainPanel.getGameBoard().isValidSettlementSpot(mainPanel.getSelectedBuildSite().getArrX(),
+				mainPanel.getSelectedBuildSite().getArrY())) {
+			if (mainPanel.getSelectedBuildSite().buildSettlement(clientManager.getPlayerIndex())) {
+				// printing status message
+				System.out.println("Building settlement at (" + mainPanel.getSelectedBuildSite().getX() + ", "
+						+ mainPanel.getSelectedBuildSite().getY() + ")");
+				// updating build site array in the network
+				sendBuildSite(mainPanel.getSelectedBuildSite());
+			} else
+				System.out.println("Failed to build settlement: There is already somthing built there.");
+		} else
+			// printing statis message.
+			System.out.println("Failed to build settlement: There are buildings adjacent to the proposed build site.");
+	}
+
+	public void buildRoad() {
+		// adding a road at the selected build site.
+		if (mainPanel.getSelectedBuildSite().getPlayerID() == clientManager.getPlayerIndex() && !selectingRoad) {
+			// Starting a thread so it doesn't hold up the graphics
+			// thread.
+			Thread addRoadThread = new Thread() {
+				public void run() {
+					addRoad();
+					selectingRoad = false;
+				}
+			};
+			addRoadThread.start();
+		} else {
+			selectingRoad = false;
+		}
+	}
+
+	/**
+	 * Builds a city at the selected build site.
+	 */
+	public void buildCity() {
+		// building a city.
+		if (mainPanel.getSelectedBuildSite().buildCity(clientManager.getPlayerIndex())) {
+			// printing statis message.
+			System.out.println("Building City at (" + mainPanel.getSelectedBuildSite().getX() + ", "
+					+ mainPanel.getSelectedBuildSite().getY() + ")");
+			// updating build site array in the network
+			sendBuildSite(mainPanel.getSelectedBuildSite());
+		} else
+			// printing statis message.
+			System.out.println("Failed to build City.");
+	}
+
+	/**
 	 * Updates the build site that is selected in the main game panel.
 	 */
 	public void sendBuildSite(BuildSite toSend) {
@@ -243,75 +296,30 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		// the server so the server can distribute the updated ones to the
 		// client.
 		if (enabledIO)
-			if (e.getSource() == buildSettlement) {
-				// making sure it is ok to build on this tile:
-
-				if (mainPanel.getGameBoard().isValidSettlementSpot(mainPanel.getSelectedBuildSite().getArrX(),
-						mainPanel.getSelectedBuildSite().getArrY())) {
-					if (mainPanel.getSelectedBuildSite().buildSettlement(clientManager.getPlayerIndex())) {
-						// printing status message
-						System.out.println("Building settlement at (" + mainPanel.getSelectedBuildSite().getX() + ", "
-								+ mainPanel.getSelectedBuildSite().getY() + ")");
-						// updating build site array in the network
-						sendBuildSite(mainPanel.getSelectedBuildSite());
-					} else
-						System.out.println(
-								"Failed to build settlement: There is already somthing built there.");
-				} else
-					// printing statis message.
-					System.out.println("Failed to build settlement: There are buildings adjacent to the proposed build site.");
-			} else if (e.getSource() == endTurn) {
+			if (e.getSource() == buildSettlement)
+				buildSettlement();
+			else if (e.getSource() == endTurn)
 				// ends the turn.
 				clientManager.endTurn();
-			} else if (e.getSource() == buildCity) {
-				// building a city.
-				if (mainPanel.getSelectedBuildSite().buildCity(clientManager.getPlayerIndex())) {
-					// printing statis message.
-					System.out.println("Building City at (" + mainPanel.getSelectedBuildSite().getX() + ", "
-							+ mainPanel.getSelectedBuildSite().getY() + ")");
-					// updating build site array in the network
-					sendBuildSite(mainPanel.getSelectedBuildSite());
-				} else
-					// printing statis message.
-					System.out.println("Failed to build City.");
-			} else if (e.getSource() == buildRoad) {
-				// adding a road at the selected build site.
-				if (mainPanel.getSelectedBuildSite().getPlayerID() == clientManager.getPlayerIndex()
-						&& !selectingRoad) {
-					// Starting a thread so it doesn't hold up the graphics
-					// thread.
-					Thread addRoadThread = new Thread() {
-						public void run() {
-							addRoad();
-							selectingRoad = false;
-						}
-					};
-					addRoadThread.start();
-				} else {
-					selectingRoad = false;
-				}
-
-			}
+			else if (e.getSource() == buildCity)
+				buildCity();
+			else if (e.getSource() == buildRoad)
+				buildRoad();
 
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		if (enabledIO && e.getKeyChar() == 'b')
-			if (mainPanel.getSelectedBuildSite().buildSettlement(clientManager.getPlayerIndex()))
-				System.out.println("Building settlement.");
-			else
-				System.out.println("Failed to build settlement.");
-
-		// finding the proper build site to send which needs to be updated.
-		for (int i = 0; i < clientManager.getGameBoard().getBuildSites().size(); i++)
-			for (int n = 0; n < clientManager.getGameBoard().getBuildSites().get(i).size(); n++)
-				if (clientManager.getGameBoard().getBuildSites().get(i).get(n) == mainPanel.getSelectedBuildSite()) {
-					// telling the server to updated the build sites.
-					clientManager.sendUpdatedBuildSite(n, i);
-					break;
-				}
+		// The shortcuts for all of the commands:
+		if (enabledIO)
+			if (e.getKeyChar() == 'b')
+				buildSettlement();
+			else if (e.getKeyChar() == 'c')
+				buildCity();
+			else if (e.getKeyChar() == 'r')
+				buildRoad();
+			else if (e.getKeyChar() == 'e')
+				clientManager.endTurn();
 	}
 
 	@Override
