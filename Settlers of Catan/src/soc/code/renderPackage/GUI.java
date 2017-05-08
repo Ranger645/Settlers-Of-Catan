@@ -135,7 +135,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	 */
 	public void addRoad() {
 		// Making sure this is true so nothing else happens:
-		System.out.println("Choose an adjacent build site then press Lock Road.");
+		System.out.println("Choose an adjacent build site to complete the road.");
 		selectingRoad = true;
 		buildRoad.setEnabled(true);
 		buildRoad.setText("Cancel Road Construction");
@@ -240,7 +240,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
 	public void buildRoad() {
 		// adding a road at the selected build site.
-		if (mainPanel.getSelectedBuildSite().getPlayerID() == clientManager.getPlayerIndex() && !selectingRoad) {
+		if ((mainPanel.getSelectedBuildSite().canBuildRoad(clientManager.getPlayerIndex())) && !selectingRoad) {
 			// Starting a thread so it doesn't hold up the graphics
 			// thread.
 			Thread addRoadThread = new Thread() {
@@ -305,7 +305,6 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 				buildCity();
 			else if (e.getSource() == buildRoad)
 				buildRoad();
-
 	}
 
 	@Override

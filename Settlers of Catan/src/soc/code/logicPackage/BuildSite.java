@@ -41,6 +41,42 @@ public class BuildSite {
 	}
 
 	/**
+	 * Tests to see if the player can build a road on this tile.
+	 * 
+	 * @param playerIndex
+	 *            - the player that will build the road.
+	 * @return true if it is ok to build a road for this player or false if it
+	 *         is not ok to build.
+	 */
+	public boolean canBuildRoad(int playerIndex) {
+		boolean isValid = true;
+
+		// testing to make sure there is an open road position.
+		int openRoads = 0;
+		for (int i : roadIDValues)
+			if (i < 0)
+				openRoads++;
+		if (openRoads == 0)
+			return false;
+
+		if (playerID == playerIndex)
+			return true;
+
+		// Testing if there is a settlement on the buildsite of the appropriate
+		// color.
+		if (playerID != playerIndex && playerID > -1)
+			isValid = false;
+
+		// testing to see if there is another road connected to this site.
+		isValid = false;
+		for (int i : roadIDValues)
+			if (i == playerIndex)
+				isValid = true;
+
+		return isValid;
+	}
+
+	/**
 	 * Sets the road specified by the given direction to the given player ID
 	 * 
 	 * @param roadDirection
