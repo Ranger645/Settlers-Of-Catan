@@ -56,6 +56,30 @@ public class Board {
 	}
 
 	/**
+	 * Checks to see if the build site at the given x and y coordinates can have
+	 * a settlement built on it.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return true if it is ok to build or false if there are other settlments
+	 *         on this tile or directly adjacent.
+	 */
+	public boolean isValidSettlementSpot(int x, int y) {
+		boolean isValid = true;
+
+		// Testing the actual site:
+		if (boardBuildSites.get(y).get(x).getBuildingType() > 0)
+			isValid = false;
+
+		// Testing the adjacent build sites.
+		for (BuildSite site : getAdjacentBuildSites(x, y))
+			if (site != null && site.getBuildingType() > 0)
+				isValid = false;
+
+		return isValid;
+	}
+
+	/**
 	 * Returns whether or not the two specified coordinates are adjacent to each
 	 * other in the array of build sites.
 	 * 

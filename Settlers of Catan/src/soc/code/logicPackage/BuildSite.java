@@ -2,9 +2,9 @@ package soc.code.logicPackage;
 
 public class BuildSite {
 
-	// These are the x and y coordinates of the build sites that will be used
-	// for determining if they were clicked on or where the building that is on
-	// top of them goes.
+	// These are points for determining where the build site is located in
+	// different circumstances. The x and y are points on the board while the
+	// arrx and arry are points in an array.
 	private int x, y, arrX, arrY = 0;
 
 	// This is the variable that determines what type of building is located on
