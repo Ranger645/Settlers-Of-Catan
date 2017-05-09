@@ -269,6 +269,7 @@ public class ClientSetup extends Thread {
 		String[] tileData = new String[19];
 		for (int i = 0; i < 19; i++) {
 			tileData[i] = dataSucker.getNextLine();
+			System.out.println(tileData[i]);
 			// if the line is not from the tile transmission then it needs to be
 			// rid of.
 			if (tileData[i].charAt(tileData[i].length() - 1) != '|')

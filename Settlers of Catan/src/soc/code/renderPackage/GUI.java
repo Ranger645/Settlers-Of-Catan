@@ -189,26 +189,46 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 				// Then the road has to be built to the left of the first
 				// selected
 				// build site.
-				roadStartSite.setRoadIDValue(BuildSite.ROAD_LEFT_ID, clientManager.getPlayerIndex());
-				mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_RIGHT_ID,
-						clientManager.getPlayerIndex());
+				// Checking to make sure there is not already a road at the spot
+				// the user wants to build on.
+				if (!(roadStartSite.getRoadIDValues()[0] > -1 && roadStartSite.getRoadIDValues()[0] == mainPanel
+						.getSelectedBuildSite().getRoadIDValues()[2])) {
+					roadStartSite.setRoadIDValue(BuildSite.ROAD_LEFT_ID, clientManager.getPlayerIndex());
+					mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_RIGHT_ID,
+							clientManager.getPlayerIndex());
+				} else {
+					System.out.println("You cannot build a road there, there is already a road built there.");
+				}
 			}
 
 			if (adjacentSites[2] == mainPanel.getSelectedBuildSite()) {
 				// Then the road has to be built to the right of the first
-				// selected
-				// build site.
-				roadStartSite.setRoadIDValue(BuildSite.ROAD_RIGHT_ID, clientManager.getPlayerIndex());
-				mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_LEFT_ID, clientManager.getPlayerIndex());
+				// selected build site.
+				// Checking to make sure there is not already a road at the spot
+				// the user wants to build on.
+				if (!(roadStartSite.getRoadIDValues()[2] > -1 && roadStartSite.getRoadIDValues()[2] == mainPanel
+						.getSelectedBuildSite().getRoadIDValues()[0])) {
+					roadStartSite.setRoadIDValue(BuildSite.ROAD_RIGHT_ID, clientManager.getPlayerIndex());
+					mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_LEFT_ID,
+							clientManager.getPlayerIndex());
+				} else {
+					System.out.println("You cannot build a road there, there is already a road built there.");
+				}
 			}
 
 			if (adjacentSites[1] == mainPanel.getSelectedBuildSite()) {
 				// Then the road has to be built below or above the first
-				// selected
-				// build site.
-				roadStartSite.setRoadIDValue(BuildSite.ROAD_MIDDLE_ID, clientManager.getPlayerIndex());
-				mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_MIDDLE_ID,
-						clientManager.getPlayerIndex());
+				// selected build site.
+				// Checking to make sure there is not already a road at the spot
+				// the user wants to build on.
+				if (!(roadStartSite.getRoadIDValues()[1] > -1 && roadStartSite.getRoadIDValues()[1] == mainPanel
+						.getSelectedBuildSite().getRoadIDValues()[1])) {
+					roadStartSite.setRoadIDValue(BuildSite.ROAD_MIDDLE_ID, clientManager.getPlayerIndex());
+					mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_MIDDLE_ID,
+							clientManager.getPlayerIndex());
+				} else {
+					System.out.println("You cannot build a road there, there is already a road built there.");
+				}
 			}
 
 			// sending the updated build sites.
