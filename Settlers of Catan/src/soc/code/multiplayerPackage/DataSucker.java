@@ -60,6 +60,29 @@ public class DataSucker extends Thread {
 		return suckedCommands.remove(0);
 	}
 
+	/**
+	 * Gets the next line that contains the given value
+	 * 
+	 * @param contained
+	 *            - the value that needs to be contained in the incoming line of
+	 *            data.
+	 * @return
+	 */
+	public String getNextLineWith(String contained) {
+		while (true) {
+			for (int i = 0; i < suckedCommands.size(); i++) {
+				if (suckedCommands.get(i).contains(contained))
+					return suckedCommands.remove(i);
+			}
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public String getNextBuildSite() {
 		while (buildSiteMessages.size() < 1)
 			try {

@@ -29,6 +29,9 @@ public class ClientSetup extends Thread {
 	// The variable for keeping track of whether or not it is this player's
 	// turn.
 	private boolean isTurn = false;
+	// the varibale that will keep track of whether or not the user is in the
+	// process of clicking roll dice.
+	private boolean areDiceRolled = true;
 
 	// The data sucker that will handle all incoming data seperatly and store it
 	// in an array list of strings.
@@ -88,6 +91,14 @@ public class ClientSetup extends Thread {
 		// The following set of if statements contaion the programming
 		// for what a client should do when a host sends a particular
 		// message to it. They will all be individual if statments.
+
+		// This means that the client should now start the intro to their turn.
+		// It means the program will basically wait for the user to press the
+		// "roll dice button".
+		if (data.equals("rolldice")) {
+			System.out.println("Either play a Development Card or Roll the Dice.");
+			areDiceRolled = false;
+		}
 
 		// The server is sending build sites to the client to update the build
 		// site array.
@@ -205,7 +216,7 @@ public class ClientSetup extends Thread {
 		ArrayList<Player> p = new ArrayList<Player>();
 
 		// getting teh number of players:
-		String numberOfPlayersTransmission = dataSucker.getNextLine();
+		String numberOfPlayersTransmission = dataSucker.getNextLineWith("P:");
 		int numberOfPlayers = Integer.parseInt(numberOfPlayersTransmission.substring(2));
 
 		// recieving each player transmission.
@@ -268,12 +279,9 @@ public class ClientSetup extends Thread {
 		System.out.println("Recieving Tile Data from the Host...");
 		String[] tileData = new String[19];
 		for (int i = 0; i < 19; i++) {
-			tileData[i] = dataSucker.getNextLine();
-			System.out.println(tileData[i]);
-			// if the line is not from the tile transmission then it needs to be
-			// rid of.
-			if (tileData[i].charAt(tileData[i].length() - 1) != '|')
-				doServerCommand(tileData[i--]);
+			// gets the next line with the propper identifier for mass data
+			// transmission.
+			tileData[i] = dataSucker.getNextLineWith("|");
 		}
 		Board b = new Board(tileData);
 		return b;
@@ -287,6 +295,16 @@ public class ClientSetup extends Thread {
 		return alive;
 	}
 
+	/**
+	 * The user has clicked the roll dice button and now the server needs to
+	 * know to roll the dice.
+	 */
+	public void rollDice() {
+		System.out.println("You have rolled the Dice...");
+		areDiceRolled = true;
+		ConnectionHelper.printString("rolleddice", clientSocket);
+	}
+
 	public boolean isReady() {
 		return isReady;
 	}
@@ -297,6 +315,14 @@ public class ClientSetup extends Thread {
 
 	public Player getLocalPlayer() {
 		return localPlayer;
+	}
+
+	public boolean areDiceRolled() {
+		return areDiceRolled;
+	}
+
+	public void setAreDiceRolled(boolean areDiceRolled) {
+		this.areDiceRolled = areDiceRolled;
 	}
 
 	public int getPlayerIndex() {

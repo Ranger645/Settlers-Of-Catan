@@ -33,8 +33,9 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	private boolean isHostGUI = false;
 	private ClientSetup clientManager = null;
 
-	private boolean enabledIO = false;
-	private JMenuItem buildSettlement, endTurn, buildCity, buildRoad = null;
+	private int IOStatus = 0; // 0 if all disabled, 1 if rolling dice, 2 if all
+								// enabled.
+	private JMenuItem buildSettlement, endTurn, buildCity, buildRoad, rollDice, buyDevCard, playDevCard = null;
 
 	// keeps track of whether the user is in the process of selecting a road.
 	private boolean selectingRoad = false;
@@ -68,6 +69,15 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 			buildRoad = new JMenuItem("Build Road");
 			buildRoad.addActionListener(this);
 
+			rollDice = new JMenuItem("Roll Dice");
+			rollDice.addActionListener(this);
+
+			buyDevCard = new JMenuItem("Buy Development Card");
+			buyDevCard.addActionListener(this);
+
+			playDevCard = new JMenuItem("Play Development Card");
+			playDevCard.addActionListener(this);
+
 			endTurn = new JMenuItem("End Turn");
 			endTurn.addActionListener(this);
 
@@ -76,6 +86,9 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 			commandMenu.add(buildSettlement);
 			commandMenu.add(buildCity);
 			commandMenu.add(buildRoad);
+			commandMenu.add(buyDevCard);
+			commandMenu.add(playDevCard);
+			commandMenu.add(rollDice);
 			commandMenu.add(endTurn);
 
 			menuBar.add(commandMenu);
@@ -92,25 +105,38 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	}
 
 	/**
+	 * This just opens the UI that is needed before the dice are rolled.
+	 */
+	public void openDiceRollUI() {
+		IOStatus = 1;
+		playDevCard.setEnabled(true);
+		rollDice.setEnabled(true);
+	}
+
+	/**
 	 * Will enable all of the components that the user can interact with
 	 */
-	public void openIO() {
+	public void openTurnIO() {
+		IOStatus = 2;
+		rollDice.setEnabled(false);
 		buildSettlement.setEnabled(true);
 		buildCity.setEnabled(true);
 		buildRoad.setEnabled(true);
+		buyDevCard.setEnabled(true);
 		endTurn.setEnabled(true);
-		enabledIO = true;
 	}
 
 	/**
 	 * will disable all of the components that the user can interact with
 	 */
 	public void closeIO() {
+		IOStatus = 0;
 		buildSettlement.setEnabled(false);
 		buildCity.setEnabled(false);
 		buildRoad.setEnabled(false);
 		endTurn.setEnabled(false);
-		enabledIO = false;
+		playDevCard.setEnabled(false);
+		buyDevCard.setEnabled(false);
 	}
 
 	public GamePanel getMainPanel() {
@@ -121,12 +147,12 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		this.mainPanel = mainPanel;
 	}
 
-	public boolean isEnabledIO() {
-		return enabledIO;
+	public int getIOStatus() {
+		return IOStatus;
 	}
 
-	public void setEnabledIO(boolean enabledIO) {
-		this.enabledIO = enabledIO;
+	public void setIOStatus(int newStatus) {
+		this.IOStatus = newStatus;
 	}
 
 	/**
@@ -292,6 +318,15 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	}
 
 	/**
+	 * Plays a development card that the user selects.
+	 */
+	public void playDevCard() {
+		// if the card is successfully played, then the button is disabled
+		// because only one card can be played per turn.
+		playDevCard.setEnabled(false);
+	}
+
+	/**
 	 * Updates the build site that is selected in the main game panel.
 	 */
 	public void sendBuildSite(BuildSite toSend) {
@@ -315,7 +350,13 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		// pressed the client must send the updated build site array lists to
 		// the server so the server can distribute the updated ones to the
 		// client.
-		if (enabledIO)
+		if (IOStatus == 1)
+			if (e.getSource() == rollDice)
+				clientManager.rollDice();
+			else if (e.getSource() == playDevCard)
+				playDevCard();
+
+		if (IOStatus == 2)
 			if (e.getSource() == buildSettlement)
 				buildSettlement();
 			else if (e.getSource() == endTurn)
@@ -325,12 +366,18 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 				buildCity();
 			else if (e.getSource() == buildRoad)
 				buildRoad();
+			else if (e.getSource() == rollDice)
+				clientManager.rollDice();
+			else if (e.getSource() == buyDevCard)
+				;
+			else if (e.getSource() == playDevCard)
+				playDevCard();
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// The shortcuts for all of the commands:
-		if (enabledIO)
+		if (IOStatus == 2)
 			if (e.getKeyChar() == 'b')
 				buildSettlement();
 			else if (e.getKeyChar() == 'c')

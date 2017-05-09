@@ -61,6 +61,21 @@ public class HostSetup extends Thread {
 	 * @return the final board of the player whose turn it is.
 	 */
 	public Board doTurn(int playerIndex, Board mainGameBoard, GUI gui) {
+		// starting the turn with a dice roll that will be at the user's turn's
+		// discretion:
+		clientConnectionList.get(playerIndex).startDiceRollProcess();
+
+		// Waiting for the user to roll the dice all while checking to see what
+		// else they have doen (for example playing a knight)
+		while (clientConnectionList.get(playerIndex).isRollingDice())
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		System.out.println("The Dice have been rolled.");
 
 		// Telling the client that it is their turn.
 		clientConnectionList.get(playerIndex).startTurn();

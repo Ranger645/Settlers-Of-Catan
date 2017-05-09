@@ -3,6 +3,7 @@ package soc.code.runtimePackage;
 import java.util.Random;
 
 import soc.code.logicPackage.Board;
+import soc.code.logicPackage.Die;
 import soc.code.logicPackage.Player;
 import soc.code.multiplayerPackage.ClientSetup;
 import soc.code.multiplayerPackage.HostSetup;
@@ -118,10 +119,10 @@ public class GameRuntime {
 			// repainting:
 			gui.repaint();
 
-			//\\ MAIN GAME LOOP //\\
+			// \\ MAIN GAME LOOP //\\
 			int currentPlayer = 0;
 			int playerOrderTracker = 0;
-			
+
 			// Displaying initial messages.
 			hostManager.broadcast("Starting Game...");
 			hostManager.broadcast("The Order of this game is as follows...");
@@ -137,6 +138,9 @@ public class GameRuntime {
 				hostManager.broadcast("It is now "
 						+ hostManager.getClientConnections().get(currentPlayer).getPlayer().getUsername() + "'s turn.");
 
+				// rolling two six sided dice:
+				int diceRoll = Die.getDiceRoll(2, 6);
+
 				// Telling the host manager to start the given players turn and
 				// wait for it to be done while constantly updating the main
 				// game board with the same values that the client is sending to
@@ -146,7 +150,7 @@ public class GameRuntime {
 
 				// Making sure that the build sites in the main game board are
 				// perfectly up to date before moving on to the next turn.
-				//gameBoard.overwriteBuildSites(afterTurnBoard.getBuildSites());
+				// gameBoard.overwriteBuildSites(afterTurnBoard.getBuildSites());
 
 				// This is the turn rotater.
 				if (++playerOrderTracker >= playerArray.length)
@@ -161,7 +165,7 @@ public class GameRuntime {
 
 			// waiting for the server to send the entirety of the gameboard
 			// object so that the GUI can be initialized.
-			System.out.println("Waiting for Server to send Tile Board info...");
+			System.out.println("Waiting for Server to send Board info...");
 			while (clientManager.getGameBoard() == null)
 				sleepMillis(20);
 
@@ -177,9 +181,11 @@ public class GameRuntime {
 
 				// controlling whether or not the IO should be enabled or
 				// disabled epending on whether or not it is the client's turn.
-				if (clientManager.isTurn() && !gui.isEnabledIO())
-					gui.openIO();
-				else if (!clientManager.isTurn() && gui.isEnabledIO())
+				if (!clientManager.areDiceRolled() && gui.getIOStatus() != 1)
+					gui.openDiceRollUI();
+				else if (clientManager.isTurn() && clientManager.areDiceRolled() && gui.getIOStatus() != 2)
+					gui.openTurnIO();
+				else if(gui.getIOStatus() != 0 && !clientManager.isTurn() && clientManager.areDiceRolled())
 					gui.closeIO();
 
 				// This is just responsible for constantly updating the

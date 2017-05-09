@@ -37,6 +37,14 @@ public class ClientConnection extends Thread {
 	// The variable for keeping track of whether or not it is this player's
 	// turn.
 	private boolean isTurn = false;
+	// The varibale that will also tell the server where the user is at in their
+	// turn. If it is true then the user is still in phase 1, but if it is false
+	// then they are in phase two and have already rolled the dice.
+	private boolean rollingDice = false;
+
+	public boolean isRollingDice() {
+		return rollingDice;
+	}
 
 	private Board gameBoard = null;
 
@@ -73,6 +81,13 @@ public class ClientConnection extends Thread {
 	 *            - the command that the client wants executed.
 	 */
 	public void doClientCommand(String data) {
+
+		// This means that the client has chosen to roll the dice and the server
+		// should continue to the normal phase of the client's turn.
+		if (data.equals("rolleddice")) {
+			rollingDice = false;
+		}
+
 		// The client is sending build sites to the host to update the build
 		// site array based on what the client has done during their turn.
 		if (data.equals("buildsites")) {
@@ -128,6 +143,15 @@ public class ClientConnection extends Thread {
 	public void startTurn() {
 		isTurn = true;
 		ConnectionHelper.printString("startturn", clientSocket);
+	}
+
+	/**
+	 * This method begins the part before the actual turn starts where the user
+	 * has to press the button to roll the dice.
+	 */
+	public void startDiceRollProcess() {
+		rollingDice = true;
+		ConnectionHelper.printString("rolldice", clientSocket);
 	}
 
 	public void startGameProcess(HostSetup hostManager, Board gameBoard) {
