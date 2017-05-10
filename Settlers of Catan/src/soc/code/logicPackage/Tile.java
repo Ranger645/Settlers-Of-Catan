@@ -90,6 +90,28 @@ public class Tile {
 		return "null";
 	}
 
+	/**
+	 * @return the integer corresponding to the type of resource tile that this
+	 *         is.
+	 */
+	public int toTypeValue() {
+		switch (type) {
+		case WOOD:
+			return 0;
+		case WHEAT:
+			return 1;
+		case BRICK:
+			return 3;
+		case SHEEP:
+			return 2;
+		case ORE:
+			return 4;
+		case DESERT:
+			return -1;
+		}
+		return -1;
+	}
+
 	public static BufferedImage getT_WoodImage() {
 		return t_WoodImage;
 	}
@@ -129,7 +151,7 @@ public class Tile {
 	public int getNumberOfBuildSites() {
 		return numberOfBuildSites;
 	}
-	
+
 	public void setResourceNumber(int resourceNumber) {
 		this.resourceNumber = resourceNumber;
 	}

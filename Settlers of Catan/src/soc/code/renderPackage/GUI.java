@@ -15,6 +15,7 @@ import javax.swing.JMenuItem;
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.BuildSite;
 import soc.code.logicPackage.Tile;
+import soc.code.logicPackage.Player.PlayerInventory;
 import soc.code.multiplayerPackage.ClientSetup;
 
 /**
@@ -43,9 +44,9 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	public GUI(Board gameBoard, ClientSetup clientManager, boolean isHost) {
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(Tile.TILE_WIDTH * 6, Tile.TILE_WIDTH * 6);
+		this.setSize(Tile.TILE_WIDTH * 6 + PlayerInventory.WIDTH, Tile.TILE_WIDTH * 6);
 		this.setTitle("Stettlers of Catan");
-		this.setResizable(false);
+		//this.setResizable(false);
 
 		this.isHostGUI = isHost;
 		this.clientManager = clientManager;

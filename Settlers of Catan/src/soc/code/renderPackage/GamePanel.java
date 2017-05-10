@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.BuildSite;
+import soc.code.logicPackage.Player.PlayerInventory;
 import soc.code.logicPackage.Tile;
 import soc.code.multiplayerPackage.ClientSetup;
 
@@ -132,6 +133,20 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 		// drawing the numbers on top of the tiles:
 		this.drawTileNumbers(g);
+
+		// drawing the player inventories on the client's screen.
+		this.drawPlayerInventories(g);
+	}
+
+	/**
+	 * Draws the inventories of the players towards the left side of the screen
+	 * in order that they connected.
+	 */
+	public void drawPlayerInventories(Graphics g) {
+		// drawing the inventory of each player.
+		for (int i = 0; i < clientManager.getAllPlayers().length; i++)
+			clientManager.getAllPlayers()[i].getInventory().paint(g, this.getWidth() - PlayerInventory.WIDTH,
+					PlayerInventory.HEIGHT * i);
 	}
 
 	private void drawRoads(Graphics g, ArrayList<ArrayList<BuildSite>> sites) {

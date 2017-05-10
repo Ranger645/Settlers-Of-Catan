@@ -1,6 +1,7 @@
 package soc.code.logicPackage;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -18,6 +19,11 @@ public class Player {
 	public Player(String username) {
 		this.username = username;
 		preferedColor = Color.BLACK;
+		inventory = new PlayerInventory();
+	}
+
+	public PlayerInventory getInventory() {
+		return inventory;
 	}
 
 	public void setPreferedColor(int r, int g, int b) {
@@ -103,15 +109,33 @@ public class Player {
 	/**
 	 * @author fossg This class is for keeping track of all the things
 	 */
-	private class PlayerInventory {
+	public class PlayerInventory {
 
 		// Resource cards will be stored as different amounts of each type. Each
 		// type will be stored in this array under their type index. Wood = 0,
 		// Wheat = 1, Sheep = 2, Brick = 3, Ore = 4.
 		private int[] numOfResourceCards = null;
+		
+		public static final int WIDTH = 300;
+		public static final int HEIGHT = 100;
 
 		public PlayerInventory() {
 			numOfResourceCards = new int[5];
+		}
+
+		/**
+		 * Paints the players inventory at the given point on the given graphics
+		 * object.
+		 * 
+		 * @param g
+		 * @param x
+		 * @param y
+		 */
+		public void paint(Graphics g, int x, int y) {
+			g.setColor(preferedColor);
+			g.fillRect(x, y, WIDTH, HEIGHT);
+			g.setColor(Color.GRAY);
+			g.drawString(getUsername(), x + 5, y + 20);
 		}
 
 	}
