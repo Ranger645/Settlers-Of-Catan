@@ -11,6 +11,10 @@ public class Player {
 	private String username = "";
 	private Color preferedColor = null;
 
+	// this is the inventory of this player that will store all of its resource
+	// cards and development cards and victory point counter.
+	private PlayerInventory inventory = null;
+
 	public Player(String username) {
 		this.username = username;
 		preferedColor = Color.BLACK;
@@ -94,6 +98,22 @@ public class Player {
 			equal = false;
 
 		return equal;
+	}
+
+	/**
+	 * @author fossg This class is for keeping track of all the things
+	 */
+	private class PlayerInventory {
+
+		// Resource cards will be stored as different amounts of each type. Each
+		// type will be stored in this array under their type index. Wood = 0,
+		// Wheat = 1, Sheep = 2, Brick = 3, Ore = 4.
+		private int[] numOfResourceCards = null;
+
+		public PlayerInventory() {
+			numOfResourceCards = new int[5];
+		}
+
 	}
 
 }
