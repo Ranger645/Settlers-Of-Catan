@@ -357,7 +357,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 								null);
 						break;
 					case DESERT:
-						g.drawImage(Tile.getT_WheatImage(),
+						g.drawImage(Tile.getT_DesertImage(),
 								(int) ((currentXRow += Tile.TILE_WIDTH) + tileZeroPoint.getX() - Tile.TILE_WIDTH / 2),
 								(int) (STARTING_Y + (i + 2) * 3 * Tile.TILE_HEIGHT / 4 + tileZeroPoint.getY()
 										- Tile.TILE_HEIGHT / 2),

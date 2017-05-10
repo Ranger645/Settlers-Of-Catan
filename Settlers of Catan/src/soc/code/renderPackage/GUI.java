@@ -131,6 +131,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	 */
 	public void closeIO() {
 		IOStatus = 0;
+		rollDice.setEnabled(false);
 		buildSettlement.setEnabled(false);
 		buildCity.setEnabled(false);
 		buildRoad.setEnabled(false);
@@ -323,7 +324,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	public void playDevCard() {
 		// if the card is successfully played, then the button is disabled
 		// because only one card can be played per turn.
-		playDevCard.setEnabled(false);
+		//playDevCard.setEnabled(false);
 	}
 
 	/**
