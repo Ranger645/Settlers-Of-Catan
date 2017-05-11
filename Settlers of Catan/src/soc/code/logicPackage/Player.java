@@ -1,7 +1,11 @@
 package soc.code.logicPackage;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -28,6 +32,7 @@ public class Player {
 
 	public void setPreferedColor(int r, int g, int b) {
 		preferedColor = new Color(r, g, b);
+		inventory = new PlayerInventory();
 	}
 
 	public Color getPreferedColor() {
@@ -107,7 +112,9 @@ public class Player {
 	}
 
 	/**
-	 * @author fossg This class is for keeping track of all the things
+	 * This class is for keeping track of all the things
+	 * 
+	 * @author fossg
 	 */
 	public class PlayerInventory {
 
@@ -116,15 +123,40 @@ public class Player {
 		// Wheat = 1, Sheep = 2, Brick = 3, Ore = 4.
 		private int[] numOfResourceCards = null;
 
-		public int[] getNumOfResourceCards() {
-			return numOfResourceCards;
-		}
+		// The background image that will be drawn as the backdrop to the
+		// player's inventory.
+		private BufferedImage inventoryBackground = null;
 
 		public static final int WIDTH = 300;
-		public static final int HEIGHT = 100;
+		public static final int HEIGHT = 120;
 
 		public PlayerInventory() {
 			numOfResourceCards = new int[5];
+
+			// initializing the image and the graphics to edit the background
+			// image.
+			inventoryBackground = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g2 = (Graphics2D) inventoryBackground.getGraphics();
+
+			Color generalColor = null;
+			int rgbSum = getPreferedColor().getBlue() + getPreferedColor().getGreen() + getPreferedColor().getRed();
+			if (rgbSum < 255 * 3 / 2)
+				generalColor = Color.WHITE;
+			else
+				generalColor = Color.BLACK;
+
+			g2.setColor(generalColor);
+			g2.fillRect(0, 0, WIDTH, HEIGHT);
+
+			int backInset = 4;
+			g2.setColor(getPreferedColor());
+			g2.fillRect(backInset, backInset, WIDTH - backInset * 2, HEIGHT - backInset * 2);
+
+			g2.setColor(generalColor);
+			g2.setFont(new Font("arial", Font.PLAIN, 16));
+			g2.drawString(getUsername(), 5, 20);
+			g2.setStroke(new BasicStroke(backInset));
+			g2.drawLine(0, 20 + backInset + 2, WIDTH, 20 + backInset + 2);
 		}
 
 		/**
@@ -136,12 +168,12 @@ public class Player {
 		 * @param y
 		 */
 		public void paint(Graphics g, int x, int y) {
-			g.setColor(preferedColor);
-			g.fillRect(x, y, WIDTH, HEIGHT);
-			g.setColor(Color.GRAY);
-			g.drawString(getUsername(), x + 5, y + 20);
+			g.drawImage(inventoryBackground, x, y, null);
 		}
 
+		public int[] getNumOfResourceCards() {
+			return numOfResourceCards;
+		}
 	}
 
 }

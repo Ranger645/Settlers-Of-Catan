@@ -149,7 +149,7 @@ public class HostSetup extends Thread {
 		}
 	}
 
-	// the while loop that will wait for a new client to connect and then store
+	// The while loop that will wait for a new client to connect and then store
 	// their information to be playable with.
 	private void searchForClientConnections() {
 		while (keepSearching) {
