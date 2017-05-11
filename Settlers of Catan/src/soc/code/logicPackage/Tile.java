@@ -25,6 +25,13 @@ public class Tile {
 	private static BufferedImage t_WheatImage;
 	private static BufferedImage t_DesertImage;
 
+	private static BufferedImage c_WoodImage;
+	private static BufferedImage c_BrickImage;
+	private static BufferedImage c_OreImage;
+	private static BufferedImage c_SheepImage;
+	private static BufferedImage c_WheatImage;
+	private static BufferedImage c_CardBackImage;
+
 	protected RESOURCE_TYPE type;
 	// this is the numeber that the dice needs to be rolled to gain this
 	// resource. If this tile is a desert then this number is -1
@@ -57,6 +64,13 @@ public class Tile {
 			t_BrickImage = ImageIO.read(new File("resources\\images\\tile_Brick.png"));
 			t_OreImage = ImageIO.read(new File("resources\\images\\tile_Ore.png"));
 			t_DesertImage = ImageIO.read(new File("resources\\images\\tile_Desert.png"));
+
+			c_WoodImage = ImageIO.read(new File("resources\\images\\card_Wood.png"));
+			c_WheatImage = ImageIO.read(new File("resources\\images\\card_Wheat.png"));
+			c_SheepImage = ImageIO.read(new File("resources\\images\\card_Sheep.png"));
+			c_BrickImage = ImageIO.read(new File("resources\\images\\card_Brick.png"));
+			c_OreImage = ImageIO.read(new File("resources\\images\\card_Ore.png"));
+			c_CardBackImage = ImageIO.read(new File("resources\\images\\card_DefaultBacking.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.out.println("[ERROR] Unable to read tile image file.");
@@ -134,6 +148,30 @@ public class Tile {
 
 	public static BufferedImage getT_DesertImage() {
 		return t_DesertImage;
+	}
+
+	public static BufferedImage getC_WoodImage() {
+		return c_WoodImage;
+	}
+
+	public static BufferedImage getC_BrickImage() {
+		return c_BrickImage;
+	}
+
+	public static BufferedImage getC_OreImage() {
+		return c_OreImage;
+	}
+
+	public static BufferedImage getC_SheepImage() {
+		return c_SheepImage;
+	}
+
+	public static BufferedImage getC_WheatImage() {
+		return c_WheatImage;
+	}
+
+	public static BufferedImage getC_CardBackImage() {
+		return c_CardBackImage;
 	}
 
 	public static int getTileWidth() {
