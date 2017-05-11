@@ -151,7 +151,7 @@ public class ClientConnection extends Thread {
 	 * to each of the clients with the updated inventory. It is used if a client
 	 * builds somthing or when the dice is rolled.
 	 */
-	private void updateServerWidePlayerInventory() {
+	public void updateServerWidePlayerInventory() {
 		// going through each client and updating each of their copies of this
 		// players inventory including the client who owns this player.
 		for (ClientConnection i : hostManager.getClientConnections())

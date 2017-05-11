@@ -138,9 +138,6 @@ public class GameRuntime {
 				hostManager.broadcast("It is now "
 						+ hostManager.getClientConnections().get(currentPlayer).getPlayer().getUsername() + "'s turn.");
 
-				// rolling two six sided dice:
-				int diceRoll = Die.getDiceRoll(2, 6);
-
 				// Telling the host manager to start the given players turn and
 				// wait for it to be done while constantly updating the main
 				// game board with the same values that the client is sending to

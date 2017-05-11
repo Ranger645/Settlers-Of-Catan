@@ -6,7 +6,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import soc.code.logicPackage.Board;
-import soc.code.logicPackage.Player;
+import soc.code.logicPackage.BuildSite;
+import soc.code.logicPackage.Die;
+import soc.code.logicPackage.Tile;
 import soc.code.renderPackage.GUI;
 
 /**
@@ -74,8 +76,9 @@ public class HostSetup extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		
-		System.out.println("The Dice have been rolled.");
+
+		// actually doing the dice roll process.
+		doDiceRoll(playerIndex);
 
 		// Telling the client that it is their turn.
 		clientConnectionList.get(playerIndex).startTurn();
@@ -89,6 +92,46 @@ public class HostSetup extends Thread {
 		// sending the board that is stored in that client to the board that is
 		// kept on the server.
 		return clientConnectionList.get(playerIndex).getGameBoard();
+	}
+
+	/**
+	 * Rolls the dice for the turn and distributes resources to each of the
+	 * players.
+	 */
+	private void doDiceRoll(int playerIndex) {
+		// rolling two six sided dice:
+		int diceRoll = Die.getDiceRoll(2, 6);
+
+		// broadcasting the dice roll.
+		broadcast(clientConnectionList.get(playerIndex).getPlayer().getUsername() + " has rolled a " + diceRoll + ".");
+
+		// distibuting the resources to the players:
+		ArrayList<ArrayList<Tile>> tileArray = gameBoard.getTileArray();
+
+		for (int i = 0; i < tileArray.size(); i++)
+			for (int n = 0; n < tileArray.get(i).size(); n++)
+				if (tileArray.get(i).get(n).getResourceNumber() == diceRoll)
+					// then this tile's number has been rolled and all build
+					// sites must have their corresponding player awarded with
+					// the resource on this build site.
+					for (BuildSite site : tileArray.get(i).get(n).getTileBuildSites())
+					// going through each of the build sites around the
+					// appropriate tile.
+					if (site.getBuildingType() == 1) {
+					// then there is a settlemnt on this one.
+					clientConnectionList.get(site.getPlayerID()).getPlayer().getInventory().getNumOfResourceCards()[tileArray.get(i).get(n).toTypeValue()]++;
+					broadcast(clientConnectionList.get(site.getPlayerID()).getPlayer().getUsername() + " has a Settlment on a " + diceRoll + " , so they get a " + tileArray.get(i).get(n).toString() + ".");
+					} else if (site.getBuildingType() == 2) {
+					// then there is a city on this one.
+					clientConnectionList.get(site.getPlayerID()).getPlayer().getInventory().getNumOfResourceCards()[tileArray.get(i).get(n).toTypeValue()] += 2;
+					broadcast(clientConnectionList.get(site.getPlayerID()).getPlayer().getUsername() + " has a Settlment on a " + diceRoll + " , so they get two " + tileArray.get(i).get(n).toString() + ".");
+					}
+
+		// now it has to send all of the updated inventories to all of the
+		// clients.
+		for (ClientConnection connection : clientConnectionList)
+			connection.updateServerWidePlayerInventory();
+
 	}
 
 	/**
