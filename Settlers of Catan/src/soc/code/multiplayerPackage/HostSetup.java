@@ -294,8 +294,6 @@ public class HostSetup extends Thread {
 
 	public void updateAllBuildSites(int clientThatIsUpdating) {
 		// setting the board on the server to have the same build sites.
-		System.out.println("Updating Build Sites.");
-		broadcast("Updating Build Sites.");
 		gameBoard.overwriteBuildSites(clientConnectionList.get(clientThatIsUpdating).getGameBoard().getBuildSites());
 		for (int i = 0; i < clientConnectionList.size(); i++)
 			if (i != clientThatIsUpdating)
@@ -324,7 +322,6 @@ public class HostSetup extends Thread {
 	 * @param y
 	 */
 	public void updateSingleBuildSite(int clientThatIsUpdating, int x, int y) {
-		broadcast("Updating Build site at (" + x + ", " + y + ").");
 		for (int i = 0; i < clientConnectionList.size(); i++)
 			if (i != clientThatIsUpdating)
 				// sending the updated build site.
