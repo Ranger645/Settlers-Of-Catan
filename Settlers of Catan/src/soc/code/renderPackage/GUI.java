@@ -374,6 +374,8 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 				;
 			else if (e.getSource() == playDevCard)
 				playDevCard();
+		
+		clientManager.sendPlayerInventory();
 	}
 
 	@Override

@@ -92,6 +92,16 @@ public class ClientSetup extends Thread {
 		// for what a client should do when a host sends a particular
 		// message to it. They will all be individual if statments.
 
+		// This means the server needs to updated the player specified in the
+		// incoming data.
+		if (data.contains("Player:")) {
+			// getting the index of the player to recieve:
+			int playerIndex = Integer.parseInt(data.substring(data.indexOf(":") + 1, data.indexOf(":") + 2));
+
+			// turning the recieved data into the updated player:
+			ConnectionHelper.recievePlayerInventory(allPlayers[playerIndex], data);
+		}
+
 		// This means that the client should now start the intro to their turn.
 		// It means the program will basically wait for the user to press the
 		// "roll dice button".
@@ -185,6 +195,14 @@ public class ClientSetup extends Thread {
 				+ localPlayer.getPreferedColor().getGreen() + "," + localPlayer.getPreferedColor().getBlue(),
 				clientSocket);
 		System.out.println("BIO file send.");
+	}
+
+	/**
+	 * Sends an updated version of the players inventory to the server so the
+	 * server can distribute it to the other clients.
+	 */
+	public void sendPlayerInventory() {
+		ConnectionHelper.sendPlayerInventory(localPlayer, playerIndex, clientSocket);
 	}
 
 	private void startGameProcess() {

@@ -82,6 +82,16 @@ public class ClientConnection extends Thread {
 	 */
 	public void doClientCommand(String data) {
 
+		// This means the client just built somthing or changed their resource
+		// number for some reason so they are sending their updated inventory:
+		if (data.contains("Player:")) {
+			// recieving the updated player:
+			ConnectionHelper.recievePlayerInventory(clientPlayer, data);
+
+			// broadcasting this updated player to all the other clients:
+			updateServerWidePlayerInventory();
+		}
+
 		// This means that the client has chosen to roll the dice and the server
 		// should continue to the normal phase of the client's turn.
 		if (data.equals("rolleddice")) {
@@ -134,6 +144,19 @@ public class ClientConnection extends Thread {
 			// then sending the other players:
 			sendOtherPlayers();
 		}
+	}
+
+	/**
+	 * Updates the inventory of this player on every client. It sends a message
+	 * to each of the clients with the updated inventory. It is used if a client
+	 * builds somthing or when the dice is rolled.
+	 */
+	private void updateServerWidePlayerInventory() {
+		// going through each client and updating each of their copies of this
+		// players inventory including the client who owns this player.
+		for (ClientConnection i : hostManager.getClientConnections())
+			ConnectionHelper.sendPlayerInventory(i.getPlayer(), hostManager.getClientConnections().indexOf(i),
+					i.getClientSocket());
 	}
 
 	/**

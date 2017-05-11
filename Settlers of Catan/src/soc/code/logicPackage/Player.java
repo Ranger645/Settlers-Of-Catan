@@ -115,7 +115,11 @@ public class Player {
 		// type will be stored in this array under their type index. Wood = 0,
 		// Wheat = 1, Sheep = 2, Brick = 3, Ore = 4.
 		private int[] numOfResourceCards = null;
-		
+
+		public int[] getNumOfResourceCards() {
+			return numOfResourceCards;
+		}
+
 		public static final int WIDTH = 300;
 		public static final int HEIGHT = 100;
 

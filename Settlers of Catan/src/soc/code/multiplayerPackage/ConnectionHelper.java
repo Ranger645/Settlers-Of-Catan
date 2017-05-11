@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.BuildSite;
+import soc.code.logicPackage.Player;
 
 /**
  * This class is for housing helper methods to assist in data spitting and data
@@ -17,6 +18,57 @@ import soc.code.logicPackage.BuildSite;
 public class ConnectionHelper {
 
 	// static ConsoleWindow CW = new ConsoleWindow();
+
+	/**
+	 * This method sends data for a player contained in a string to the given
+	 * socket. It also must have the index of the player. This method is used by
+	 * the server to update all of the clients' local arrays of players. It is
+	 * also used by the clients on their turns to update the server and all the
+	 * other clients' player arrays when they build somthing. The syntax for
+	 * sending a player is as follows:
+	 * Player:<index>,<numOfWood>,<numOfWheat>,<numOfSheep>,<numOfBrick>,<numOfOre>,<devcard1>,<devcard2>...<devcard(n)>|
+	 * 
+	 * @param p
+	 *            - the player to send
+	 * @param index
+	 *            - the index of the player to send
+	 * @param toSend
+	 *            - the socket to send the player to.
+	 */
+	public static void sendPlayerInventory(Player p, int index, Socket toSendSocket) {
+		// creating the message intro
+		String toSend = "Player:" + index + ",";
+
+		// adding the number of resources to the message
+		for (int i = 0; i < p.getInventory().getNumOfResourceCards().length; i++)
+			toSend += p.getInventory().getNumOfResourceCards()[i] + ",";
+
+		// adding the message terminator:
+		toSend += "|";
+	}
+
+	/**
+	 * This method updates the given player object with the data that is stored
+	 * in the data variable that just came in from a socket.
+	 * 
+	 * @param p
+	 *            - the player to update
+	 * @param data
+	 *            - the data that the player needs to have.
+	 */
+	public static void recievePlayerInventory(Player p, String data) {
+		// cutting off the initial identification message:
+		data = data.substring(data.indexOf(":") + 2);
+
+		// recieving the resources numbers:
+		for (int i = 0; i < p.getInventory().getNumOfResourceCards().length; i++) {
+			String nextValue = data.substring(0, data.indexOf(","));
+			data = data.substring(data.indexOf(",") + 1);
+			p.getInventory().getNumOfResourceCards()[i] = Integer.parseInt(nextValue);
+		}
+
+		// receiving the development cards:
+	}
 
 	/**
 	 * This method starts the tramsimssion with the user by sending the keyword
