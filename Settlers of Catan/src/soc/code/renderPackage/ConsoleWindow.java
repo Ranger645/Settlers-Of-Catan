@@ -18,6 +18,13 @@ import javax.swing.JTextField;
 
 import soc.code.runtimePackage.GameRuntime;
 
+/**
+ * This is the class I use as an independant console for each client. Eclipse
+ * can only have one client at a time so I had to make a new one to support
+ * multiple interfaces and clients connected to one server at one time.
+ * 
+ * @author Greg
+ */
 public class ConsoleWindow extends JFrame {
 
 	// box that the user types commands or chat into

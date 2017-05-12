@@ -11,6 +11,13 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * This is the player class. The player will be responsible for storing all
+ * biological info about the player including their name and color, as well as
+ * be able to load a player from a bio file and store thier inventory.
+ * 
+ * @author Greg
+ */
 public class Player {
 
 	private String username = "";

@@ -10,6 +10,13 @@ import soc.code.multiplayerPackage.HostSetup;
 import soc.code.renderPackage.ConsoleWindow;
 import soc.code.renderPackage.GUI;
 
+/**
+ * This is the main driver class of the program. It contains the main method as
+ * well as several private helper methods for doing different aspects of the
+ * game and so the main method doesn't get too cluttered.
+ * 
+ * @author Greg
+ */
 public class GameRuntime {
 
 	/* @formatter:off
@@ -182,7 +189,7 @@ public class GameRuntime {
 					gui.openDiceRollUI();
 				else if (clientManager.isTurn() && clientManager.areDiceRolled() && gui.getIOStatus() != 2)
 					gui.openTurnIO();
-				else if(gui.getIOStatus() != 0 && !clientManager.isTurn() && clientManager.areDiceRolled())
+				else if (gui.getIOStatus() != 0 && !clientManager.isTurn() && clientManager.areDiceRolled())
 					gui.closeIO();
 
 				// This is just responsible for constantly updating the

@@ -1,5 +1,12 @@
 package soc.code.logicPackage;
 
+/**
+ * This is the buildsite class. It is responsible for storing what is on and who
+ * is on a buildsite. It also contains methods for building different buildings
+ * and roads.
+ * 
+ * @author Greg
+ */
 public class BuildSite {
 
 	// These are points for determining where the build site is located in

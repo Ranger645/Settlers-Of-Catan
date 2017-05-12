@@ -1,5 +1,11 @@
 package soc.code.logicPackage;
 
+/**
+ * This is a dice helper class that contains methods for helping roll dice in
+ * different configurations.
+ * 
+ * @author Greg
+ */
 public class Die {
 
 	/**

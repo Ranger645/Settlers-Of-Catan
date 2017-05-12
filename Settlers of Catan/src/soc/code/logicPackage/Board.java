@@ -3,6 +3,14 @@ package soc.code.logicPackage;
 import java.awt.Point;
 import java.util.ArrayList;
 
+/**
+ * The board class' main function is to store the array of tiles and the array
+ * of build sites. Both will be multidimensional arraylists. It is also
+ * responsible for initializing the board either from scratch or overwriting its
+ * current build sites with updated ones.
+ * 
+ * @author Greg
+ */
 public class Board {
 
 	/*
