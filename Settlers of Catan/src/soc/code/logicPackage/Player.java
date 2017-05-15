@@ -168,14 +168,28 @@ public class Player {
 
 		/**
 		 * Paints the players inventory at the given point on the given graphics
-		 * object.
+		 * object. Only paints the faces of the cards if reveal cards equals
+		 * true.
 		 * 
 		 * @param g
 		 * @param x
 		 * @param y
+		 * @param revealCards
 		 */
-		public void paint(Graphics g, int x, int y) {
+		public void paint(Graphics g, int x, int y, boolean revealCards) {
+			// drawing the background of the inventory:
 			g.drawImage(inventoryBackground, x, y, null);
+
+			// drawing the data displaying how many cards each player has:
+			if (revealCards) {
+				// Drawing the faces of the cards if this is the player for this
+				// client.
+				
+			} else {
+				// Drawing the backs of the cards if this is another player
+				// besides the one for this client.
+				
+			}
 		}
 
 		public int[] getNumOfResourceCards() {

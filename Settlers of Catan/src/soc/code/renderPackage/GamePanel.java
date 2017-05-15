@@ -146,7 +146,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		// drawing the inventory of each player.
 		for (int i = 0; i < clientManager.getAllPlayers().length; i++)
 			clientManager.getAllPlayers()[i].getInventory().paint(g, this.getWidth() - PlayerInventory.WIDTH,
-					PlayerInventory.HEIGHT * i);
+					PlayerInventory.HEIGHT * i, clientManager.getAllPlayers()[i] == clientManager.getLocalPlayer());
 	}
 
 	private void drawRoads(Graphics g, ArrayList<ArrayList<BuildSite>> sites) {
