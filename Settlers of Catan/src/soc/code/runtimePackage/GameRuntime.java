@@ -126,7 +126,7 @@ public class GameRuntime {
 			// repainting:
 			gui.repaint();
 
-			// \\ MAIN GAME LOOP //\\
+			// \\ MAIN GAME LOOP // \\
 			int currentPlayer = 0;
 			int playerOrderTracker = 0;
 

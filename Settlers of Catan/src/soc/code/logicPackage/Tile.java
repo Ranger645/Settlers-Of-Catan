@@ -126,6 +126,39 @@ public class Tile {
 		return -1;
 	}
 
+	public static BufferedImage typeValueToCardImage(int val) {
+		switch (val) {
+		case 0:
+			return getC_WoodImage();
+		case 1:
+			return getC_WheatImage();
+		case 2:
+			return getC_BrickImage();
+		case 3:
+			return getC_SheepImage();
+		case 4:
+			return getC_OreImage();
+		}
+		return null;
+	}
+
+	public static BufferedImage typeValueToTileImage(int val) {
+		switch (val) {
+		case 0:
+			return getT_WoodImage();
+		case 1:
+			return getT_WheatImage();
+		case 2:
+			return getT_BrickImage();
+		case 3:
+			return getT_SheepImage();
+		case 4:
+			return getT_OreImage();
+		default:
+			return getT_DesertImage();
+		}
+	}
+
 	public static BufferedImage getT_WoodImage() {
 		return t_WoodImage;
 	}

@@ -179,17 +179,37 @@ public class Player {
 		public void paint(Graphics g, int x, int y, boolean revealCards) {
 			// drawing the background of the inventory:
 			g.drawImage(inventoryBackground, x, y, null);
+			int cardStartX = 6 + x;
+			int cardY = 30 + y;
+
+			System.out.println("My Cards:");
+			for (int i = 0; i < numOfResourceCards.length; i++)
+				System.out.println(i + ") " + numOfResourceCards[i]);
 
 			// drawing the data displaying how many cards each player has:
 			if (revealCards) {
 				// Drawing the faces of the cards if this is the player for this
 				// client.
-				
+				int cardX = cardStartX;
+				for (int i = 0; i < numOfResourceCards.length; i++)
+					for (int n = 0; n < numOfResourceCards[i]; n++) {
+						g.drawImage(Tile.typeValueToCardImage(i), cardX, cardY, null);
+						cardStartX += Tile.getC_CardBackImage().getWidth() + 2;
+					}
 			} else {
 				// Drawing the backs of the cards if this is another player
 				// besides the one for this client.
-				
+				int cardX = cardStartX;
+				for (int i = 0; i < numOfResourceCards.length; i++)
+					for (int n = 0; n < numOfResourceCards[i]; n++) {
+						g.drawImage(Tile.getC_CardBackImage(), cardX, cardY, null);
+						cardStartX += Tile.getC_CardBackImage().getWidth() + 2;
+					}
 			}
+		}
+
+		public void setNumResourceCard(int cardValue, int numOfCards) {
+			numOfResourceCards[cardValue] = numOfCards;
 		}
 
 		public int[] getNumOfResourceCards() {

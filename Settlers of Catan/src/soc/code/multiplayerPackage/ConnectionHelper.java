@@ -25,8 +25,9 @@ public class ConnectionHelper {
 	 * the server to update all of the clients' local arrays of players. It is
 	 * also used by the clients on their turns to update the server and all the
 	 * other clients' player arrays when they build somthing. The syntax for
-	 * sending a player is as follows:
-	 * Player:<index>,<numOfWood>,<numOfWheat>,<numOfSheep>,<numOfBrick>,<numOfOre>,<devcard1>,<devcard2>...<devcard(n)>|
+	 * sending a player is as follows: Player:<index>,<numOfWood>,<numOfWheat>,
+	 * <numOfSheep>,<numOfBrick>,<numOfOre>,<devcard1>,<devcard2>...
+	 * <devcard(n)>|
 	 * 
 	 * @param p
 	 *            - the player to send
@@ -64,7 +65,7 @@ public class ConnectionHelper {
 		for (int i = 0; i < p.getInventory().getNumOfResourceCards().length; i++) {
 			String nextValue = data.substring(0, data.indexOf(","));
 			data = data.substring(data.indexOf(",") + 1);
-			p.getInventory().getNumOfResourceCards()[i] = Integer.parseInt(nextValue);
+			p.getInventory().setNumResourceCard(i, Integer.parseInt(nextValue));
 		}
 
 		// receiving the development cards:

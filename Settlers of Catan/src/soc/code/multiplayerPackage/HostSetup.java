@@ -111,7 +111,7 @@ public class HostSetup extends Thread {
 		for (int i = 0; i < tileArray.size(); i++)
 			for (int n = 0; n < tileArray.get(i).size(); n++)
 				if (tileArray.get(i).get(n).getResourceNumber() == diceRoll)
-					// then this tile's number has been rolled and all build
+					// Then this tile's number has been rolled and all build
 					// sites must have their corresponding player awarded with
 					// the resource on this build site.
 					for (BuildSite site : tileArray.get(i).get(n).getTileBuildSites())
