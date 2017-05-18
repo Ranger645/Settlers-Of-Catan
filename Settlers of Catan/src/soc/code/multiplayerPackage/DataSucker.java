@@ -37,8 +37,9 @@ public class DataSucker extends Thread {
 				buildSiteMessages.add(line.substring(2));
 			} else
 				suckedCommands.add(line);
+			
 			try {
-				this.sleep(2);
+				Thread.sleep(20);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

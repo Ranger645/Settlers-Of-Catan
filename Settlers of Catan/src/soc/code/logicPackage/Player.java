@@ -180,30 +180,52 @@ public class Player {
 			// drawing the background of the inventory:
 			g.drawImage(inventoryBackground, x, y, null);
 			int cardStartX = 6 + x;
-			int cardY = 30 + y;
+			int cardY = 32 + y;
 
-//			System.out.println("My Cards:");
-//			for (int i = 0; i < numOfResourceCards.length; i++)
-//				System.out.println(i + ") " + numOfResourceCards[i]);
+			// System.out.println("My Cards:");
+			// for (int i = 0; i < numOfResourceCards.length; i++)
+			// System.out.println(i + ") " + numOfResourceCards[i]);
 
 			// drawing the data displaying how many cards each player has:
 			if (revealCards) {
-				// Drawing the faces of the cards if this is the player for this
-				// client.
+				// counting the number of cards that have to be drawn in the
+				// inventory:
+				int numberOfCards = 0;
+				for (int i = 0; i < numOfResourceCards.length; i++)
+					for (int n = 0; n < numOfResourceCards[i]; n++)
+						numberOfCards++;
+				
+				//distance in between x values of cards equals (totalWidth - cardwidth)/(card# - 1)
+				int xDistance = (WIDTH - 10) - Tile.getC_CardBackImage().getWidth();
+				xDistance /= numberOfCards - 1;
+
+				// Drawing the backs of the cards if this is another player
+				// besides the one for this client.
 				int cardX = cardStartX;
 				for (int i = 0; i < numOfResourceCards.length; i++)
 					for (int n = 0; n < numOfResourceCards[i]; n++) {
 						g.drawImage(Tile.typeValueToCardImage(i), cardX, cardY, null);
-						cardStartX += Tile.getC_CardBackImage().getWidth() + 2;
+						cardX += xDistance;
 					}
 			} else {
+				// counting the number of cards that have to be drawn in the
+				// inventory:
+				int numberOfCards = 0;
+				for (int i = 0; i < numOfResourceCards.length; i++)
+					for (int n = 0; n < numOfResourceCards[i]; n++)
+						numberOfCards++;
+				
+				//distance in between x values of cards equals (totalWidth - cardwidth)/(card# - 1)
+				int xDistance = (WIDTH - 10) - Tile.getC_CardBackImage().getWidth();
+				xDistance /= numberOfCards - 1;
+
 				// Drawing the backs of the cards if this is another player
 				// besides the one for this client.
 				int cardX = cardStartX;
 				for (int i = 0; i < numOfResourceCards.length; i++)
 					for (int n = 0; n < numOfResourceCards[i]; n++) {
 						g.drawImage(Tile.getC_CardBackImage(), cardX, cardY, null);
-						cardStartX += Tile.getC_CardBackImage().getWidth() + 2;
+						cardX += xDistance;
 					}
 			}
 		}
