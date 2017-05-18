@@ -182,9 +182,9 @@ public class Player {
 			int cardStartX = 6 + x;
 			int cardY = 30 + y;
 
-			System.out.println("My Cards:");
-			for (int i = 0; i < numOfResourceCards.length; i++)
-				System.out.println(i + ") " + numOfResourceCards[i]);
+//			System.out.println("My Cards:");
+//			for (int i = 0; i < numOfResourceCards.length; i++)
+//				System.out.println(i + ") " + numOfResourceCards[i]);
 
 			// drawing the data displaying how many cards each player has:
 			if (revealCards) {

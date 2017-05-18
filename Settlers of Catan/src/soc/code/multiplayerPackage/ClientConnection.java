@@ -154,9 +154,10 @@ public class ClientConnection extends Thread {
 	public void updateServerWidePlayerInventory() {
 		// going through each client and updating each of their copies of this
 		// players inventory including the client who owns this player.
-		for (ClientConnection i : hostManager.getClientConnections())
+		for (ClientConnection i : hostManager.getClientConnections()) 
 			ConnectionHelper.sendPlayerInventory(i.getPlayer(), hostManager.getClientConnections().indexOf(i),
-					i.getClientSocket());
+					this.getClientSocket());
+		
 	}
 
 	/**

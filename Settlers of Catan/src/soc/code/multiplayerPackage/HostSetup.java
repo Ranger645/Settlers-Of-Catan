@@ -105,6 +105,15 @@ public class HostSetup extends Thread {
 		// broadcasting the dice roll.
 		broadcast(clientConnectionList.get(playerIndex).getPlayer().getUsername() + " has rolled a " + diceRoll + ".");
 
+		// sleeping this thread so the next message does not get tangled with
+		// the previous one.
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		// distibuting the resources to the players:
 		ArrayList<ArrayList<Tile>> tileArray = gameBoard.getTileArray();
 
@@ -118,13 +127,19 @@ public class HostSetup extends Thread {
 					// going through each of the build sites around the
 					// appropriate tile.
 					if (site.getBuildingType() == 1) {
+
 					// then there is a settlemnt on this one.
-					clientConnectionList.get(site.getPlayerID()).getPlayer().getInventory().getNumOfResourceCards()[tileArray.get(i).get(n).toTypeValue()]++;
+					int currentValue = clientConnectionList.get(site.getPlayerID()).getPlayer().getInventory().getNumOfResourceCards()[tileArray.get(i).get(n).toTypeValue()];
+					clientConnectionList.get(site.getPlayerID()).getPlayer().getInventory().setNumResourceCard(tileArray.get(i).get(n).toTypeValue(), currentValue + 1);
 					broadcast(clientConnectionList.get(site.getPlayerID()).getPlayer().getUsername() + " has a Settlment on a " + diceRoll + " , so they get a " + tileArray.get(i).get(n).toString() + ".");
+
 					} else if (site.getBuildingType() == 2) {
+
 					// then there is a city on this one.
-					clientConnectionList.get(site.getPlayerID()).getPlayer().getInventory().getNumOfResourceCards()[tileArray.get(i).get(n).toTypeValue()] += 2;
-					broadcast(clientConnectionList.get(site.getPlayerID()).getPlayer().getUsername() + " has a Settlment on a " + diceRoll + " , so they get two " + tileArray.get(i).get(n).toString() + ".");
+					int currentValue = clientConnectionList.get(site.getPlayerID()).getPlayer().getInventory().getNumOfResourceCards()[tileArray.get(i).get(n).toTypeValue()];
+					clientConnectionList.get(site.getPlayerID()).getPlayer().getInventory().setNumResourceCard(tileArray.get(i).get(n).toTypeValue(), currentValue + 2);
+					broadcast(clientConnectionList.get(site.getPlayerID()).getPlayer().getUsername() + " has a Settlment on a " + diceRoll + " , so they get two " + tileArray.get(i).get(n).toString() + "s .");
+
 					}
 
 		// now it has to send all of the updated inventories to all of the

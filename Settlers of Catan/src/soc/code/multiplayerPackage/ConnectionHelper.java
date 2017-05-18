@@ -46,6 +46,7 @@ public class ConnectionHelper {
 
 		// adding the message terminator:
 		toSend += "|";
+		printString(toSend, toSendSocket);
 	}
 
 	/**
@@ -59,7 +60,9 @@ public class ConnectionHelper {
 	 */
 	public static void recievePlayerInventory(Player p, String data) {
 		// cutting off the initial identification message:
-		data = data.substring(data.indexOf(":") + 2);
+		data = data.substring(data.indexOf(",") + 1);
+		
+		System.out.println("Recieving Player Inventory..." + data);
 
 		// recieving the resources numbers:
 		for (int i = 0; i < p.getInventory().getNumOfResourceCards().length; i++) {
