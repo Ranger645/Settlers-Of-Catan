@@ -115,9 +115,9 @@ public class Tile {
 		case WHEAT:
 			return 1;
 		case BRICK:
-			return 3;
-		case SHEEP:
 			return 2;
+		case SHEEP:
+			return 3;
 		case ORE:
 			return 4;
 		case DESERT:

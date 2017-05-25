@@ -18,6 +18,7 @@ import soc.code.logicPackage.Player;
 public class ConnectionHelper {
 
 	// static ConsoleWindow CW = new ConsoleWindow();
+	private static boolean sendingData = false;
 
 	/**
 	 * This method sends data for a player contained in a string to the given
@@ -61,7 +62,7 @@ public class ConnectionHelper {
 	public static void recievePlayerInventory(Player p, String data) {
 		// cutting off the initial identification message:
 		data = data.substring(data.indexOf(",") + 1);
-		
+
 		System.out.println("Recieving Player Inventory..." + data);
 
 		// recieving the resources numbers:
@@ -284,10 +285,27 @@ public class ConnectionHelper {
 	 */
 	public static void printString(String toPrint, Socket s) {
 		try {
+
+			while (sendingData)
+				Thread.sleep(5);
+
+			sendingData = true;
 			for (int i = 0; i < toPrint.length(); i++)
 				// sending each individual character in ascii format:
 				s.getOutputStream().write((int) toPrint.charAt(i));
 			s.getOutputStream().write('\n');
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private static void sendTerminationChar(Socket s) {
+		try {
+			s.getOutputStream().write(178);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -305,14 +323,20 @@ public class ConnectionHelper {
 			// The data is sent as integer values of the ascii representation of
 			// each character of data. So these integers must be converted back
 			// into letters in ascii format which is done here:
+
 			char currentValue;
 			do {
 				currentValue = (char) s.getInputStream().read();
-				readString += currentValue;
+				if (currentValue == (char) 178)
+					sendingData = false;
+				else
+					readString += currentValue;
 			} while (currentValue != '\n');
 			// Chopping off the endline character at the end of the data
 			// message.
 			readString = readString.substring(0, readString.length() - 1);
+			sendTerminationChar(s);
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -133,16 +133,14 @@ public class ClientConnection extends Thread {
 
 		// Then the client has pressed ready and is now ready to start the game.
 		if (data.equals("ready")) {
-			System.out.println("Player " + clientPlayer.getUsername() + " is ready.");
-			// hostManager.broadcast("//Player " + clientPlayer.getUsername() +
-			// " is ready.");
-			isReady = true;
-
 			// initializing the client's board object by sending the hosts.
 			sendBoardTiles(gameBoard);
 
 			// then sending the other players:
 			sendOtherPlayers();
+			
+			System.out.println("Player " + clientPlayer.getUsername() + " is ready.");
+			isReady = true;
 		}
 	}
 

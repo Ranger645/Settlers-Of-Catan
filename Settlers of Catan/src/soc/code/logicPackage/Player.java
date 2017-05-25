@@ -194,10 +194,15 @@ public class Player {
 				for (int i = 0; i < numOfResourceCards.length; i++)
 					for (int n = 0; n < numOfResourceCards[i]; n++)
 						numberOfCards++;
-				
-				//distance in between x values of cards equals (totalWidth - cardwidth)/(card# - 1)
-				int xDistance = (WIDTH - 10) - Tile.getC_CardBackImage().getWidth();
-				xDistance /= numberOfCards - 1;
+
+				int xDistance = 0;
+
+				if (numberOfCards == 1)
+					cardStartX += WIDTH / 2 - Tile.getC_CardBackImage().getWidth() / 2;
+				else
+					// distance in between x values of cards equals (totalWidth
+					// - cardwidth)/(card# - 1)
+					xDistance = ((WIDTH - 10) - Tile.getC_CardBackImage().getWidth()) / (numberOfCards - 1);
 
 				// Drawing the backs of the cards if this is another player
 				// besides the one for this client.
@@ -214,10 +219,15 @@ public class Player {
 				for (int i = 0; i < numOfResourceCards.length; i++)
 					for (int n = 0; n < numOfResourceCards[i]; n++)
 						numberOfCards++;
-				
-				//distance in between x values of cards equals (totalWidth - cardwidth)/(card# - 1)
-				int xDistance = (WIDTH - 10) - Tile.getC_CardBackImage().getWidth();
-				xDistance /= numberOfCards - 1;
+
+				int xDistance = 0;
+
+				if (numberOfCards == 1)
+					cardStartX += WIDTH / 2 - Tile.getC_CardBackImage().getWidth() / 2;
+				else
+					// distance in between x values of cards equals (totalWidth
+					// - cardwidth)/(card# - 1)
+					xDistance = ((WIDTH - 10) - Tile.getC_CardBackImage().getWidth()) / (numberOfCards - 1);
 
 				// Drawing the backs of the cards if this is another player
 				// besides the one for this client.
