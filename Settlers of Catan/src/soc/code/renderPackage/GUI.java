@@ -176,7 +176,6 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		do {
 			// waiting for the user to pick the road.
 			while (mainPanel.getSelectedBuildSite() == roadStartSite && selectingRoad) {
-				System.out.println("Waiting...");
 				try {
 					Thread.sleep(200);
 				} catch (InterruptedException e) {

@@ -63,8 +63,6 @@ public class ConnectionHelper {
 		// cutting off the initial identification message:
 		data = data.substring(data.indexOf(",") + 1);
 
-		System.out.println("Recieving Player Inventory..." + data);
-
 		// recieving the resources numbers:
 		for (int i = 0; i < p.getInventory().getNumOfResourceCards().length; i++) {
 			String nextValue = data.substring(0, data.indexOf(","));
@@ -261,8 +259,6 @@ public class ConnectionHelper {
 
 		int right = Integer.parseInt(buildSiteCommand.substring(0, buildSiteCommand.indexOf("|")));
 
-		System.out.println("(" + left + ", " + middle + ", " + right + ")");
-
 		// changing the values inside of the build site array.
 		currentBuildSites.get(y).get(x).setPlayerID(playerID);
 		currentBuildSites.get(y).get(x).setBuildingType(buildingType);
@@ -303,6 +299,14 @@ public class ConnectionHelper {
 		}
 	}
 
+	/**
+	 * Sends the ascii character for index 178 to the given socket. This is used
+	 * when the reciever of data is finished recieving the transmission from the
+	 * user.
+	 * 
+	 * @param s
+	 *            - the socket to send the termination character to.
+	 */
 	private static void sendTerminationChar(Socket s) {
 		try {
 			s.getOutputStream().write(178);
