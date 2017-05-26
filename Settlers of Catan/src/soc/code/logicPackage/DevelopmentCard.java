@@ -8,5 +8,18 @@ package soc.code.logicPackage;
  * @author Greg
  */
 public class DevelopmentCard {
+	
+	protected String name = "";
 
+	public DevelopmentCard(String name){
+		this.name = name;
+	}
+	
+	/**
+	 * Plays the development card
+	 */
+	public void playCard(){
+		
+	}
+	
 }
