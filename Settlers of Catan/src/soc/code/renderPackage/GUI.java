@@ -37,6 +37,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	private int IOStatus = 0; // 0 if all disabled, 1 if rolling dice, 2 if all
 								// enabled.
 	private JMenuItem buildSettlement, endTurn, buildCity, buildRoad, rollDice, buyDevCard, playDevCard = null;
+	private JMenuItem[] tradeButtons = null;
 
 	// keeps track of whether the user is in the process of selecting a road.
 	private boolean selectingRoad = false;
@@ -46,7 +47,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(Tile.TILE_WIDTH * 6 + PlayerInventory.WIDTH, Tile.TILE_WIDTH * 6);
 		this.setTitle("Stettlers of Catan");
-		//this.setResizable(false);
+		// this.setResizable(false);
 
 		this.isHostGUI = isHost;
 		this.clientManager = clientManager;
@@ -82,6 +83,15 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 			endTurn = new JMenuItem("End Turn");
 			endTurn.addActionListener(this);
 
+			JMenu tradeMenu = new JMenu("Trade");
+			tradeButtons = new JMenuItem[clientManager.getAllPlayers().length];
+			for (int i = 0; i < tradeButtons.length; i++) {
+				tradeButtons[i] = new JMenuItem(
+						(i + 1) + ". Trade with " + clientManager.getAllPlayers()[i].getUsername());
+				tradeButtons[i].addActionListener(this);
+				tradeMenu.add(tradeButtons[i]);
+			}
+
 			this.addKeyListener(this);
 
 			commandMenu.add(buildSettlement);
@@ -93,6 +103,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 			commandMenu.add(endTurn);
 
 			menuBar.add(commandMenu);
+			menuBar.add(tradeMenu);
 
 			this.setJMenuBar(menuBar);
 
@@ -303,6 +314,18 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	}
 
 	/**
+	 * This method is called when the player wants to trade with one of the
+	 * players. The player to propose a trade to is given by the passed
+	 * playerIndex variable.
+	 * 
+	 * @param playerIndex
+	 *            - the player to propose a trade to.
+	 */
+	public void proposeTrade(int playerIndex) {
+		System.out.println("Proposing a trade with " + clientManager.getAllPlayers()[playerIndex].getUsername());
+	}
+
+	/**
 	 * Builds a city at the selected build site.
 	 */
 	public void buildCity() {
@@ -324,7 +347,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	public void playDevCard() {
 		// if the card is successfully played, then the button is disabled
 		// because only one card can be played per turn.
-		//playDevCard.setEnabled(false);
+		// playDevCard.setEnabled(false);
 	}
 
 	/**
@@ -357,7 +380,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 			else if (e.getSource() == playDevCard)
 				playDevCard();
 
-		if (IOStatus == 2)
+		if (IOStatus == 2) {
 			if (e.getSource() == buildSettlement)
 				buildSettlement();
 			else if (e.getSource() == endTurn)
@@ -367,13 +390,18 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 				buildCity();
 			else if (e.getSource() == buildRoad)
 				buildRoad();
-			else if (e.getSource() == rollDice)
-				clientManager.rollDice();
 			else if (e.getSource() == buyDevCard)
 				;
 			else if (e.getSource() == playDevCard)
 				playDevCard();
-		
+
+			// Checking to see if a trade button has been pressed and then
+			// opening the dialog to propose a trade to the user.
+			for (int i = 0; i < tradeButtons.length; i++)
+				if (e.getSource() == tradeButtons[i])
+					proposeTrade(Integer.parseInt(tradeButtons[i].getText().substring(0, 1)) - 1);
+		}
+
 		clientManager.sendPlayerInventory();
 	}
 
