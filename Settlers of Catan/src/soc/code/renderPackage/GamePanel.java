@@ -47,6 +47,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	private BuildSite hovoredBuildSite = null;
 
 	private final Color BACKGROUND_COLOR = new Color(68, 199, 255);
+	
+	private TradeGUI trader = null;
 
 	// constructor requires reference to board that will be generated.
 	public GamePanel(Board GB, ClientSetup clientManager) {
@@ -55,6 +57,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
+		
+		trader = new TradeGUI();
 
 		// setting the size and border spacing:
 		this.setSize(Tile.TILE_WIDTH * 6, Tile.TILE_WIDTH * 6);
@@ -136,6 +140,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 		// drawing the player inventories on the client's screen.
 		this.drawPlayerInventories(g);
+		
 	}
 
 	/**
@@ -471,6 +476,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		return BACKGROUND_COLOR;
 	}
 
+	public TradeGUI getTrader() {
+		return trader;
+	}
+	
 	public Board getGameBoard() {
 		return gameBoard;
 	}

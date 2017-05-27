@@ -90,6 +90,9 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 						(i + 1) + ". Trade with " + clientManager.getAllPlayers()[i].getUsername());
 				tradeButtons[i].addActionListener(this);
 				tradeMenu.add(tradeButtons[i]);
+				// Permenently disabling this player's own trade button.
+				if (clientManager.getAllPlayers()[i].getUsername().equals(clientManager.getLocalPlayer().getUsername()))
+					tradeButtons[i].setEnabled(false);
 			}
 
 			this.addKeyListener(this);
@@ -313,6 +316,10 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		}
 	}
 
+	public JFrame getThisFrame() {
+		return this;
+	}
+
 	/**
 	 * This method is called when the player wants to trade with one of the
 	 * players. The player to propose a trade to is given by the passed
@@ -321,8 +328,21 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	 * @param playerIndex
 	 *            - the player to propose a trade to.
 	 */
-	public void proposeTrade(int playerIndex) {
+	public void proposeTrade(final int playerIndex) {
 		System.out.println("Proposing a trade with " + clientManager.getAllPlayers()[playerIndex].getUsername());
+
+		Thread tradeThread = new Thread() {
+			public void run() {
+				int[] tradeValues = null;
+				if (mainPanel.getTrader().waitForSelection(clientManager.getAllPlayers()[playerIndex].getUsername(),
+						getThisFrame()))
+					tradeValues = mainPanel.getTrader().getCreatedTrade();
+				else
+					System.out.println("Trade Cancelled.");
+			}
+		};
+		tradeThread.start();
+
 	}
 
 	/**

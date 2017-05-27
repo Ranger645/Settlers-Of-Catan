@@ -125,6 +125,22 @@ public class Tile {
 		}
 		return -1;
 	}
+	
+	public static String idToString(int id){
+		switch (id) {
+		case 0:
+			return "Wood";
+		case 1:
+			return "Wheat";
+		case 2:
+			return "Sheep";
+		case 3:
+			return "Brick";
+		case 4:
+			return "Ore";
+		}
+		return "";
+	}
 
 	public static BufferedImage typeValueToCardImage(int val) {
 		switch (val) {
