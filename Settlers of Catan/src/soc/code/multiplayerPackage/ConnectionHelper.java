@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.BuildSite;
@@ -31,7 +32,7 @@ public class ConnectionHelper {
 		int[] intData = new int[12];
 		for (int i = 0; i < intData.length; i++) {
 			intData[i] = Integer.parseInt(data.substring(0, data.indexOf(",")));
-			data.substring(data.indexOf(",") + 1);
+			data = data.substring(data.indexOf(",") + 1);
 		}
 		return intData;
 	}
@@ -63,10 +64,9 @@ public class ConnectionHelper {
 		toSend += "," + recievingPlayerIndex;
 
 		for (int i : tradeValues)
-			toSend += "," + tradeValues[i];
+			toSend += "," + i;
 		toSend += ",";
 
-		System.out.println("Sending Trade: " + toSend);
 		printString(toSend, toSendSocket);
 	}
 

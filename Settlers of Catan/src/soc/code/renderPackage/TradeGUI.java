@@ -2,6 +2,7 @@ package soc.code.renderPackage;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -121,7 +122,7 @@ public class TradeGUI extends JFrame implements ActionListener {
 			tradeArray[i++] = (int) spinner.getValue();
 		for (JSpinner spinner : theirCards)
 			tradeArray[i++] = (int) spinner.getValue();
-
+		
 		return tradeArray;
 	}
 
