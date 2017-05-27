@@ -165,7 +165,7 @@ public class HostSetup extends Thread {
 	public boolean addTrade(PendingTrade t) {
 		for (PendingTrade pt : trades)
 			if (pt.equals(t) && pt.isCounterPart(t)) {
-				t.makeTrade(clientConnectionList);
+				pt.makeTrade(clientConnectionList);
 
 				// updating the inventories of the two clients involved with the
 				// trade.
