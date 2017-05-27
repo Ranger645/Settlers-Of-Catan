@@ -294,7 +294,7 @@ public class GameRuntime {
 			clientManager = null;
 		} else {
 			// creating the client:
-			clientManager = new ClientSetup(localPlayer);
+			clientManager = new ClientSetup(localPlayer, gui);
 			// setting the host to null:
 			hostManager = null;
 		}
@@ -324,7 +324,7 @@ public class GameRuntime {
 	private static void resurectThread() {
 		if (!isHost && !clientManager.getAliveState()) { // only applicable for
 															// clients
-			clientManager = new ClientSetup(localPlayer);
+			clientManager = new ClientSetup(localPlayer, gui);
 		}
 	}
 

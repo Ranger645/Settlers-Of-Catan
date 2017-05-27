@@ -17,6 +17,7 @@ import soc.code.logicPackage.BuildSite;
 import soc.code.logicPackage.Tile;
 import soc.code.logicPackage.Player.PlayerInventory;
 import soc.code.multiplayerPackage.ClientSetup;
+import soc.code.multiplayerPackage.ConnectionHelper;
 
 /**
  * This class is the frame that will hold the game and all Graphical features
@@ -330,19 +331,35 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	 */
 	public void proposeTrade(final int playerIndex) {
 		System.out.println("Proposing a trade with " + clientManager.getAllPlayers()[playerIndex].getUsername());
-
+		// The thread that will handle getting what the user wants to trade.
 		Thread tradeThread = new Thread() {
 			public void run() {
-				int[] tradeValues = null;
 				if (mainPanel.getTrader().waitForSelection(clientManager.getAllPlayers()[playerIndex].getUsername(),
-						getThisFrame()))
+						getThisFrame())) {
+					int[] tradeValues = null;
 					tradeValues = mainPanel.getTrader().getCreatedTrade();
-				else
+
+					// Now it has to actually check to see if the trade request
+					// is valid:
+					boolean isRequestValid = true;
+					for (int i = 0; i < clientManager.getLocalPlayer().getInventory()
+							.getNumOfResourceCards().length; i++)
+						if (clientManager.getLocalPlayer().getInventory().getNumOfResourceCards()[i] < tradeValues[i])
+							isRequestValid = false;
+
+					// If it is a valid trade request, sending the trade request
+					// to the server.
+					if (isRequestValid)
+						ConnectionHelper.sendTradeRequest(clientManager.getPlayerIndex(), playerIndex, tradeValues,
+								clientManager.getClientSocket());
+					else
+						System.out.println("You don't have enough cards to make that trade.");
+
+				} else
 					System.out.println("Trade Cancelled.");
 			}
 		};
 		tradeThread.start();
-
 	}
 
 	/**

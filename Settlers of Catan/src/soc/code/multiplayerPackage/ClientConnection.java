@@ -4,8 +4,10 @@ import java.awt.Point;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import soc.code.logicPackage.Board;
+import soc.code.logicPackage.PendingTrade;
 import soc.code.logicPackage.Player;
 import soc.code.logicPackage.Tile;
 
@@ -82,6 +84,19 @@ public class ClientConnection extends Thread {
 	 */
 	public void doClientCommand(String data) {
 
+		// Then there is an incoming trade request.
+		if (data.contains("trade:")) {
+			if (hostManager.addTrade(new PendingTrade(ConnectionHelper.decodeTradeRequest(data))))
+				System.out.println("Making Trade.");
+			else {
+				int[] dataInt = ConnectionHelper.decodeTradeRequest(data);
+				int[] tradeValues = Arrays.copyOfRange(dataInt, 2, 12);
+				// sending the trade request to the client.
+				ConnectionHelper.sendTradeRequest(dataInt[0], dataInt[1], tradeValues,
+						hostManager.getClientConnections().get(dataInt[1]).getClientSocket());
+			}
+		}
+
 		// This means the client just built somthing or changed their resource
 		// number for some reason so they are sending their updated inventory:
 		if (data.contains("Player:")) {
@@ -138,7 +153,7 @@ public class ClientConnection extends Thread {
 
 			// then sending the other players:
 			sendOtherPlayers();
-			
+
 			System.out.println("Player " + clientPlayer.getUsername() + " is ready.");
 			isReady = true;
 		}
@@ -152,10 +167,10 @@ public class ClientConnection extends Thread {
 	public void updateServerWidePlayerInventory() {
 		// going through each client and updating each of their copies of this
 		// players inventory including the client who owns this player.
-		for (ClientConnection i : hostManager.getClientConnections()) 
+		for (ClientConnection i : hostManager.getClientConnections())
 			ConnectionHelper.sendPlayerInventory(i.getPlayer(), hostManager.getClientConnections().indexOf(i),
 					this.getClientSocket());
-		
+
 	}
 
 	/**

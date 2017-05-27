@@ -17,8 +17,58 @@ import soc.code.logicPackage.Player;
  */
 public class ConnectionHelper {
 
-	// static ConsoleWindow CW = new ConsoleWindow();
 	private static boolean sendingData = false;
+
+	/**
+	 * Parses out the actual data from an incoming trade request
+	 * 
+	 * @param data
+	 *            - the string representing the incoming trade request
+	 * @return an int array of the trade request.
+	 */
+	public static int[] decodeTradeRequest(String data) {
+		data = data.substring(data.indexOf(":") + 1);
+		int[] intData = new int[12];
+		for (int i = 0; i < intData.length; i++) {
+			intData[i] = Integer.parseInt(data.substring(0, data.indexOf(",")));
+			data.substring(data.indexOf(",") + 1);
+		}
+		return intData;
+	}
+
+	/**
+	 * Sends the trade request as an encoded string. Then it sends a line
+	 * starting with "trade:" and followed by 12 integers separated by commas
+	 * and terminating on comma. The first two integers are the player that is
+	 * requesting the trade and the player that is reciving the trade request.
+	 * The next five are what the first player is offering and the last five are
+	 * what the first player wants.
+	 * 
+	 * @param sendingPlayerIndex
+	 *            - the index of the player sending the trade request.
+	 * @param recievingPlayerIndex
+	 *            - the index of the player recieving the trade request
+	 * @param tradeValues
+	 *            - an array of integers containin ten trade request values. The
+	 *            first five are the offer and the second five are what they
+	 *            need.
+	 * @param toSendSocket
+	 *            - the socket to send the request to.
+	 */
+	public static void sendTradeRequest(int sendingPlayerIndex, int recievingPlayerIndex, int[] tradeValues,
+			Socket toSendSocket) {
+		String toSend = "trade:";
+
+		toSend += sendingPlayerIndex;
+		toSend += "," + recievingPlayerIndex;
+
+		for (int i : tradeValues)
+			toSend += "," + tradeValues[i];
+		toSend += ",";
+
+		System.out.println("Sending Trade: " + toSend);
+		printString(toSend, toSendSocket);
+	}
 
 	/**
 	 * This method sends data for a player contained in a string to the given
@@ -31,9 +81,9 @@ public class ConnectionHelper {
 	 * <devcard(n)>|
 	 * 
 	 * @param p
-	 *            - the player to send
+	 *            - the player whose inventory is to be sent.
 	 * @param index
-	 *            - the index of the player to send
+	 *            - the index of the player to send.
 	 * @param toSend
 	 *            - the socket to send the player to.
 	 */

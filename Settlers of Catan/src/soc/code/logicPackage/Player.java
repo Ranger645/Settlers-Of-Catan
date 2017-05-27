@@ -139,6 +139,8 @@ public class Player {
 
 		public PlayerInventory() {
 			numOfResourceCards = new int[5];
+			for(int i = 0; i < 5; i++)
+				numOfResourceCards[i] = 2;
 
 			// initializing the image and the graphics to edit the background
 			// image.

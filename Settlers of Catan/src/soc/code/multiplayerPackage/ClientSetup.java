@@ -4,9 +4,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import javax.swing.JOptionPane;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.Player;
+import soc.code.logicPackage.Tile;
+import soc.code.renderPackage.GUI;
 
 /**
  * This class is meant to handle the multiplayer connection to the host for this
@@ -41,8 +46,13 @@ public class ClientSetup extends Thread {
 	// class because incoming changes from the server will be recieved here.
 	private Board gameBoard = null;
 
-	public ClientSetup(Player p) {
+	// needs a copy of the GUI so it can use it as a focus for different message
+	// popups.
+	private GUI guiReference = null;
+
+	public ClientSetup(Player p, GUI mainGUI) {
 		localPlayer = p;
+		guiReference = mainGUI;
 	}
 
 	public void connectToHost(String ipAddress) {
@@ -91,6 +101,52 @@ public class ClientSetup extends Thread {
 		// The following set of if statements contaion the programming
 		// for what a client should do when a host sends a particular
 		// message to it. They will all be individual if statments.
+
+		// This means another player has requested a trade with this one and now
+		// this client must decide if it can go through.
+		if (data.contains("trade:")) {
+			int[] allValues = ConnectionHelper.decodeTradeRequest(data);
+			// the values of that are involved in the array.
+			int[] tradeValues = Arrays.copyOfRange(allValues, 2, 12);
+			// Now it has to actually check to see if the trade request
+			// is valid:
+			boolean isRequestValid = true;
+			for (int i = 0; i < getLocalPlayer().getInventory().getNumOfResourceCards().length; i++)
+				if (getLocalPlayer().getInventory().getNumOfResourceCards()[i] < tradeValues[i + 5])
+					isRequestValid = false;
+
+			String dialog = "Player " + allPlayers[allValues[0]].getUsername() + " is offering ";
+			for (int i = 0; i < 5; i++)
+				if (tradeValues[i] > 0)
+					dialog += tradeValues[i] + " " + Tile.idToString(i) + ", ";
+			dialog = dialog.substring(0, dialog.length() - 1);
+
+			dialog += "for ";
+
+			for (int i = 0; i < 5; i++)
+				if (tradeValues[i] > 0)
+					dialog += tradeValues[i + 5] + " " + Tile.idToString(i) + ", ";
+			dialog = dialog.substring(0, dialog.length() - 1);
+			dialog += ".";
+
+			if (isRequestValid) {
+				// Then the user is presented with options to say yes or no to
+				// the trade...
+				dialog += " Would you like to accept?";
+				int userChoice = JOptionPane.showConfirmDialog(guiReference, dialog, "Trade Dialog",
+						JOptionPane.YES_NO_OPTION);
+				if (userChoice == 0) {
+					System.out.println("Trade Accepted");
+					ConnectionHelper.sendTradeRequest(allValues[1], allValues[0], tradeValues, clientSocket);
+				} else
+					System.out.println("Trade Declined.");
+			} else {
+				// Then the user is presented with just an option to say no to
+				// the trade...
+				dialog += " Unfortunatly, we cannot afford this price... yet";
+				JOptionPane.showMessageDialog(guiReference, dialog);
+			}
+		}
 
 		// This means the server needs to updated the player specified in the
 		// incoming data.
@@ -333,6 +389,10 @@ public class ClientSetup extends Thread {
 
 	public Player getLocalPlayer() {
 		return localPlayer;
+	}
+
+	public Socket getClientSocket() {
+		return clientSocket;
 	}
 
 	public boolean areDiceRolled() {

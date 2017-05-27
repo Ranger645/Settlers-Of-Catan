@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.BuildSite;
 import soc.code.logicPackage.Die;
+import soc.code.logicPackage.PendingTrade;
 import soc.code.logicPackage.Tile;
 import soc.code.renderPackage.GUI;
 
@@ -34,9 +35,14 @@ public class HostSetup extends Thread {
 	// the reference to the main game board.
 	private Board gameBoard = null;
 
+	// the arraylist that will store pending trades. It will be cleared after
+	// every turn.
+	private ArrayList<PendingTrade> trades = null;
+
 	private static final int MAX_PLAYERS = 4;
 
 	public HostSetup(Board b) {
+		trades = new ArrayList<PendingTrade>();
 		clientConnectionList = new ArrayList<ClientConnection>();
 		gameBoard = b;
 	}
@@ -147,6 +153,40 @@ public class HostSetup extends Thread {
 		for (ClientConnection connection : clientConnectionList)
 			connection.updateServerWidePlayerInventory();
 
+	}
+
+	/**
+	 * Either adds a trade to the pending trade arraylist or actually does the
+	 * trade if the trade is already in the pending trade arraylist.
+	 * 
+	 * @param t
+	 * @return true if it makes the trade false if it doesn't make the trade.
+	 */
+	public boolean addTrade(PendingTrade t) {
+		for (PendingTrade pt : trades)
+			if (pt.equals(t) && pt.isCounterPart(t)) {
+				t.makeTrade(clientConnectionList);
+
+				// updating the inventories of the two clients involved with the
+				// trade.
+				ConnectionHelper.sendPlayerInventory(clientConnectionList.get(pt.getProposalPlayerIndex()).getPlayer(),
+						pt.getProposalPlayerIndex(),
+						clientConnectionList.get(pt.getProposalPlayerIndex()).getClientSocket());
+				ConnectionHelper.sendPlayerInventory(clientConnectionList.get(pt.getReplierPlayerIndex()).getPlayer(),
+						pt.getReplierPlayerIndex(),
+						clientConnectionList.get(pt.getReplierPlayerIndex()).getClientSocket());
+
+				trades.remove(trades.indexOf(pt));
+				return true;
+			} else if (pt.isCounterPart(t) && !pt.equals(t)) {
+				// then a player has made a counter offer so it has to replace
+				// the previous one.
+				trades.remove(trades.indexOf(pt));
+				trades.add(t);
+			}
+
+		trades.add(t);
+		return false;
 	}
 
 	/**
