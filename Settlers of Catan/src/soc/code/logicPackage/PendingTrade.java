@@ -1,6 +1,7 @@
 package soc.code.logicPackage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import soc.code.multiplayerPackage.ClientConnection;
 
@@ -30,6 +31,7 @@ public class PendingTrade {
 	public void makeTrade(ArrayList<ClientConnection> clientConnectionList) {
 		Player proposedPlayer = clientConnectionList.get(proposalPlayerIndex).getPlayer();
 		Player receivedPlayer = clientConnectionList.get(replierPlayerIndex).getPlayer();
+		System.out.println("Making Trade: " + Arrays.toString(tradeCards));
 
 		for (int i = 0; i < receivedPlayer.getInventory().getNumOfResourceCards().length; i++) {
 			// adding the cards and subtracting the cards where nessesary to

@@ -175,8 +175,10 @@ public class HostSetup extends Thread {
 				ConnectionHelper.sendPlayerInventory(clientConnectionList.get(pt.getReplierPlayerIndex()).getPlayer(),
 						pt.getReplierPlayerIndex(),
 						clientConnectionList.get(pt.getReplierPlayerIndex()).getClientSocket());
-				
-				broadcast("Player " + clientConnectionList.get(pt.getProposalPlayerIndex()).getPlayer().getUsername() + " traded with " + clientConnectionList.get(pt.getReplierPlayerIndex()).getPlayer().getUsername() + ".");
+
+				broadcast("Player " + clientConnectionList.get(pt.getProposalPlayerIndex()).getPlayer().getUsername()
+						+ " traded with "
+						+ clientConnectionList.get(pt.getReplierPlayerIndex()).getPlayer().getUsername() + ".");
 
 				trades.remove(trades.indexOf(pt));
 				return true;

@@ -119,14 +119,14 @@ public class ClientSetup extends Thread {
 			for (int i = 0; i < 5; i++)
 				if (tradeValues[i] > 0)
 					dialog += tradeValues[i] + " " + Tile.idToString(i) + ", ";
-			dialog = dialog.substring(0, dialog.length() - 1);
+			dialog = dialog.substring(0, dialog.length() - 2);
 
-			dialog += "for ";
+			dialog += " for ";
 
 			for (int i = 0; i < 5; i++)
-				if (tradeValues[i] > 0)
+				if (tradeValues[i + 5] > 0)
 					dialog += tradeValues[i + 5] + " " + Tile.idToString(i) + ", ";
-			dialog = dialog.substring(0, dialog.length() - 1);
+			dialog = dialog.substring(0, dialog.length() - 2);
 			dialog += ".";
 
 			if (isRequestValid) {

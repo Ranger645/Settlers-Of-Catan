@@ -133,9 +133,9 @@ public class Tile {
 		case 1:
 			return "Wheat";
 		case 2:
-			return "Sheep";
-		case 3:
 			return "Brick";
+		case 3:
+			return "Sheep";
 		case 4:
 			return "Ore";
 		}
