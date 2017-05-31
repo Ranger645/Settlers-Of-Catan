@@ -54,6 +54,33 @@ public class HostSetup extends Thread {
 	}
 
 	/**
+	 * This method does the opening settlement and road selection. It is a snake
+	 * draft starting with the first player and eending with each player having
+	 * placed 2 settlements and 1 road off of each settlement so in total two
+	 * roads each.
+	 * 
+	 * @param playerOrder
+	 *            - the order that the snake draft should go in. The last player
+	 *            in the array will have a double turn in the middle of the
+	 *            draft.
+	 */
+	public void doOpeningSettlementSelection(int[] playerOrder) {
+		// Going down the player order array:
+		broadcast("Every player is now selecting their starting settlements...");
+		for (int i = 0; i < playerOrder.length; i++) {
+			int currentPlayer = playerOrder[i];
+			broadcast("Player " + clientConnectionList.get(currentPlayer).getPlayer().getUsername()
+					+ " is now selecting their first settlment and road.");
+		}
+		// Going up the player order array:
+		for (int i = playerOrder.length - 1; i >= 0; i--) {
+			int currentPlayer = playerOrder[i];
+			broadcast("Player " + clientConnectionList.get(currentPlayer).getPlayer().getUsername()
+					+ " is now selecting their second settlment and road.");
+		}
+	}
+
+	/**
 	 * Tells the client connection handler to start the client's turn. Then it
 	 * waits for the turn to be finished all while constantly updating the main
 	 * gameboard with whatever the client whose turn it is is doing to it.

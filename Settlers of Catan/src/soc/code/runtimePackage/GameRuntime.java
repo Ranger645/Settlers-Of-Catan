@@ -132,9 +132,14 @@ public class GameRuntime {
 
 			// Displaying initial messages.
 			hostManager.broadcast("Starting Game...");
+
 			hostManager.broadcast("The Order of this game is as follows...");
 			for (int i = 0; i < playerOrder.length; i++)
 				hostManager.broadcast((i + 1) + ". " + playerArray[playerOrder[i]].getUsername());
+
+			// Establishing the starting settlments for each player in a snake
+			// draft format.
+			hostManager.doOpeningSettlementSelection(playerOrder);
 
 			while (true/* Eventually this will be the win testing condition */) {
 
