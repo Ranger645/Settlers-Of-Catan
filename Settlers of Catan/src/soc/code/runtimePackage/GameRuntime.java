@@ -266,6 +266,7 @@ public class GameRuntime {
 					System.out.println("[ERROR] you do not have permission to kick someone, you are not a host.");
 			} else if (lastMessage.equals("startGame") && isHost) {
 				// starting the game...
+				System.out.println("Stopping Client Acceptence.");
 				System.out.println("Starting the game...");
 				gameBoard = new Board(); // initializing the game board
 				gui = new GUI(gameBoard, clientManager, true); // initializing

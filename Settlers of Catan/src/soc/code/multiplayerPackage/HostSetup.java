@@ -255,6 +255,10 @@ public class HostSetup extends Thread {
 			}
 		}
 	}
+	
+	public void stopClientSearch(){
+		keepSearching = false;
+	}
 
 	/**
 	 * Gets the combined readiness of all of the clients. It is essentially a
