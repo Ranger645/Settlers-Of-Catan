@@ -33,6 +33,8 @@ public class ClientConnection extends Thread {
 
 	// will determine if the player is ready or not:
 	private boolean isReady = false;
+	
+	private boolean isWaitingForData = false;
 
 	private DataSucker dataSucker = null;
 
@@ -83,6 +85,10 @@ public class ClientConnection extends Thread {
 	 *            - the command that the client wants executed.
 	 */
 	public void doClientCommand(String data) {
+		
+		if(data.equals("selectBeginning")){
+			isWaitingForData = false;
+		}
 
 		// Then there is an incoming trade request.
 		if (data.contains("trade:")) {
@@ -157,6 +163,15 @@ public class ClientConnection extends Thread {
 			System.out.println("Player " + clientPlayer.getUsername() + " is ready.");
 			isReady = true;
 		}
+	}
+
+	/**
+	 * This method tells the client to select a settlement and a road for the
+	 * beginning of the game.
+	 */
+	public void selectOpeningSettlementAndRoad() {
+		isWaitingForData = true;
+		ConnectionHelper.printString("selectBeginning", clientSocket);
 	}
 
 	/**
@@ -318,6 +333,10 @@ public class ClientConnection extends Thread {
 
 	public Socket getClientSocket() {
 		return clientSocket;
+	}
+
+	public boolean isWaitingForData() {
+		return isWaitingForData;
 	}
 
 	public boolean getReadiness() {

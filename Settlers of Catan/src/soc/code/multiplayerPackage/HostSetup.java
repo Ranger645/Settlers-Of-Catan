@@ -71,12 +71,28 @@ public class HostSetup extends Thread {
 			int currentPlayer = playerOrder[i];
 			broadcast("Player " + clientConnectionList.get(currentPlayer).getPlayer().getUsername()
 					+ " is now selecting their first settlment and road.");
+			clientConnectionList.get(currentPlayer).selectOpeningSettlementAndRoad();
+			while(clientConnectionList.get(currentPlayer).isWaitingForData())
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 		// Going up the player order array:
 		for (int i = playerOrder.length - 1; i >= 0; i--) {
 			int currentPlayer = playerOrder[i];
 			broadcast("Player " + clientConnectionList.get(currentPlayer).getPlayer().getUsername()
 					+ " is now selecting their second settlment and road.");
+			clientConnectionList.get(currentPlayer).selectOpeningSettlementAndRoad();
+			while(clientConnectionList.get(currentPlayer).isWaitingForData())
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 	}
 
@@ -255,8 +271,8 @@ public class HostSetup extends Thread {
 			}
 		}
 	}
-	
-	public void stopClientSearch(){
+
+	public void stopClientSearch() {
 		keepSearching = false;
 	}
 

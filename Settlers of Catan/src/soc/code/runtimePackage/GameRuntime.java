@@ -136,6 +136,13 @@ public class GameRuntime {
 			hostManager.broadcast("The Order of this game is as follows...");
 			for (int i = 0; i < playerOrder.length; i++)
 				hostManager.broadcast((i + 1) + ". " + playerArray[playerOrder[i]].getUsername());
+			
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			// Establishing the starting settlments for each player in a snake
 			// draft format.
@@ -185,6 +192,7 @@ public class GameRuntime {
 
 			// passing the gameboard reference to the gui object.
 			gui = new GUI(gameBoard, clientManager, false);
+			clientManager.setGuiReference(gui);
 
 			while (true) {
 
@@ -227,6 +235,7 @@ public class GameRuntime {
 				// setting the program running on this computer to the host of
 				// the game.
 				System.out.println("Setting this computer to Host Status.");
+				console.getInputField().setText("startGame");
 				isHost = true;
 				createMultiplayerApparatus();
 				hostManager.start();
@@ -238,6 +247,7 @@ public class GameRuntime {
 				createMultiplayerApparatus();
 			} else if (lastMessage.length() > 10 && lastMessage.substring(0, 10).equals("connectTo ")) {
 				// connecting to the specified host if this program is a client:
+				console.getInputField().setText("ready");
 				if (isHost)
 					System.out.println("[ERROR] This is not a client.");
 				else

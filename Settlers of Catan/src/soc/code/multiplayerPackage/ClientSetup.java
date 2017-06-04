@@ -9,6 +9,7 @@ import java.util.Arrays;
 import javax.swing.JOptionPane;
 
 import soc.code.logicPackage.Board;
+import soc.code.logicPackage.BuildSite;
 import soc.code.logicPackage.Player;
 import soc.code.logicPackage.Tile;
 import soc.code.renderPackage.GUI;
@@ -76,6 +77,10 @@ public class ClientSetup extends Thread {
 		}
 	}
 
+	public void setGuiReference(GUI guiReference) {
+		this.guiReference = guiReference;
+	}
+
 	public void run() {
 
 		while (alive) {
@@ -102,50 +107,37 @@ public class ClientSetup extends Thread {
 		// for what a client should do when a host sends a particular
 		// message to it. They will all be individual if statments.
 
+		// This means it is the beginning of the game and the server wants this
+		// client to select a build site to build a settlment and start building
+		// a road. When the client is finished with this, it will send the same
+		// message back to the server.
+		if (data.equals("selectBeginning")) {
+			System.out.println("[SERVER MESSAGE] Select a build site to build a settlment.");
+
+			// waiting for the gui reference to be set so the program can access
+			// it for getting the first settlements.
+			while (guiReference == null)
+				try {
+					this.sleep(20);
+					System.out.println("Hello");
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			// Setting the selected build site to null so it can get the next
+			// one selected.
+			guiReference.buildOpenningSettlement(playerIndex);
+
+			// After it has built the settlement and the road, it has to reply
+			// to the server so the server knows it is done.
+			ConnectionHelper.printString("selectBeginning", clientSocket);
+		}
+
 		// This means another player has requested a trade with this one and now
 		// this client must decide if it can go through.
 		if (data.contains("trade:")) {
-			int[] allValues = ConnectionHelper.decodeTradeRequest(data);
-			// the values of that are involved in the array.
-			int[] tradeValues = Arrays.copyOfRange(allValues, 2, 12);
-			// Now it has to actually check to see if the trade request
-			// is valid:
-			boolean isRequestValid = true;
-			for (int i = 0; i < getLocalPlayer().getInventory().getNumOfResourceCards().length; i++)
-				if (getLocalPlayer().getInventory().getNumOfResourceCards()[i] < tradeValues[i + 5])
-					isRequestValid = false;
-
-			String dialog = "Player " + allPlayers[allValues[0]].getUsername() + " is offering ";
-			for (int i = 0; i < 5; i++)
-				if (tradeValues[i] > 0)
-					dialog += tradeValues[i] + " " + Tile.idToString(i) + ", ";
-			dialog = dialog.substring(0, dialog.length() - 2);
-
-			dialog += " for ";
-
-			for (int i = 0; i < 5; i++)
-				if (tradeValues[i + 5] > 0)
-					dialog += tradeValues[i + 5] + " " + Tile.idToString(i) + ", ";
-			dialog = dialog.substring(0, dialog.length() - 2);
-			dialog += ".";
-
-			if (isRequestValid) {
-				// Then the user is presented with options to say yes or no to
-				// the trade...
-				dialog += " Would you like to accept?";
-				int userChoice = JOptionPane.showConfirmDialog(guiReference, dialog, "Trade Dialog",
-						JOptionPane.YES_NO_OPTION);
-				if (userChoice == 0) {
-					System.out.println("Trade Accepted");
-					ConnectionHelper.sendTradeRequest(allValues[1], allValues[0], tradeValues, clientSocket);
-				} else
-					System.out.println("Trade Declined.");
-			} else {
-				// Then the user is presented with just an option to say no to
-				// the trade...
-				dialog += " Unfortunatly, we cannot afford this price... yet";
-				JOptionPane.showMessageDialog(guiReference, dialog);
-			}
+			doTrade(data);
 		}
 
 		// This means the server needs to updated the player specified in the
@@ -227,6 +219,50 @@ public class ClientSetup extends Thread {
 		// the normal stuff that happens during their turn.
 		if (data.equals("startturn")) {
 			isTurn = true;
+		}
+	}
+
+	private void doTrade(String data) {
+		int[] allValues = ConnectionHelper.decodeTradeRequest(data);
+		// the values of that are involved in the array.
+		int[] tradeValues = Arrays.copyOfRange(allValues, 2, 12);
+		// Now it has to actually check to see if the trade request
+		// is valid:
+		boolean isRequestValid = true;
+		for (int i = 0; i < getLocalPlayer().getInventory().getNumOfResourceCards().length; i++)
+			if (getLocalPlayer().getInventory().getNumOfResourceCards()[i] < tradeValues[i + 5])
+				isRequestValid = false;
+
+		String dialog = "Player " + allPlayers[allValues[0]].getUsername() + " is offering ";
+		for (int i = 0; i < 5; i++)
+			if (tradeValues[i] > 0)
+				dialog += tradeValues[i] + " " + Tile.idToString(i) + ", ";
+		dialog = dialog.substring(0, dialog.length() - 2);
+
+		dialog += " for ";
+
+		for (int i = 0; i < 5; i++)
+			if (tradeValues[i + 5] > 0)
+				dialog += tradeValues[i + 5] + " " + Tile.idToString(i) + ", ";
+		dialog = dialog.substring(0, dialog.length() - 2);
+		dialog += ".";
+
+		if (isRequestValid) {
+			// Then the user is presented with options to say yes or no to
+			// the trade...
+			dialog += " Would you like to accept?";
+			int userChoice = JOptionPane.showConfirmDialog(guiReference, dialog, "Trade Dialog",
+					JOptionPane.YES_NO_OPTION);
+			if (userChoice == 0) {
+				System.out.println("Trade Accepted");
+				ConnectionHelper.sendTradeRequest(allValues[1], allValues[0], tradeValues, clientSocket);
+			} else
+				System.out.println("Trade Declined.");
+		} else {
+			// Then the user is presented with just an option to say no to
+			// the trade...
+			dialog += " Unfortunatly, we cannot afford this price... yet";
+			JOptionPane.showMessageDialog(guiReference, dialog);
 		}
 	}
 

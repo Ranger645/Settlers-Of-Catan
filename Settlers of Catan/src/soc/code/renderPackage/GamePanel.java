@@ -468,6 +468,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		return selectedBuildSite;
 	}
 
+	public void setSelectedBuildSite(BuildSite selectedBuildSite) {
+		this.selectedBuildSite = selectedBuildSite;
+	}
+
 	public BuildSite getHovoredBuildSite() {
 		return hovoredBuildSite;
 	}

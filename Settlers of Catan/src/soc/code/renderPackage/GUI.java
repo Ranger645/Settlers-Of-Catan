@@ -190,6 +190,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		boolean inValidSite = false;
 		do {
 			// waiting for the user to pick the road.
+			mainPanel.setSelectedBuildSite(roadStartSite);
 			while (mainPanel.getSelectedBuildSite() == roadStartSite && selectingRoad) {
 				try {
 					Thread.sleep(200);
@@ -279,11 +280,11 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		} else
 			System.out.println("Road Construction Cancelled.");
 	}
-
+	
 	/**
 	 * Trys to build a settlement at the selected build site.
 	 */
-	public void buildSettlement() {
+	public boolean buildSettlement() {
 		// making sure it is ok to build on this tile:
 		if (mainPanel.getGameBoard().isValidSettlementSpot(mainPanel.getSelectedBuildSite().getArrX(),
 				mainPanel.getSelectedBuildSite().getArrY())) {
@@ -293,11 +294,16 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 						+ mainPanel.getSelectedBuildSite().getY() + ")");
 				// updating build site array in the network
 				sendBuildSite(mainPanel.getSelectedBuildSite());
-			} else
+				return true;
+			} else {
 				System.out.println("Failed to build settlement: There is already somthing built there.");
-		} else
-			// printing statis message.
+				return false;
+			}
+		} else {
+			// printing status message.
 			System.out.println("Failed to build settlement: There are buildings adjacent to the proposed build site.");
+			return false;
+		}
 	}
 
 	public void buildRoad() {
@@ -315,6 +321,50 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		} else {
 			selectingRoad = false;
 		}
+	}
+
+	public void buildRoadNoThread() {
+		// adding a road at the selected build site.
+		if ((mainPanel.getSelectedBuildSite().canBuildRoad(clientManager.getPlayerIndex())) && !selectingRoad) {
+			// Starting a thread so it doesn't hold up the graphics
+			// thread.
+			addRoad();
+			selectingRoad = false;
+		} else {
+			selectingRoad = false;
+		}
+	}
+
+	/**
+	 * This method waits for the client to select the openning settlement and
+	 * road and then sends updates it via the host.
+	 */
+	public void buildOpenningSettlement(int playerIndex) {
+		// Deselecting all build sites.
+		do {
+			BuildSite placeHolder = new BuildSite(-1, -1, false);
+			this.mainPanel.setSelectedBuildSite(placeHolder);
+
+			// waiting for the client to select a build site to build a
+			// settlement
+			// on.
+			int currentBuildingCount = 0;
+			while (mainPanel.getSelectedBuildSite() == placeHolder)
+				try {
+					Thread.sleep(50);
+					currentBuildingCount += 50;
+					if (currentBuildingCount % 1000 == 0)
+						System.out.println("Waiting for you to Select a build site: " + (currentBuildingCount / 1000)
+								+ " seconds.");
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+		} while (!buildSettlement());
+
+		// building the road off of the selected build site.
+		buildRoadNoThread();
 	}
 
 	public JFrame getThisFrame() {
