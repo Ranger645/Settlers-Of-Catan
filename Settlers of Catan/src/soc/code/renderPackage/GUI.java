@@ -286,6 +286,114 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		} else
 			System.out.println("Road Construction Cancelled.");
 	}
+
+	/**
+	 * Adds a road starting at the selected build site. It then waits for the
+	 * user to select a VALID build site and then creates the road logically.
+	 */
+	public void addRoadNoThread() {
+		// Making sure this is true so nothing else happens:
+		System.out.println("Choose an adjacent build site to complete the road.");
+		selectingRoad = true;
+
+		BuildSite roadStartSite = mainPanel.getSelectedBuildSite();
+
+		// getting a selected road from the user as long as it takes to be a
+		// valid road.
+		boolean inValidSite = false;
+		do {
+			// waiting for the user to pick the road.
+			mainPanel.setSelectedBuildSite(roadStartSite);
+			while (mainPanel.getSelectedBuildSite() == roadStartSite && selectingRoad) {
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			if (selectingRoad) {
+				// if the user did not cancel the build.
+				inValidSite = !mainPanel.getGameBoard().areBuildSitesAdjacent(
+						new Point(roadStartSite.getArrX(), roadStartSite.getArrY()),
+						new Point(mainPanel.getSelectedBuildSite().getArrX(),
+								mainPanel.getSelectedBuildSite().getArrY()));
+
+				// displaying status message:
+				if (inValidSite) {
+					System.out.println("That build site is not adjacent to the selected Build Site.");
+				} else
+					System.out.println("Building Road from (" + roadStartSite.getArrX() + ", " + roadStartSite.getArrY()
+							+ ") to (" + mainPanel.getSelectedBuildSite().getArrX() + ", "
+							+ mainPanel.getSelectedBuildSite().getArrY() + ")");
+			}
+
+		} while (inValidSite);
+
+		buildRoad.setText("Build Road");
+
+		if (selectingRoad) {
+			// if the user did not cancel the build.
+
+			// After both build sites have been recieved, now they have to be
+			// propperly formatted.
+			BuildSite[] adjacentSites = mainPanel.getGameBoard().getAdjacentBuildSites(roadStartSite.getArrX(),
+					roadStartSite.getArrY());
+
+			if (adjacentSites[0] == mainPanel.getSelectedBuildSite()) {
+				// Then the road has to be built to the left of the first
+				// selected
+				// build site.
+				// Checking to make sure there is not already a road at the spot
+				// the user wants to build on.
+				if (!(roadStartSite.getRoadIDValues()[0] > -1 && roadStartSite.getRoadIDValues()[0] == mainPanel
+						.getSelectedBuildSite().getRoadIDValues()[2])) {
+					roadStartSite.setRoadIDValue(BuildSite.ROAD_LEFT_ID, clientManager.getPlayerIndex());
+					mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_RIGHT_ID,
+							clientManager.getPlayerIndex());
+				} else {
+					System.out.println("You cannot build a road there, there is already a road built there.");
+				}
+			}
+
+			if (adjacentSites[2] == mainPanel.getSelectedBuildSite()) {
+				// Then the road has to be built to the right of the first
+				// selected build site.
+				// Checking to make sure there is not already a road at the spot
+				// the user wants to build on.
+				if (!(roadStartSite.getRoadIDValues()[2] > -1 && roadStartSite.getRoadIDValues()[2] == mainPanel
+						.getSelectedBuildSite().getRoadIDValues()[0])) {
+					roadStartSite.setRoadIDValue(BuildSite.ROAD_RIGHT_ID, clientManager.getPlayerIndex());
+					mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_LEFT_ID,
+							clientManager.getPlayerIndex());
+				} else {
+					System.out.println("You cannot build a road there, there is already a road built there.");
+				}
+			}
+
+			if (adjacentSites[1] == mainPanel.getSelectedBuildSite()) {
+				// Then the road has to be built below or above the first
+				// selected build site.
+				// Checking to make sure there is not already a road at the spot
+				// the user wants to build on.
+				if (!(roadStartSite.getRoadIDValues()[1] > -1 && roadStartSite.getRoadIDValues()[1] == mainPanel
+						.getSelectedBuildSite().getRoadIDValues()[1])) {
+					roadStartSite.setRoadIDValue(BuildSite.ROAD_MIDDLE_ID, clientManager.getPlayerIndex());
+					mainPanel.getSelectedBuildSite().setRoadIDValue(BuildSite.ROAD_MIDDLE_ID,
+							clientManager.getPlayerIndex());
+				} else {
+					System.out.println("You cannot build a road there, there is already a road built there.");
+				}
+			}
+
+			// sending the updated build sites.
+			sendBuildSite(mainPanel.getSelectedBuildSite());
+			sendBuildSite(roadStartSite);
+		} else
+			System.out.println("Road Construction Cancelled.");
+	}
+
 	
 	/**
 	 * Trys to build a settlement at the selected build site.
@@ -334,7 +442,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		if ((mainPanel.getSelectedBuildSite().canBuildRoad(clientManager.getPlayerIndex())) && !selectingRoad) {
 			// Starting a thread so it doesn't hold up the graphics
 			// thread.
-			addRoad();
+			addRoadNoThread();
 			selectingRoad = false;
 		} else {
 			selectingRoad = false;
@@ -347,6 +455,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 	 */
 	public void buildOpenningSettlement(int playerIndex) {
 		// Deselecting all build sites.
+		int currentBuildingCount = 0;
 		do {
 			BuildSite placeHolder = new BuildSite(-1, -1, false);
 			this.mainPanel.setSelectedBuildSite(placeHolder);
@@ -354,12 +463,11 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 			// waiting for the client to select a build site to build a
 			// settlement
 			// on.
-			int currentBuildingCount = 0;
 			while (mainPanel.getSelectedBuildSite() == placeHolder)
 				try {
 					Thread.sleep(50);
 					currentBuildingCount += 50;
-					if (currentBuildingCount % 1000 == 0)
+					if (currentBuildingCount % 10000 == 0)
 						System.out.println("Waiting for you to Select a build site: " + (currentBuildingCount / 1000)
 								+ " seconds.");
 				} catch (InterruptedException e) {

@@ -293,7 +293,7 @@ public class ClientSetup extends Thread {
 		ConnectionHelper.printString("COLOR:" + localPlayer.getPreferedColor().getRed() + ","
 				+ localPlayer.getPreferedColor().getGreen() + "," + localPlayer.getPreferedColor().getBlue(),
 				clientSocket);
-		System.out.println("BIO file send.");
+		System.out.println("BIO file sent.");
 	}
 
 	/**
