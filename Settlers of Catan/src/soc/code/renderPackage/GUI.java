@@ -1,12 +1,18 @@
 package soc.code.renderPackage;
 
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -14,8 +20,8 @@ import javax.swing.JMenuItem;
 
 import soc.code.logicPackage.Board;
 import soc.code.logicPackage.BuildSite;
-import soc.code.logicPackage.Tile;
 import soc.code.logicPackage.Player.PlayerInventory;
+import soc.code.logicPackage.Tile;
 import soc.code.multiplayerPackage.ClientSetup;
 import soc.code.multiplayerPackage.ConnectionHelper;
 
@@ -49,7 +55,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 		this.setSize(Tile.TILE_WIDTH * 6 + PlayerInventory.WIDTH, Tile.TILE_WIDTH * 6);
 		this.setTitle("Stettlers of Catan");
 		// this.setResizable(false);
-
+		
 		this.isHostGUI = isHost;
 		this.clientManager = clientManager;
 
