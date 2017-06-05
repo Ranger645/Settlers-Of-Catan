@@ -33,7 +33,7 @@ public class ClientConnection extends Thread {
 
 	// will determine if the player is ready or not:
 	private boolean isReady = false;
-	
+
 	private boolean isWaitingForData = false;
 
 	private DataSucker dataSucker = null;
@@ -85,8 +85,8 @@ public class ClientConnection extends Thread {
 	 *            - the command that the client wants executed.
 	 */
 	public void doClientCommand(String data) {
-		
-		if(data.equals("selectBeginning")){
+
+		if (data.equals("selectBeginning")) {
 			isWaitingForData = false;
 		}
 
@@ -172,6 +172,17 @@ public class ClientConnection extends Thread {
 	public void selectOpeningSettlementAndRoad() {
 		isWaitingForData = true;
 		ConnectionHelper.printString("selectBeginning", clientSocket);
+	}
+
+	/**
+	 * Sends the message to the clients that kills them and stops their loops
+	 * and announces the winner of the game.
+	 * 
+	 * @param index
+	 *            - the index of the player who won.
+	 */
+	public void declareWinner(int index) {
+		ConnectionHelper.printString("winner:" + index, clientSocket);
 	}
 
 	/**

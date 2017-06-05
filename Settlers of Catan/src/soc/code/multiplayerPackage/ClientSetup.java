@@ -13,6 +13,7 @@ import soc.code.logicPackage.BuildSite;
 import soc.code.logicPackage.Player;
 import soc.code.logicPackage.Tile;
 import soc.code.renderPackage.GUI;
+import soc.code.runtimePackage.GameRuntime;
 
 /**
  * This class is meant to handle the multiplayer connection to the host for this
@@ -106,6 +107,12 @@ public class ClientSetup extends Thread {
 		// The following set of if statements contaion the programming
 		// for what a client should do when a host sends a particular
 		// message to it. They will all be individual if statments.
+
+		if (data.contains("winner:")) {
+			int winnerIndex = Integer.parseInt(data.substring(data.indexOf(":") + 1));
+			System.out.println("\n" + "[SERVER MESSAGE] " + allPlayers[winnerIndex].getUsername() + " HAS WON THE GAME!!!");
+			GameRuntime.playingGame = false;
+		}
 
 		// This means it is the beginning of the game and the server wants this
 		// client to select a build site to build a settlment and start building

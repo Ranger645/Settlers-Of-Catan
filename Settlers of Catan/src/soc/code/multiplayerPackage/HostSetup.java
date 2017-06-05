@@ -398,6 +398,10 @@ public class HostSetup extends Thread {
 		}
 	}
 
+	public Board getGameBoard() {
+		return gameBoard;
+	}
+
 	public void updateAllBuildSites(int clientThatIsUpdating) {
 		// setting the board on the server to have the same build sites.
 		gameBoard.overwriteBuildSites(clientConnectionList.get(clientThatIsUpdating).getGameBoard().getBuildSites());

@@ -1,5 +1,6 @@
 package soc.code.runtimePackage;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import soc.code.logicPackage.Board;
@@ -58,7 +59,7 @@ public class GameRuntime {
 	static GUI gui = null;
 	// a boolean variable in charge keeping track of whether or not there is a
 	// game going on.
-	static boolean playingGame = false;
+	public static boolean playingGame = false;
 
 	// The player that is running this game. Sometimes it will be the host and
 	// sometimes it will be a client.
@@ -75,148 +76,158 @@ public class GameRuntime {
 	static ClientSetup clientManager = null;
 
 	public static void main(String[] args) {
+		while (true) {
+			// initializing the console:
+			console = new ConsoleWindow();
+			// making it so that System.out.print() sends String to the console.
+			console.setSystemOut();
+			System.out.println("Console Linked to Game: Settlers of Catan.");
 
-		// initializing the console:
-		console = new ConsoleWindow();
-		// making it so that System.out.print() sends String to the console.
-		console.setSystemOut();
-		System.out.println("Console Linked to Game: Settlers of Catan.");
+			// creating the default multiplayer utils, which is as a client:
+			localPlayer = Player.readPlayerFile();
+			createMultiplayerApparatus();
+			// running through Game Setup with the user:
+			preGameConsoleDialogue();
 
-		// creating the default multiplayer utils, which is as a client:
-		localPlayer = Player.readPlayerFile();
-		createMultiplayerApparatus();
-		// running through Game Setup with the user:
-		preGameConsoleDialogue();
+			if (isHost) {
+				System.out.println("Program acting as host of Game with " + hostManager.getClientConnections().size()
+						+ " Players.");
 
-		if (isHost) {
-			System.out.println(
-					"Program acting as host of Game with " + hostManager.getClientConnections().size() + " Players.");
+				// what the program is responsible for doing if it is a Host
+				playerArray = compilePlayerObjects(); // initializing the local
+														// players.
+				// Passing the board to the players and making sure they are
+				// ready to start the game.
+				hostManager.startGameProcess(gameBoard);
 
-			// what the program is responsible for doing if it is a Host
-			playerArray = compilePlayerObjects(); // initializing the local
-													// players.
-			// Passing the board to the players and making sure they are
-			// ready to start the game.
-			hostManager.startGameProcess(gameBoard);
+				// waiting for everyone to be ready:
+				int readinessCounter = 0;
+				while (!hostManager.getClientReadiness()) {
+					if (readinessCounter % 100 == 0)
+						System.out.println(
+								"Waiting for clients type \"ready\". Time: " + readinessCounter / 10 + " seconds.");
 
-			// waiting for everyone to be ready:
-			int readinessCounter = 0;
-			while (!hostManager.getClientReadiness()) {
-				if (readinessCounter % 100 == 0)
-					System.out.println(
-							"Waiting for clients type \"ready\". Time: " + readinessCounter / 10 + " seconds.");
+					readinessCounter++;
+					sleepMillis(100);
+				}
 
-				readinessCounter++;
-				sleepMillis(100);
-			}
+				// making the order of the players array.
+				int[] playerOrder = new int[hostManager.getClientConnections().size()];
+				for (int i = 0; i < playerOrder.length; i++)
+					playerOrder[i] = i;
 
-			// making the order of the players array.
-			int[] playerOrder = new int[hostManager.getClientConnections().size()];
-			for (int i = 0; i < playerOrder.length; i++)
-				playerOrder[i] = i;
+				// shuffling the order of the players
+				for (int i = 0; i < playerOrder.length; i++) {
+					int randInt = new Random().nextInt(playerOrder.length);
+					int temp = playerOrder[randInt];
+					playerOrder[randInt] = playerOrder[i];
+					playerOrder[i] = temp;
+				}
 
-			// shuffling the order of the players
-			for (int i = 0; i < playerOrder.length; i++) {
-				int randInt = new Random().nextInt(playerOrder.length);
-				int temp = playerOrder[randInt];
-				playerOrder[randInt] = playerOrder[i];
-				playerOrder[i] = temp;
-			}
-
-			// repainting:
-			gui.repaint();
-
-			// \\ MAIN GAME LOOP // \\
-			int currentPlayer = 0;
-			int playerOrderTracker = 0;
-
-			// Displaying initial messages.
-			hostManager.broadcast("Starting Game...");
-
-			hostManager.broadcast("The Order of this game is as follows...");
-			for (int i = 0; i < playerOrder.length; i++)
-				hostManager.broadcast((i + 1) + ". " + playerArray[playerOrder[i]].getUsername());
-			
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			// Establishing the starting settlments for each player in a snake
-			// draft format.
-			hostManager.doOpeningSettlementSelection(playerOrder);
-
-			while (true/* Eventually this will be the win testing condition */) {
-
-				// setting this turns player index based on the random order.
-				currentPlayer = playerOrder[playerOrderTracker];
-
-				// telling all the clients whose turn it is.
-				hostManager.broadcast("It is now "
-						+ hostManager.getClientConnections().get(currentPlayer).getPlayer().getUsername() + "'s turn.");
-
-				// Telling the host manager to start the given players turn and
-				// wait for it to be done while constantly updating the main
-				// game board with the same values that the client is sending to
-				// the game board that is stored in the client connection object
-				// of the player whose turn it is.
-				Board afterTurnBoard = hostManager.doTurn(currentPlayer, gameBoard, gui);
-
-				// Making sure that the build sites in the main game board are
-				// perfectly up to date before moving on to the next turn.
-				// gameBoard.overwriteBuildSites(afterTurnBoard.getBuildSites());
-
-				// This is the turn rotater.
-				if (++playerOrderTracker >= playerArray.length)
-					playerOrderTracker = 0;
-
-				// Repainting the gui after everything the turn is over just for
-				// good measure.
-				gui.repaint();
-			}
-
-		} else {
-
-			// waiting for the server to send the entirety of the gameboard
-			// object so that the GUI can be initialized.
-			System.out.println("Waiting for Server to send Board info...");
-			while (clientManager.getGameBoard() == null)
-				sleepMillis(20);
-
-			// updating the gameBoard object inside this class so that the main
-			// method can pass the reference to the GUI object.
-			System.out.println("Creating GUI Window...");
-			gameBoard = clientManager.getGameBoard();
-
-			// passing the gameboard reference to the gui object.
-			gui = new GUI(gameBoard, clientManager, false);
-			clientManager.setGuiReference(gui);
-
-			while (true) {
-
-				// controlling whether or not the IO should be enabled or
-				// disabled epending on whether or not it is the client's turn.
-				if (!clientManager.areDiceRolled() && gui.getIOStatus() != 1)
-					gui.openDiceRollUI();
-				else if (clientManager.isTurn() && clientManager.areDiceRolled() && gui.getIOStatus() != 2)
-					gui.openTurnIO();
-				else if (gui.getIOStatus() != 0 && !clientManager.isTurn() && clientManager.areDiceRolled())
-					gui.closeIO();
-
-				// This is just responsible for constantly updating the
-				// gui window so the client has real time data.
+				// repainting:
 				gui.repaint();
 
-				// and then it sleeps to conserver processing power.
-				sleepMillis(20);
-			}
+				// \\ MAIN GAME LOOP // \\
+				int currentPlayer = 0;
+				int playerOrderTracker = 0;
 
+				// Displaying initial messages.
+				hostManager.broadcast("Starting Game...");
+
+				hostManager.broadcast("The Order of this game is as follows...");
+				for (int i = 0; i < playerOrder.length; i++)
+					hostManager.broadcast((i + 1) + ". " + playerArray[playerOrder[i]].getUsername());
+
+				// Establishing the starting settlments for each player in a
+				// snake
+				// draft format.
+				hostManager.doOpeningSettlementSelection(playerOrder);
+				gameBoard = hostManager.getGameBoard();
+
+				int winner = -1;
+				while (winner < 0) {
+					// setting this turns player index based on the random
+					// order.
+					currentPlayer = playerOrder[playerOrderTracker];
+
+					// telling all the clients whose turn it is.
+					hostManager.broadcast("It is now "
+							+ hostManager.getClientConnections().get(currentPlayer).getPlayer().getUsername()
+							+ "'s turn.");
+
+					// Telling the host manager to start the given players turn
+					// and
+					// wait for it to be done while constantly updating the main
+					// game board with the same values that the client is
+					// sending to
+					// the game board that is stored in the client connection
+					// object
+					// of the player whose turn it is.
+					Board afterTurnBoard = hostManager.doTurn(currentPlayer, gameBoard, gui);
+
+					// Making sure that the build sites in the main game board
+					// are
+					// perfectly up to date before moving on to the next turn.
+					// gameBoard.overwriteBuildSites(afterTurnBoard.getBuildSites());
+
+					// This is the turn rotater.
+					if (++playerOrderTracker >= playerArray.length)
+						playerOrderTracker = 0;
+
+					// getting the winner if there is one:
+					winner = getWinner();
+
+					// Repainting the gui after everything the turn is over just
+					// for
+					// good measure.
+					gui.repaint();
+				}
+				// sending the winning dialogue:
+				for (int i = 0; i < hostManager.getClientConnections().size(); i++)
+					hostManager.getClientConnections().get(i).declareWinner(winner);
+				System.out.println("Exiting server in 10 Seconds...");
+				sleepMillis(10000);
+			} else {
+
+				// waiting for the server to send the entirety of the gameboard
+				// object so that the GUI can be initialized.
+				System.out.println("Waiting for Server to send Board info...");
+				while (clientManager.getGameBoard() == null)
+					sleepMillis(20);
+
+				// updating the gameBoard object inside this class so that the
+				// main
+				// method can pass the reference to the GUI object.
+				System.out.println("Creating GUI Window...");
+				gameBoard = clientManager.getGameBoard();
+
+				// passing the gameboard reference to the gui object.
+				gui = new GUI(gameBoard, clientManager, false);
+				clientManager.setGuiReference(gui);
+
+				while (true) {
+
+					// controlling whether or not the IO should be enabled or
+					// disabled epending on whether or not it is the client's
+					// turn.
+					if (!clientManager.areDiceRolled() && gui.getIOStatus() != 1)
+						gui.openDiceRollUI();
+					else if (clientManager.isTurn() && clientManager.areDiceRolled() && gui.getIOStatus() != 2)
+						gui.openTurnIO();
+					else if (gui.getIOStatus() != 0 && !clientManager.isTurn() && clientManager.areDiceRolled())
+						gui.closeIO();
+
+					// This is just responsible for constantly updating the
+					// gui window so the client has real time data.
+					gui.repaint();
+
+					// and then it sleeps to conserver processing power.
+					sleepMillis(20);
+				}
+
+			}
+			System.exit(0);
 		}
-
-		// after the game is over, it resets the game playing variable to false:
-		// playingGame = false;
 	}
 
 	/**
@@ -352,4 +363,57 @@ public class GameRuntime {
 		return player;
 	}
 
+	/**
+	 * Checks to see if a player has won and returns which player won.
+	 * 
+	 * @return -1 if no player has won or the player index of the winner if a
+	 *         player did win.
+	 */
+	private static int getWinner() {
+		int[] scores = new int[hostManager.getClientConnections().size()];
+		for (int i = 0; i < gameBoard.getBuildSites().size(); i++) {
+			for (int n = 0; n < gameBoard.getBuildSites().get(i).size(); n++) {
+				System.out.print(gameBoard.getBuildSites().get(i).get(n).getBuildingType());
+				if (gameBoard.getBuildSites().get(i).get(n).getBuildingType() > 0) {
+					scores[gameBoard.getBuildSites().get(i).get(n).getPlayerID()] += gameBoard.getBuildSites().get(i)
+							.get(n).getBuildingType();
+					if (scores[gameBoard.getBuildSites().get(i).get(n).getPlayerID()] >= 10)
+						return gameBoard.getBuildSites().get(i).get(n).getPlayerID();
+
+				}
+			}
+			System.out.println();
+		}
+		System.out.println(Arrays.toString(scores));
+		return -1;
+	}
+
+	private static void resetGame() {
+		console = null;
+		// the static Board variable that will store the game board.
+		gameBoard = null;
+		// the JFrame that will house the board:
+		gui = null;
+		// a boolean variable in charge keeping track of whether or not there is
+		// a
+		// game going on.
+		playingGame = false;
+
+		// The player that is running this game. Sometimes it will be the host
+		// and
+		// sometimes it will be a client.
+		localPlayer = null;
+		// this is the array of references to all of the host side player
+		// objects
+		// will be.
+		playerArray = null;
+
+		isHost = false;
+		// these two variables are the connectivity and data managment objects
+		// for
+		// if the player is a host or client. Only one can be initialized at one
+		// time. The default is client.
+		hostManager = null;
+		clientManager = null;
+	}
 }
